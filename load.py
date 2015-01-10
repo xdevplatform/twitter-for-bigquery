@@ -16,15 +16,12 @@ formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(messag
 ch.setFormatter(formatter)
 root.addHandler(ch)
 
-# record = None
-# with open (RECORD_FILE, "r") as myfile:
-#     data = myfile.read()
-#     record = json.loads(data)
-#  
-# # create schema
-# schema = schema_from_record(record)
-# 
-# print "schema: %s" % schema
+schema = ""
+with open (SCHEMA, "r") as f:
+    schema = schema + f.read()
+schema = json.loads(schema)
+  
+print "schema: %s" % schema
 
 # get client
 client = get_client(PROJECT_ID, service_account=SERVICE_ACCOUNT, private_key=KEY, readonly=False)
@@ -33,16 +30,19 @@ client.swallow_results = False
 print "client: %s" % client
 
 # create table
-created = client.create_table(DATASET_ID, TABLE_ID, SCHEMA)
+created = client.create_table(DATASET_ID, TABLE_ID, schema)
  
 print "created: %s" % created
- 
-with open(RECORDS_FILE, 'rU') as f:
+
+tweet = ""
+with open(RECORDS_FILE, "r") as f:
     for line in f:
-        record = json.loads(line)
-        print "record: %s" % record
-        inserted = client.push_rows(DATASET_ID, TABLE_ID, [record], None) 
-        print "inserted: %s" % inserted
+        tweet = tweet + line
+
+record = json.loads(tweet)
+print "record: %s" % record
+inserted = client.push_rows(DATASET_ID, TABLE_ID, [record], None) 
+print "inserted: %s" % inserted
  
 # # Submit an async query.
 # job_id, _results = client.query('SELECT * FROM dataset.my_table LIMIT 1000')
