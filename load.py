@@ -5,17 +5,23 @@ from bigquery import schema_from_record
 from config import *
 
 record = None
-with open (record_file, "r") as myfile:
+with open (RECORD_FILE, "r") as myfile:
     data = myfile.read()
     record = json.loads(data)
  
-print record
- 
-result = schema_from_record(record)
-print result
+# create schema
+schema = schema_from_record(record)
 
-# client = get_client(project_id, service_account=service_account, private_key=key, readonly=True)
-# 
+print schema
+
+# get client
+client = get_client(PROJECT_ID, service_account=SERVICE_ACCOUNT, private_key=KEY, readonly=True)
+
+# create table
+created = client.create_table(DATASET_ID, TABLE_ID, schema)
+
+print created
+ 
 # # Submit an async query.
 # job_id, _results = client.query('SELECT * FROM dataset.my_table LIMIT 1000')
 # 

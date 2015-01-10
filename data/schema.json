@@ -1,0 +1,657 @@
+[
+    {
+        "fields": [
+            {
+                "type": "string",
+                "name": "screen_name",
+                "mode": "nullable"
+            },
+            {
+                "type": "integer",
+                "name": "id",
+                "mode": "nullable"
+            },
+            {
+                "type": "string",
+                "name": "id_str",
+                "mode": "nullable"
+            }
+        ],
+        "type": "record",
+        "name": "contributors",
+        "mode": "repeated"
+    },
+    {
+        "type": "boolean",
+        "name": "truncated",
+        "mode": "nullable"
+    },
+    {
+        "type": "string",
+        "name": "text",
+        "mode": "nullable"
+    },
+    {
+        "type": "integer",
+        "name": "in_reply_to_status_id",
+        "mode": "nullable"
+    },
+    {
+        "type": "integer",
+        "name": "id",
+        "mode": "nullable"
+    },
+    {
+        "type": "integer",
+        "name": "favorite_count",
+        "mode": "nullable"
+    },
+    {
+        "type": "string",
+        "name": "source",
+        "mode": "nullable"
+    },
+    {
+        "type": "boolean",
+        "name": "retweeted",
+        "mode": "nullable"
+    },
+    {
+        "fields": [
+            {
+                "type": "string",
+                "name": "type",
+                "mode": "nullable"
+            },
+            {
+                "fields": [
+                    {
+                        "type": "float",
+                        "name": "lat",
+                        "mode": "nullable"
+                    },
+                    {
+                        "type": "float",
+                        "name": "long",
+                        "mode": "nullable"
+                    }
+                ],
+                "type": "record",
+                "name": "coordinates",
+                "mode": "nullable"
+            }
+        ],
+        "type": "record",
+        "name": "coordinates",
+        "mode": "nullable"
+    },
+    {
+        "type": "string",
+        "name": "timestamp_ms",
+        "mode": "nullable"
+    },
+    {
+        "fields": [
+            {
+                "fields": [
+                    {
+                        "type": "integer",
+                        "name": "id",
+                        "mode": "nullable"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "indices",
+                        "mode": "repeated"
+                    },
+                    {
+                        "type": "string",
+                        "name": "id_str",
+                        "mode": "nullable"
+                    },
+                    {
+                        "type": "string",
+                        "name": "screen_name",
+                        "mode": "nullable"
+                    },
+                    {
+                        "type": "string",
+                        "name": "name",
+                        "mode": "nullable"
+                    }
+                ],
+                "type": "record",
+                "name": "user_mentions",
+                "mode": "repeated"
+            },
+            {
+                "fields": [
+                    {
+                        "type": "integer",
+                        "name": "indices",
+                        "mode": "repeated"
+                    },
+                    {
+                        "type": "string",
+                        "name": "text",
+                        "mode": "nullable"
+                    }
+                ],
+                "type": "record",
+                "name": "symbols",
+                "mode": "repeated"
+            },
+            {
+                "fields": [
+                    {
+                        "type": "integer",
+                        "name": "woeid",
+                        "mode": "nullable"
+                    },
+                    {
+                        "type": "string",
+                        "name": "name",
+                        "mode": "nullable"
+                    },
+                    {
+                        "type": "string",
+                        "name": "countryCode",
+                        "mode": "nullable"
+                    },
+                    {
+                        "type": "string",
+                        "name": "url",
+                        "mode": "nullable"
+                    },
+                    {
+                        "type": "string",
+                        "name": "country",
+                        "mode": "nullable"
+                    },
+                    {
+                        "fields": [
+                            {
+                                "type": "integer",
+                                "name": "code",
+                                "mode": "nullable"
+                            },
+                            {
+                                "type": "string",
+                                "name": "name",
+                                "mode": "nullable"
+                            }
+                        ],
+                        "type": "record",
+                        "name": "placeType",
+                        "mode": "nullable"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "parentid",
+                        "mode": "nullable"
+                    }
+                ],
+                "type": "record",
+                "name": "trends",
+                "mode": "repeated"
+            },
+            {
+                "fields": [
+                    {
+                        "type": "integer",
+                        "name": "indices",
+                        "mode": "repeated"
+                    },
+                    {
+                        "type": "string",
+                        "name": "text",
+                        "mode": "nullable"
+                    }
+                ],
+                "type": "record",
+                "name": "hashtags",
+                "mode": "repeated"
+            },
+            {
+                "fields": [
+                    {
+                        "type": "string",
+                        "name": "url",
+                        "mode": "nullable"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "indices",
+                        "mode": "repeated"
+                    },
+                    {
+                        "type": "string",
+                        "name": "expanded_url",
+                        "mode": "nullable"
+                    },
+                    {
+                        "type": "string",
+                        "name": "display_url",
+                        "mode": "nullable"
+                    }
+                ],
+                "type": "record",
+                "name": "urls",
+                "mode": "repeated"
+            }
+        ],
+        "type": "record",
+        "name": "entities",
+        "mode": "nullable"
+    },
+    {
+        "type": "string",
+        "name": "in_reply_to_screen_name",
+        "mode": "nullable"
+    },
+    {
+        "type": "string",
+        "name": "id_str",
+        "mode": "nullable"
+    },
+    {
+        "type": "integer",
+        "name": "retweet_count",
+        "mode": "nullable"
+    },
+    {
+        "type": "integer",
+        "name": "in_reply_to_user_id",
+        "mode": "nullable"
+    },
+    {
+        "type": "boolean",
+        "name": "favorited",
+        "mode": "nullable"
+    },
+    {
+        "fields": [
+            {
+                "type": "boolean",
+                "name": "follow_request_sent",
+                "mode": "nullable"
+            },
+            {
+                "type": "boolean",
+                "name": "profile_use_background_image",
+                "mode": "nullable"
+            },
+            {
+                "type": "boolean",
+                "name": "default_profile_image",
+                "mode": "nullable"
+            },
+            {
+                "type": "integer",
+                "name": "id",
+                "mode": "nullable"
+            },
+            {
+                "type": "boolean",
+                "name": "verified",
+                "mode": "nullable"
+            },
+            {
+                "type": "string",
+                "name": "profile_image_url_https",
+                "mode": "nullable"
+            },
+            {
+                "type": "string",
+                "name": "profile_sidebar_fill_color",
+                "mode": "nullable"
+            },
+            {
+                "type": "string",
+                "name": "profile_text_color",
+                "mode": "nullable"
+            },
+            {
+                "type": "integer",
+                "name": "followers_count",
+                "mode": "nullable"
+            },
+            {
+                "type": "string",
+                "name": "profile_sidebar_border_color",
+                "mode": "nullable"
+            },
+            {
+                "type": "string",
+                "name": "id_str",
+                "mode": "nullable"
+            },
+            {
+                "type": "string",
+                "name": "profile_background_color",
+                "mode": "nullable"
+            },
+            {
+                "type": "integer",
+                "name": "listed_count",
+                "mode": "nullable"
+            },
+            {
+                "type": "string",
+                "name": "profile_background_image_url_https",
+                "mode": "nullable"
+            },
+            {
+                "type": "integer",
+                "name": "utc_offset",
+                "mode": "nullable"
+            },
+            {
+                "type": "integer",
+                "name": "statuses_count",
+                "mode": "nullable"
+            },
+            {
+                "type": "string",
+                "name": "description",
+                "mode": "nullable"
+            },
+            {
+                "type": "integer",
+                "name": "friends_count",
+                "mode": "nullable"
+            },
+            {
+                "type": "timestamp",
+                "name": "location",
+                "mode": "nullable"
+            },
+            {
+                "type": "string",
+                "name": "profile_link_color",
+                "mode": "nullable"
+            },
+            {
+                "type": "string",
+                "name": "profile_image_url",
+                "mode": "nullable"
+            },
+            {
+                "type": "boolean",
+                "name": "following",
+                "mode": "nullable"
+            },
+            {
+                "type": "boolean",
+                "name": "geo_enabled",
+                "mode": "nullable"
+            },
+            {
+                "type": "string",
+                "name": "profile_banner_url",
+                "mode": "nullable"
+            },
+            {
+                "type": "string",
+                "name": "profile_background_image_url",
+                "mode": "nullable"
+            },
+            {
+                "type": "string",
+                "name": "name",
+                "mode": "nullable"
+            },
+            {
+                "type": "string",
+                "name": "lang",
+                "mode": "nullable"
+            },
+            {
+                "type": "boolean",
+                "name": "profile_background_tile",
+                "mode": "nullable"
+            },
+            {
+                "type": "integer",
+                "name": "favourites_count",
+                "mode": "nullable"
+            },
+            {
+                "type": "string",
+                "name": "screen_name",
+                "mode": "nullable"
+            },
+            {
+                "type": "boolean",
+                "name": "notifications",
+                "mode": "nullable"
+            },
+            {
+                "type": "string",
+                "name": "url",
+                "mode": "nullable"
+            },
+            {
+                "type": "timestamp",
+                "name": "created_at",
+                "mode": "nullable"
+            },
+            {
+                "type": "boolean",
+                "name": "contributors_enabled",
+                "mode": "nullable"
+            },
+            {
+                "type": "string",
+                "name": "time_zone",
+                "mode": "nullable"
+            },
+            {
+                "type": "boolean",
+                "name": "protected",
+                "mode": "nullable"
+            },
+            {
+                "type": "boolean",
+                "name": "default_profile",
+                "mode": "nullable"
+            },
+            {
+                "type": "boolean",
+                "name": "is_translator",
+                "mode": "nullable"
+            }
+        ],
+        "type": "record",
+        "name": "user",
+        "mode": "nullable"
+    },
+    {
+        "fields": [
+            {
+                "type": "string",
+                "name": "type",
+                "mode": "nullable"
+            },
+            {
+                "fields": [
+                    {
+                        "type": "float",
+                        "name": "lat",
+                        "mode": "nullable"
+                    },
+                    {
+                        "type": "float",
+                        "name": "long",
+                        "mode": "nullable"
+                    }
+                ],
+                "type": "record",
+                "name": "coordinates",
+                "mode": "nullable"
+            }
+        ],
+        "type": "record",
+        "name": "geo",
+        "mode": "nullable"
+    },
+    {
+        "type": "string",
+        "name": "in_reply_to_user_id_str",
+        "mode": "nullable"
+    },
+    {
+        "type": "boolean",
+        "name": "possibly_sensitive",
+        "mode": "nullable"
+    },
+    {
+        "type": "string",
+        "name": "lang",
+        "mode": "nullable"
+    },
+    {
+        "type": "timestamp",
+        "name": "created_at",
+        "mode": "nullable"
+    },
+    {
+        "type": "string",
+        "name": "filter_level",
+        "mode": "nullable"
+    },
+    {
+        "type": "string",
+        "name": "in_reply_to_status_id_str",
+        "mode": "nullable"
+    },
+    {
+        "fields": [
+            {
+                "type": "string",
+                "name": "full_name",
+                "mode": "nullable"
+            },
+            {
+                "type": "string",
+                "name": "url",
+                "mode": "nullable"
+            },
+            {
+                "type": "string",
+                "name": "country",
+                "mode": "nullable"
+            },
+            {
+                "type": "string",
+                "name": "place_type",
+                "mode": "nullable"
+            },
+            {
+                "fields": [
+                    {
+                        "type": "string",
+                        "name": "type",
+                        "mode": "nullable"
+                    },
+                    {
+                        "fields": [
+                            {
+                                "fields": [
+                                    {
+                                        "type": "float",
+                                        "name": "lat",
+                                        "mode": "nullable"
+                                    },
+                                    {
+                                        "type": "float",
+                                        "name": "long",
+                                        "mode": "nullable"
+                                    }
+                                ],
+                                "type": "record",
+                                "name": "sw",
+                                "mode": "nullable"
+                            },
+                            {
+                                "fields": [
+                                    {
+                                        "type": "float",
+                                        "name": "lat",
+                                        "mode": "nullable"
+                                    },
+                                    {
+                                        "type": "float",
+                                        "name": "long",
+                                        "mode": "nullable"
+                                    }
+                                ],
+                                "type": "record",
+                                "name": "ne",
+                                "mode": "nullable"
+                            },
+                            {
+                                "fields": [
+                                    {
+                                        "type": "float",
+                                        "name": "lat",
+                                        "mode": "nullable"
+                                    },
+                                    {
+                                        "type": "float",
+                                        "name": "long",
+                                        "mode": "nullable"
+                                    }
+                                ],
+                                "type": "record",
+                                "name": "se",
+                                "mode": "nullable"
+                            },
+                            {
+                                "fields": [
+                                    {
+                                        "type": "float",
+                                        "name": "lat",
+                                        "mode": "nullable"
+                                    },
+                                    {
+                                        "type": "float",
+                                        "name": "long",
+                                        "mode": "nullable"
+                                    }
+                                ],
+                                "type": "record",
+                                "name": "nw",
+                                "mode": "nullable"
+                            }
+                        ],
+                        "type": "record",
+                        "name": "coordinates",
+                        "mode": "nullable"
+                    }
+                ],
+                "type": "record",
+                "name": "bounding_box",
+                "mode": "nullable"
+            },
+            {
+                "type": "string",
+                "name": "country_code",
+                "mode": "nullable"
+            },
+            {
+                "type": "string",
+                "name": "id",
+                "mode": "nullable"
+            },
+            {
+                "type": "string",
+                "name": "name",
+                "mode": "nullable"
+            }
+        ],
+        "type": "record",
+        "name": "place",
+        "mode": "nullable"
+    }
+]

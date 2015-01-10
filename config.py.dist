@@ -1,11 +1,12 @@
 # BigQuery project id as listed in the Google Developers Console.
-project_id = 'twitter-data-dump'
+PROJECT_ID = ""
+DATASET_ID = "tweets"
+TABLE_ID = "2015_01_09"
 
 # Service account email address as listed in the Google Developers Console.
-service_account = '671464438371-u0qv0of11sdv84s9m69nj8im14apd6iu@developer.gserviceaccount.com'
+SERVICE_ACCOUNT = 'ID@developer.gserviceaccount.com'
 
 # PKCS12 or PEM key provided by Google.
-key = 'notasecret'
+KEY = ""
 
-record = None
-record_file = "data/sample_tweet.json"
+RECORD_FILE = "data/sample_tweet_cleaned.json"
