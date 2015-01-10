@@ -36,4 +36,5 @@ nosetests.xml
 .project
 .pydevproject
 config.py
+bigquery/*
 *.p12
