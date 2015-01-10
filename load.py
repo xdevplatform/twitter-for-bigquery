@@ -31,15 +31,16 @@ print "client: %s" % client
 created = client.create_table(DATASET_ID, TABLE_ID, schema)
 print "created: %s" % created
 
-record = json.loads(read_file(RECORD_FILE))
-print "record: %s" % record
-
-inserted = client.push_rows(DATASET_ID, TABLE_ID, [record], None) 
-print "inserted: %s" % inserted
+# record = json.loads(read_file(RECORD_FILE))
+# print "record: %s" % record
+# 
+# inserted = client.push_rows(DATASET_ID, TABLE_ID, [record], None) 
+# print "inserted: %s" % inserted
 
 row = 0
  
 with open(RECORDS_FILE, "r") as f:
+    
     for tweet in f:
          
         record = json.loads(tweet)
@@ -47,17 +48,20 @@ with open(RECORDS_FILE, "r") as f:
         
         inserted = client.push_rows(DATASET_ID, TABLE_ID, [record], None) 
          
-        if inserted['insertErrors']:
+        if inserted.get('insertErrors', None):
 
             print "record %s: %s" % (row, record)
             print "error: %s" % inserted
             
             print "missing: "
-            ikeys = keys(record)
+            ak = all_keys(record)
       
-            for k in ikeys:
-                if not k in schema_str:
-                    print k
+            for k in ak:
+                key = "'" + k + "'"
+                has = key in schema_str 
+                print "%s: %s" % (key, has)
+                if not has:
+                    break
 
             break
          

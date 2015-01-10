@@ -7,20 +7,24 @@ def scrub(d):
         
         if value is None:
             del d[key]
-        if key == 'created_at':
+        elif key == 'coordinates':
+            del d[key]
+        elif key == 'retweeted_status':
+            del d[key]
+        elif key == 'created_at':
             d[key] = convert_timestamp(value)
         elif isinstance(value, dict):
             scrub(value)
     return d  # For convenience
 
-def keys(d):
+def all_keys(d):
 
     arr = []
     
     for key, value in d.items():
         
         if isinstance(value, dict):
-            k = keys(value)
+            k = all_keys(value)
             arr = arr + k
         else:
             arr.append(key)
