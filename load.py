@@ -4,24 +4,24 @@ from bigquery import get_client
 from bigquery import schema_from_record
 from config import *
 
-import logging
-import sys
-
-root = logging.getLogger()
-root.setLevel(logging.DEBUG)
-
-ch = logging.StreamHandler(sys.stdout)
-ch.setLevel(logging.DEBUG)
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-ch.setFormatter(formatter)
-root.addHandler(ch)
+# import logging
+# import sys
+# 
+# root = logging.getLogger()
+# root.setLevel(logging.DEBUG)
+# 
+# ch = logging.StreamHandler(sys.stdout)
+# ch.setLevel(logging.DEBUG)
+# formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+# ch.setFormatter(formatter)
+# root.addHandler(ch)
 
 schema = ""
-with open (SCHEMA, "r") as f:
+with open (SCHEMA_FILE, "r") as f:
     schema = schema + f.read()
 schema = json.loads(schema)
   
-print "schema: %s" % schema
+# print "schema: %s" % schema
 
 # get client
 client = get_client(PROJECT_ID, service_account=SERVICE_ACCOUNT, private_key=KEY, readonly=False)
