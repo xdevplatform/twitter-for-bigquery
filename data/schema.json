@@ -96,6 +96,187 @@
                 "fields": [
                     {
                         "type": "integer",
+                        "name": "indices",
+                        "mode": "repeated"
+                    },
+                    {
+                        "type": "string",
+                        "name": "text",
+                        "mode": "nullable"
+                    }
+                ],
+                "type": "record",
+                "name": "symbols",
+                "mode": "repeated"
+            },
+            {
+                "fields": [
+                    {
+                        "type": "string",
+                        "name": "expanded_url",
+                        "mode": "nullable"
+                    },
+                    {
+                        "type": "string",
+                        "name": "display_url",
+                        "mode": "nullable"
+                    },
+                    {
+                        "type": "string",
+                        "name": "url",
+                        "mode": "nullable"
+                    },
+                    {
+                        "type": "string",
+                        "name": "media_url_https",
+                        "mode": "nullable"
+                    },
+                    {
+                        "type": "string",
+                        "name": "id_str",
+                        "mode": "nullable"
+                    },
+                    {
+                        "fields": [
+                            {
+                                "fields": [
+                                    {
+                                        "type": "integer",
+                                        "name": "h",
+                                        "mode": "nullable"
+                                    },
+                                    {
+                                        "type": "string",
+                                        "name": "resize",
+                                        "mode": "nullable"
+                                    },
+                                    {
+                                        "type": "integer",
+                                        "name": "w",
+                                        "mode": "nullable"
+                                    }
+                                ],
+                                "type": "record",
+                                "name": "small",
+                                "mode": "nullable"
+                            },
+                            {
+                                "fields": [
+                                    {
+                                        "type": "integer",
+                                        "name": "h",
+                                        "mode": "nullable"
+                                    },
+                                    {
+                                        "type": "string",
+                                        "name": "resize",
+                                        "mode": "nullable"
+                                    },
+                                    {
+                                        "type": "integer",
+                                        "name": "w",
+                                        "mode": "nullable"
+                                    }
+                                ],
+                                "type": "record",
+                                "name": "large",
+                                "mode": "nullable"
+                            },
+                            {
+                                "fields": [
+                                    {
+                                        "type": "integer",
+                                        "name": "h",
+                                        "mode": "nullable"
+                                    },
+                                    {
+                                        "type": "string",
+                                        "name": "resize",
+                                        "mode": "nullable"
+                                    },
+                                    {
+                                        "type": "integer",
+                                        "name": "w",
+                                        "mode": "nullable"
+                                    }
+                                ],
+                                "type": "record",
+                                "name": "medium",
+                                "mode": "nullable"
+                            },
+                            {
+                                "fields": [
+                                    {
+                                        "type": "integer",
+                                        "name": "h",
+                                        "mode": "nullable"
+                                    },
+                                    {
+                                        "type": "string",
+                                        "name": "resize",
+                                        "mode": "nullable"
+                                    },
+                                    {
+                                        "type": "integer",
+                                        "name": "w",
+                                        "mode": "nullable"
+                                    }
+                                ],
+                                "type": "record",
+                                "name": "thumb",
+                                "mode": "nullable"
+                            }
+                        ],
+                        "type": "record",
+                        "name": "sizes",
+                        "mode": "nullable"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "indices",
+                        "mode": "repeated"
+                    },
+                    {
+                        "type": "string",
+                        "name": "type",
+                        "mode": "nullable"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "id",
+                        "mode": "nullable"
+                    },
+                    {
+                        "type": "string",
+                        "name": "media_url",
+                        "mode": "nullable"
+                    }
+                ],
+                "type": "record",
+                "name": "media",
+                "mode": "repeated"
+            },
+            {
+                "fields": [
+                    {
+                        "type": "integer",
+                        "name": "indices",
+                        "mode": "repeated"
+                    },
+                    {
+                        "type": "string",
+                        "name": "text",
+                        "mode": "nullable"
+                    }
+                ],
+                "type": "record",
+                "name": "hashtags",
+                "mode": "repeated"
+            },
+            {
+                "fields": [
+                    {
+                        "type": "integer",
                         "name": "id",
                         "mode": "nullable"
                     },
@@ -122,23 +303,6 @@
                 ],
                 "type": "record",
                 "name": "user_mentions",
-                "mode": "repeated"
-            },
-            {
-                "fields": [
-                    {
-                        "type": "integer",
-                        "name": "indices",
-                        "mode": "repeated"
-                    },
-                    {
-                        "type": "string",
-                        "name": "text",
-                        "mode": "nullable"
-                    }
-                ],
-                "type": "record",
-                "name": "symbols",
                 "mode": "repeated"
             },
             {
@@ -193,23 +357,6 @@
                 ],
                 "type": "record",
                 "name": "trends",
-                "mode": "repeated"
-            },
-            {
-                "fields": [
-                    {
-                        "type": "integer",
-                        "name": "indices",
-                        "mode": "repeated"
-                    },
-                    {
-                        "type": "string",
-                        "name": "text",
-                        "mode": "nullable"
-                    }
-                ],
-                "type": "record",
-                "name": "hashtags",
                 "mode": "repeated"
             },
             {

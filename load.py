@@ -18,49 +18,49 @@ from config import *
 # ch.setFormatter(formatter)
 # root.addHandler(ch)
 
-schema = ""
-with open (SCHEMA_FILE, "r") as f:
-    schema = schema + f.read()
-schema = json.loads(schema)
-  
+schema_str = read_file(SCHEMA_FILE)
+schema = json.loads(schema_str)
 # print "schema: %s" % schema
 
 # get client
 client = get_client(PROJECT_ID, service_account=SERVICE_ACCOUNT, private_key=KEY, readonly=False)
 client.swallow_results = False
-
 print "client: %s" % client
 
 # create table
 created = client.create_table(DATASET_ID, TABLE_ID, schema)
- 
 print "created: %s" % created
 
-# tweet = ""
-# with open(RECORD_FILE, "r") as f:
-#     for line in f:
-#         tweet = tweet + line
-# 
-# record = json.loads(tweet)
-# print "record: %s" % record
-# inserted = client.push_rows(DATASET_ID, TABLE_ID, [record], None) 
-# print "inserted: %s" % inserted
+record = json.loads(read_file(RECORD_FILE))
+print "record: %s" % record
+
+inserted = client.push_rows(DATASET_ID, TABLE_ID, [record], None) 
+print "inserted: %s" % inserted
 
 row = 0
-
+ 
 with open(RECORDS_FILE, "r") as f:
     for tweet in f:
-        
+         
         record = json.loads(tweet)
         record = scrub(record)
         
         inserted = client.push_rows(DATASET_ID, TABLE_ID, [record], None) 
-        
+         
         if inserted['insertErrors']:
+
             print "record %s: %s" % (row, record)
-            print inserted
+            print "error: %s" % inserted
+            
+            print "missing: "
+            ikeys = keys(record)
+      
+            for k in ikeys:
+                if not k in schema_str:
+                    print k
+
             break
-        
+         
         row = row + 1
 
 # # Submit an async query.

@@ -1,19 +1,31 @@
-def scrub(record):
-    return del_none(record)
- 
-def del_none(d):
-    """
-    Delete keys with the value ``None`` in a dictionary, recursively.
+import time
 
-    This alters the input so you may wish to ``copy`` the dict first.
-    """
+def scrub(d):
+
     # d.iteritems isn't used as you can't del or the iterator breaks.
     for key, value in d.items():
+        
         if value is None:
             del d[key]
+        if key == 'created_at':
+            d[key] = convert_timestamp(value)
         elif isinstance(value, dict):
-            del_none(value)
+            scrub(value)
     return d  # For convenience
+
+def keys(d):
+
+    arr = []
+    
+    for key, value in d.items():
+        
+        if isinstance(value, dict):
+            k = keys(value)
+            arr = arr + k
+        else:
+            arr.append(key)
+            
+    return arr
 
 def convert_timestamp(str):
     
@@ -21,3 +33,12 @@ def convert_timestamp(str):
     ts = time.strftime('%Y-%m-%d %H:%M:%S', ts)
     
     return ts
+
+def read_file(fn):
+    
+    data = ""
+    with open(fn, "r") as f:
+        for line in f:
+            data = data + line
+            
+    return data    
