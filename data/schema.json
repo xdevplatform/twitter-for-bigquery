@@ -800,5 +800,169 @@
         "type": "record",
         "name": "place",
         "mode": "nullable"
+    },
+    {
+        "fields": [
+            {
+                "fields": [
+                    {
+                        "type": "string",
+                        "name": "source_status_id_str",
+                        "mode": "nullable"
+                    },
+                    {
+                        "type": "string",
+                        "name": "expanded_url",
+                        "mode": "nullable"
+                    },
+                    {
+                        "type": "string",
+                        "name": "display_url",
+                        "mode": "nullable"
+                    },
+                    {
+                        "type": "string",
+                        "name": "url",
+                        "mode": "nullable"
+                    },
+                    {
+                        "type": "string",
+                        "name": "media_url_https",
+                        "mode": "nullable"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "source_status_id",
+                        "mode": "nullable"
+                    },
+                    {
+                        "type": "string",
+                        "name": "id_str",
+                        "mode": "nullable"
+                    },
+                    {
+                        "fields": [
+                            {
+                                "fields": [
+                                    {
+                                        "type": "integer",
+                                        "name": "h",
+                                        "mode": "nullable"
+                                    },
+                                    {
+                                        "type": "integer",
+                                        "name": "w",
+                                        "mode": "nullable"
+                                    },
+                                    {
+                                        "type": "string",
+                                        "name": "resize",
+                                        "mode": "nullable"
+                                    }
+                                ],
+                                "type": "record",
+                                "name": "large",
+                                "mode": "nullable"
+                            },
+                            {
+                                "fields": [
+                                    {
+                                        "type": "integer",
+                                        "name": "h",
+                                        "mode": "nullable"
+                                    },
+                                    {
+                                        "type": "integer",
+                                        "name": "w",
+                                        "mode": "nullable"
+                                    },
+                                    {
+                                        "type": "string",
+                                        "name": "resize",
+                                        "mode": "nullable"
+                                    }
+                                ],
+                                "type": "record",
+                                "name": "small",
+                                "mode": "nullable"
+                            },
+                            {
+                                "fields": [
+                                    {
+                                        "type": "integer",
+                                        "name": "h",
+                                        "mode": "nullable"
+                                    },
+                                    {
+                                        "type": "integer",
+                                        "name": "w",
+                                        "mode": "nullable"
+                                    },
+                                    {
+                                        "type": "string",
+                                        "name": "resize",
+                                        "mode": "nullable"
+                                    }
+                                ],
+                                "type": "record",
+                                "name": "medium",
+                                "mode": "nullable"
+                            },
+                            {
+                                "fields": [
+                                    {
+                                        "type": "integer",
+                                        "name": "h",
+                                        "mode": "nullable"
+                                    },
+                                    {
+                                        "type": "integer",
+                                        "name": "w",
+                                        "mode": "nullable"
+                                    },
+                                    {
+                                        "type": "string",
+                                        "name": "resize",
+                                        "mode": "nullable"
+                                    }
+                                ],
+                                "type": "record",
+                                "name": "thumb",
+                                "mode": "nullable"
+                            }
+                        ],
+                        "type": "record",
+                        "name": "sizes",
+                        "mode": "nullable"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "indices",
+                        "mode": "repeated"
+                    },
+                    {
+                        "type": "string",
+                        "name": "type",
+                        "mode": "nullable"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "id",
+                        "mode": "nullable"
+                    },
+                    {
+                        "type": "string",
+                        "name": "media_url",
+                        "mode": "nullable"
+                    }
+                ],
+                "type": "record",
+                "name": "media",
+                "mode": "repeated"
+            }
+        ],
+        "type": "record",
+        "name": "extended_entities",
+        "mode": "nullable"
     }
 ]

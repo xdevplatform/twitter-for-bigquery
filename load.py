@@ -18,6 +18,12 @@ from config import *
 # ch.setFormatter(formatter)
 # root.addHandler(ch)
 
+# record_str = read_file(RECORD_FILE)
+# record = json.loads(record_str)
+# schema_str = schema_from_record(record)
+# print schema_str
+# exit()
+
 schema_str = read_file(SCHEMA_FILE)
 schema = json.loads(schema_str)
 # print "schema: %s" % schema
@@ -57,10 +63,10 @@ with open(RECORDS_FILE, "r") as f:
             ak = all_keys(record)
       
             for k in ak:
-                key = "'" + k + "'"
+                key = '"' + k + '"'
                 has = key in schema_str 
-                print "%s: %s" % (key, has)
                 if not has:
+                    print "%s: %s" % (key, has)
                     break
 
             break
