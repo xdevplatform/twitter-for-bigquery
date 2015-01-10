@@ -362,7 +362,7 @@
                 "mode": "nullable"
             },
             {
-                "type": "timestamp",
+                "type": "string",
                 "name": "location",
                 "mode": "nullable"
             },
