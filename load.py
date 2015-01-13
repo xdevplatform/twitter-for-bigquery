@@ -18,7 +18,7 @@ from config import *
 # ch.setFormatter(formatter)
 # root.addHandler(ch)
 
-# record_str = read_file(RECORD_FILE)
+# record_str = read_file(SAMPLE_TWEET_FILE)
 # record = json.loads(record_str)
 # schema_str = schema_from_record(record)
 # print schema_str
@@ -37,15 +37,15 @@ print "client: %s" % client
 created = client.create_table(DATASET_ID, TABLE_ID, schema)
 print "created: %s" % created
 
-# record = json.loads(read_file(RECORD_FILE))
-# print "record: %s" % record
-# 
-# inserted = client.push_rows(DATASET_ID, TABLE_ID, [record], None) 
-# print "inserted: %s" % inserted
+record = json.loads(read_file(SAMPLE_TWEET_FILE))
+print "record: %s" % record
+ 
+inserted = client.push_rows(DATASET_ID, TABLE_ID, [record], None) 
+print "inserted: %s" % inserted
 
 row = 0
  
-with open(RECORDS_FILE, "r") as f:
+with open(SAMPLE_STREAM_FILE, "r") as f:
     
     for tweet in f:
          
