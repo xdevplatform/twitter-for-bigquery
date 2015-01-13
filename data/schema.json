@@ -113,6 +113,11 @@
                 "fields": [
                     {
                         "type": "string",
+                        "name": "source_status_id_str",
+                        "mode": "nullable"
+                    },
+                    {
+                        "type": "string",
                         "name": "expanded_url",
                         "mode": "nullable"
                     },
@@ -129,6 +134,11 @@
                     {
                         "type": "string",
                         "name": "media_url_https",
+                        "mode": "nullable"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "source_status_id",
                         "mode": "nullable"
                     },
                     {
