@@ -1,274 +1,98 @@
 {
 	"truncated":false,
-	"text":"RT @4sei_: \u30de\u30c3\u30af\u3067\u7570\u7269\u6df7\u5165\u304c\u3053\u3093\u306a\u306b\u5f15\u304d\u7d9a\u304d\u8d77\u3053\u308b\u3068\u306a\u3093\u304b\u30de\u30c3\u30af\u30b7\u30e7\u30c3\u30af\u306b\u4fbf\u4e57\u3057\u3066\u81ea\u5206\u3067\u30de\u30c3\u30af\u306e\u5546\u54c1\u306b\u7570\u7269\u6df7\u5165\u3055\u305b\u3066\u305d\u308c\u3092\u3044\u304b\u306b\u3082\u30de\u30c3\u30af\u3067\u8cb7\u3063\u305f\u3089\u7570\u7269\u6df7\u5165\u3057\u3066\u305f\u3068\u304b\u8a00\u3063\u3066\u88ab\u5bb3\u8005\u30c5\u30e9\u3057\u3066\u308b\u3093\u3060\u308d\u3046\u306a\u3041\u3057\u304b\u601d\u3048\u306a\u304f\u306a\u3063\u305f http://t.co/aWwQ9d4Cmk",
-	"id":553704625279229952,
+	"text":"@jb_ftddl humm legal",
+	"in_reply_to_status_id":553698164986118145,
+	"id":553704625283805184,
 	"favorite_count":0,
-	"source":"<a href=\"http://twitter.com/download/iphone\" rel=\"nofollow\">Twitter for iPhone</a>",
+	"source":"<a href=\"http://twitter.com\" rel=\"nofollow\">Twitter Web Client</a>",
 	"retweeted":false,
-	"timestamp_ms":"1420848444658",
+	"timestamp_ms":"1420848444659",
 	"entities":{
+		"user_mentions":[
+			{
+				"id":2513267680,
+				"indices":[
+					0,
+					9
+				],
+				"id_str":"2513267680",
+				"screen_name":"jb_ftddl",
+				"name":"luck"
+			}
+		],
 		"symbols":[
 			
 		],
-		"media":[
-			{
-				"source_status_id_str":"553165866712317952",
-				"expanded_url":"http://twitter.com/4sei_/status/553165866712317952/photo/1",
-				"display_url":"pic.twitter.com/aWwQ9d4Cmk",
-				"url":"http://t.co/aWwQ9d4Cmk",
-				"media_url_https":"https://pbs.twimg.com/media/B609YuTCMAAi7LT.jpg",
-				"source_status_id":553165866712317952,
-				"id_str":"553165824190459904",
-				"sizes":{
-					"large":{
-						"h":577,
-						"resize":"fit",
-						"w":1024
-					},
-					"small":{
-						"h":191,
-						"resize":"fit",
-						"w":340
-					},
-					"medium":{
-						"h":338,
-						"resize":"fit",
-						"w":600
-					},
-					"thumb":{
-						"h":150,
-						"resize":"crop",
-						"w":150
-					}
-				},
-				"indices":[
-					115,
-					137
-				],
-				"type":"photo",
-				"id":553165824190459904,
-				"media_url":"http://pbs.twimg.com/media/B609YuTCMAAi7LT.jpg"
-			}
-		],
-		"hashtags":[
+		"trends":[
 			
 		],
-		"user_mentions":[
-			{
-				"id":2211861962,
-				"indices":[
-					3,
-					9
-				],
-				"id_str":"2211861962",
-				"screen_name":"4sei_",
-				"name":"\u03b5 \u6b7b\u751f\u00b0\u3061\u3083\u3093"
-			}
-		],
-		"trends":[
+		"hashtags":[
 			
 		],
 		"urls":[
 			
 		]
 	},
-	"id_str":"553704625279229952",
+	"in_reply_to_screen_name":"jb_ftddl",
+	"id_str":"553704625283805184",
 	"retweet_count":0,
+	"in_reply_to_user_id":2513267680,
 	"favorited":false,
 	"user":{
 		"profile_use_background_image":true,
 		"default_profile_image":false,
-		"id":843525804,
+		"id":174630069,
 		"verified":false,
-		"profile_image_url_https":"https://pbs.twimg.com/profile_images/553208243984420864/AAg-cgQC_normal.jpeg",
-		"profile_sidebar_fill_color":"DDEEF6",
-		"profile_text_color":"333333",
-		"followers_count":947,
-		"profile_sidebar_border_color":"C0DEED",
-		"id_str":"843525804",
-		"profile_background_color":"C0DEED",
-		"listed_count":20,
-		"profile_background_image_url_https":"https://abs.twimg.com/images/themes/theme1/bg.png",
-		"utc_offset":32400,
-		"statuses_count":49424,
-		"description":"tin\u03b8\u9ad8\u6821\u306b\u306d\u3093\u305b\u3044\uff01 \u5ec9\u4fa1YP\u2192\u767d\u9ed2\u30af\u30b8\u30e3\u30c9\u30eb\u3001\u30b7\u30f3\u30af\u30ed\u30f3\u3001\u30cf\u30f3\u30c9BF\u3001\u6d77\u7687\u30b8\u30a7\u30cd\u30af\u30b9\u6c34\u7cbe\u9c57 \u4f7f\u3063\u3066\u307e\u3059\u3002/\u51fa)\u592a\u3082\u3082ID/\u30a8\u30b9\u30d1\u30fc\u7d71\u4e00\u3067\u30ec\u30fc\u30c8\u6f5c\u3063\u3066\u307e\u3059\u3002",
-		"friends_count":827,
-		"location":"\u8a66\u3055\u308c\u305f\u5927\u5730",
-		"profile_link_color":"229FCC",
-		"profile_image_url":"http://pbs.twimg.com/profile_images/553208243984420864/AAg-cgQC_normal.jpeg",
+		"profile_image_url_https":"https://pbs.twimg.com/profile_images/553035327439638528/Uqxe-UOm_normal.jpeg",
+		"profile_sidebar_fill_color":"252429",
+		"profile_text_color":"666666",
+		"followers_count":9440,
+		"profile_sidebar_border_color":"000000",
+		"id_str":"174630069",
+		"profile_background_color":"FFFFFF",
+		"listed_count":13,
+		"profile_background_image_url_https":"https://pbs.twimg.com/profile_background_images/533736827299962880/f7a2YoGk.jpeg",
+		"utc_offset":-7200,
+		"statuses_count":104648,
+		"description":"lucas together, we are stronger",
+		"friends_count":7511,
+		"location":"naju jo\u00e3o",
+		"profile_link_color":"111111",
+		"profile_image_url":"http://pbs.twimg.com/profile_images/553035327439638528/Uqxe-UOm_normal.jpeg",
 		"geo_enabled":true,
-		"profile_banner_url":"https://pbs.twimg.com/profile_banners/843525804/1420377092",
-		"profile_background_image_url":"http://abs.twimg.com/images/themes/theme1/bg.png",
-		"name":"\u306f\u3044\u3060 \u308c\u3093@5th\u4e21\u65e5\u73fe\u5730",
-		"lang":"ja",
-		"profile_background_tile":false,
-		"favourites_count":6280,
-		"screen_name":"OTN_G",
-		"created_at":"2012-09-24 12:48:52",
+		"profile_banner_url":"https://pbs.twimg.com/profile_banners/174630069/1420688723",
+		"profile_background_image_url":"http://pbs.twimg.com/profile_background_images/533736827299962880/f7a2YoGk.jpeg",
+		"name":"\u3164\u3164\u0633\u0627\u0641\u0644\u06a9\u0633",
+		"lang":"pt",
+		"profile_background_tile":true,
+		"favourites_count":3842,
+		"screen_name":"AARONTARlO",
+		"created_at":"2010-08-04 12:06:56",
 		"contributors_enabled":false,
-		"time_zone":"Irkutsk",
+		"time_zone":"Brasilia",
 		"protected":false,
 		"default_profile":false,
 		"is_translator":false
 	},
+	"in_reply_to_user_id_str":"2513267680",
 	"possibly_sensitive":false,
-	"lang":"ja",
+	"lang":"en",
 	"created_at":"2015-01-10 00:07:24",
 	"filter_level":"medium",
-	"extended_entities":{
-		"media":[
-			{
-				"source_status_id_str":"553165866712317952",
-				"expanded_url":"http://twitter.com/4sei_/status/553165866712317952/photo/1",
-				"display_url":"pic.twitter.com/aWwQ9d4Cmk",
-				"url":"http://t.co/aWwQ9d4Cmk",
-				"media_url_https":"https://pbs.twimg.com/media/B609YuTCMAAi7LT.jpg",
-				"source_status_id":553165866712317952,
-				"id_str":"553165824190459904",
-				"sizes":{
-					"large":{
-						"h":577,
-						"resize":"fit",
-						"w":1024
-					},
-					"small":{
-						"h":191,
-						"resize":"fit",
-						"w":340
-					},
-					"medium":{
-						"h":338,
-						"resize":"fit",
-						"w":600
-					},
-					"thumb":{
-						"h":150,
-						"resize":"crop",
-						"w":150
-					}
-				},
-				"indices":[
-					115,
-					137
-				],
-				"type":"photo",
-				"id":553165824190459904,
-				"media_url":"http://pbs.twimg.com/media/B609YuTCMAAi7LT.jpg"
-			},
-			{
-				"source_status_id_str":"553165866712317952",
-				"expanded_url":"http://twitter.com/4sei_/status/553165866712317952/photo/1",
-				"display_url":"pic.twitter.com/aWwQ9d4Cmk",
-				"url":"http://t.co/aWwQ9d4Cmk",
-				"media_url_https":"https://pbs.twimg.com/media/B609Zf5CcAAH9sM.jpg",
-				"source_status_id":553165866712317952,
-				"id_str":"553165837503197184",
-				"sizes":{
-					"large":{
-						"h":577,
-						"resize":"fit",
-						"w":1024
-					},
-					"small":{
-						"h":191,
-						"resize":"fit",
-						"w":340
-					},
-					"medium":{
-						"h":338,
-						"resize":"fit",
-						"w":600
-					},
-					"thumb":{
-						"h":150,
-						"resize":"crop",
-						"w":150
-					}
-				},
-				"indices":[
-					115,
-					137
-				],
-				"type":"photo",
-				"id":553165837503197184,
-				"media_url":"http://pbs.twimg.com/media/B609Zf5CcAAH9sM.jpg"
-			},
-			{
-				"source_status_id_str":"553165866712317952",
-				"expanded_url":"http://twitter.com/4sei_/status/553165866712317952/photo/1",
-				"display_url":"pic.twitter.com/aWwQ9d4Cmk",
-				"url":"http://t.co/aWwQ9d4Cmk",
-				"media_url_https":"https://pbs.twimg.com/media/B609aIJCUAMYVQO.jpg",
-				"source_status_id":553165866712317952,
-				"id_str":"553165848307716099",
-				"sizes":{
-					"large":{
-						"h":577,
-						"resize":"fit",
-						"w":1024
-					},
-					"small":{
-						"h":191,
-						"resize":"fit",
-						"w":340
-					},
-					"medium":{
-						"h":338,
-						"resize":"fit",
-						"w":600
-					},
-					"thumb":{
-						"h":150,
-						"resize":"crop",
-						"w":150
-					}
-				},
-				"indices":[
-					115,
-					137
-				],
-				"type":"photo",
-				"id":553165848307716099,
-				"media_url":"http://pbs.twimg.com/media/B609aIJCUAMYVQO.jpg"
-			},
-			{
-				"source_status_id_str":"553165866712317952",
-				"expanded_url":"http://twitter.com/4sei_/status/553165866712317952/photo/1",
-				"display_url":"pic.twitter.com/aWwQ9d4Cmk",
-				"url":"http://t.co/aWwQ9d4Cmk",
-				"media_url_https":"https://pbs.twimg.com/media/B609ap6CMAAFQ_3.jpg",
-				"source_status_id":553165866712317952,
-				"id_str":"553165857371598848",
-				"sizes":{
-					"large":{
-						"h":577,
-						"resize":"fit",
-						"w":1024
-					},
-					"small":{
-						"h":191,
-						"resize":"fit",
-						"w":340
-					},
-					"medium":{
-						"h":338,
-						"resize":"fit",
-						"w":600
-					},
-					"thumb":{
-						"h":150,
-						"resize":"crop",
-						"w":150
-					}
-				},
-				"indices":[
-					115,
-					137
-				],
-				"type":"photo",
-				"id":553165857371598848,
-				"media_url":"http://pbs.twimg.com/media/B609ap6CMAAFQ_3.jpg"
-			}
-		]
+	"in_reply_to_status_id_str":"553698164986118145",
+	"place":{
+		"full_name":"Porto Feliz, S\u00e3o Paulo",
+		"url":"https://api.twitter.com/1.1/geo/id/2ad1945d0ab02587.json",
+		"country":"Brasil",
+		"place_type":"city",
+		"bounding_box":{
+			"type":"Polygon"
+		},
+		"country_code":"BR",
+		"attributes":{
+			
+		},
+		"id":"2ad1945d0ab02587",
+		"name":"Porto Feliz"
 	}
 }

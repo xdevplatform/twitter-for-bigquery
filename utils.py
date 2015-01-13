@@ -1,4 +1,6 @@
+import sys
 import time
+import logging
 
 def scrub(d):
 
@@ -8,6 +10,10 @@ def scrub(d):
         if value is None:
             del d[key]
         elif key == 'coordinates':
+            del d[key]
+        elif key == 'attributes': # in 'place' object 
+            del d[key]
+        elif key == 'bounding_box': # in 'place' object
             del d[key]
         elif key == 'retweeted_status':
             del d[key]
@@ -46,3 +52,15 @@ def read_file(fn):
             data = data + line
             
     return data    
+
+def enable_logging():
+
+    root = logging.getLogger()
+    root.setLevel(logging.DEBUG)
+     
+    ch = logging.StreamHandler(sys.stdout)
+    ch.setLevel(logging.DEBUG)
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    ch.setFormatter(formatter)
+    root.addHandler(ch)
+

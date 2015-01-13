@@ -6,20 +6,6 @@ from bigquery import schema_from_record
 from utils import *
 from config import *
 
-import logging
-import sys
- 
-def enable_logging():
-
-    root = logging.getLogger()
-    root.setLevel(logging.DEBUG)
-     
-    ch = logging.StreamHandler(sys.stdout)
-    ch.setLevel(logging.DEBUG)
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    ch.setFormatter(formatter)
-    root.addHandler(ch)
-
 def generate_schema_from_tweet():
     
     record_str = read_file(SAMPLE_TWEET_FILE)
@@ -83,8 +69,12 @@ def main():
             print "Process row: %s" % row
              
             record = json.loads(tweet)
-            record_scrubbed = scrub(record)
+
+            # ignore delete records for now            
+            if record.get("delete", None):
+                continue
             
+            record_scrubbed = scrub(record)
             success = insert_record(client, record_scrubbed, schema_str)
             if not success:
                 print "Record: %s" % (json.dumps(record))
