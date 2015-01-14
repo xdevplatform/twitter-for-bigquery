@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <link rel="icon" href="http://getbootstrap.com/favicon.ico">
+
+    <title></title>
+
+
+    <link href="http://getbootstrap.com/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link href="css/tipsy.css" rel="stylesheet">
+ 
+
+    <link href="http://getbootstrap.com/examples/justified-nav/justified-nav.css" rel="stylesheet">
+    <style>
+        .axis path {
+            fill: none;
+            stroke: #777;
+            shape-rendering: crispEdges;
+        }
+	.x.axis path {
+                stroke: #777;
+            }
+        .social {
+            clear: both;
+            padding: 10px 36px 20px 36px;
+        }
+        .axis text {
+            font-family: 'Lato';
+            font-size: 13px;
+        }
+        .tick {
+            stroke-dasharray: 1, 1;
+        }
+        .bar {
+            fill: FireBrick;
+        }
+        #D3line {
+            background: rgba(255, 255, 255, 0.5);
+            box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+    <script type="text/javascript" src="js/d3.js"></script>
+    <script src="https://code.jquery.com/jquery-1.7.1.min.js"></script>
+    <script src="js/jquery.tipsy.js" type="text/javascript"></script>
+    <script>
+    function DisplayChart() {
+        var keyword = $('#txtKeyword').val();
+        $.ajax({
+            type: "GET",
+            url: "/getChartData",
+            data: {
+                inputData: keyword
+            },
+            dataType: "json",
+            success: function(response) {
+                console.log(response);
+  		CreateChart(response);
+            },
+            error: function(xhr, errorType, exception) {  
+               console.log('Error occured');
+            }
+        });
+    }
+</script>
+    <script>
+    	$(document).ready(function () {
+                $("#txtKeyword").keyup(function (event) {
+                    if (event.keyCode == 13) {
+                        DisplayChart();
+                    }
+                });
+                InitChart();
+            });
+    </script>
+    
+
+</head>
+
+<body>
+
+    <div class="container">
+
+
+	<div align="center">
+            <input id="txtKeyword" type="text" class="span3" placeholder="Type something…">
+        </div>
+        <!-- Jumbotron -->
+        <div id="D3line" class="jumbotron">
+            <svg id="visualisation" width="1000" height="500"></svg>
+
+        </div>
+
+
+
+        <!-- Site footer -->
+        <div class="footer">
+            <p>© Company 2014</p>
+        </div>
+
+    </div>
+    <!-- /container -->
+
+                <script>
+        function InitChart() {
+            var data = [{
+                "count": "202",
+                "year": "1590"
+            }, {
+                "count": "215",
+                "year": "1592"
+            }, {
+                "count": "179",
+                "year": "1593"
+            }, {
+                "count": "199",
+                "year": "1594"
+            }, {
+                "count": "134",
+                "year": "1595"
+            }, {
+                "count": "176",
+                "year": "1596"
+            }, {
+                "count": "172",
+                "year": "1597"
+            }, {
+                "count": "161",
+                "year": "1598"
+            }, {
+                "count": "199",
+                "year": "1599"
+            }, {
+                "count": "181",
+                "year": "1600"
+            }, {
+                "count": "157",
+                "year": "1602"
+            }, {
+                "count": "179",
+                "year": "1603"
+            }, {
+                "count": "150",
+                "year": "1606"
+            }, {
+                "count": "187",
+                "year": "1607"
+            }, {
+                "count": "133",
+                "year": "1608"
+            }, {
+                "count": "190",
+                "year": "1609"
+            }, {
+                "count": "175",
+                "year": "1610"
+            }, {
+                "count": "91",
+                "year": "1611"
+            }, {
+                "count": "150",
+                "year": "1612"
+            }];
+
+           
+            var color = d3.scale.category20();
+            var vis = d3.select("#visualisation"),
+                WIDTH = 1000,
+                HEIGHT = 500,
+                MARGINS = {
+                    top: 20,
+                    right: 20,
+                    bottom: 20,
+                    left: 50
+                },
+                xScale = d3.scale.linear().range([MARGINS.left, WIDTH - MARGINS.right]).domain([d3.min(data, function(d) {
+                        return (parseInt(d.year, 10) - 5);
+                    }),
+                    d3.max(data, function(d) {
+                        return parseInt(d.year, 10);
+                    })
+                ]),
+                yScale = d3.scale.linear().range([HEIGHT - MARGINS.top, MARGINS.bottom]).domain([d3.min(data, function(d) {
+                        return (parseInt(d.count, 10) - 5);
+                    }),
+                    d3.max(data, function(d) {
+                        return parseInt(d.count, 10);
+                    })
+                ]),
+                xAxis = d3.svg.axis() // generate an axis
+                .scale(xScale), // set the range of the axis
+                
+                yAxis = d3.svg.axis() // generate an axis
+                .scale(yScale)
+		.orient("left");
+		
+                
+           
+	    
+	    
+
+            vis.append("svg:g") // add a container for the axis
+                .attr("class", "x axis") // add some classes so we can style it
+                .attr("transform", "translate(0," + (HEIGHT - MARGINS.bottom) + ")") // move it into position
+                .call(xAxis); // finally, add the axis to the visualisation
+
+            vis.append("svg:g")
+                .attr("class", "y axis")
+                .attr("transform", "translate(" + (MARGINS.left) + ",0)")
+                .call(yAxis);
+        }
+
+
+	function CreateChart(data) {
+           var color = d3.scale.category20();
+            var vis = d3.select("#visualisation"),
+                WIDTH = 1000,
+                HEIGHT = 500,
+                MARGINS = {
+                    top: 20,
+                    right: 20,
+                    bottom: 20,
+                    left: 50
+                },
+                xScale = d3.scale.linear().range([MARGINS.left, WIDTH - MARGINS.right]).domain([d3.min(data, function(d) {
+                        return (parseInt(d.year, 10) - 5);
+                    }),
+                    d3.max(data, function(d) {
+                        return parseInt(d.year, 10);
+                    })
+                ]),
+                yScale = d3.scale.linear().range([HEIGHT - MARGINS.top, MARGINS.bottom]).domain([d3.min(data, function(d) {
+                        return (parseInt(d.count, 10) - 5);
+                    }),
+                    d3.max(data, function(d) {
+                        return parseInt(d.count, 10);
+                    })
+                ]),
+                xAxis = d3.svg.axis() // generate an axis
+                .scale(xScale), // set the range of the axis
+                
+                yAxis = d3.svg.axis() // generate an axis
+                .scale(yScale)
+		.orient("left");
+		
+            
+           
+	    
+	    
+	    var hasAxis = vis.select('.axis')[0][0];
+           
+            if (!hasAxis) {
+		console.log('me in');
+            vis.append("svg:g") // add a container for the axis
+                .attr("class", "x axis") // add some classes so we can style it
+                .attr("transform", "translate(0," + (HEIGHT - MARGINS.bottom) + ")") // move it into position
+                .call(xAxis); // finally, add the axis to the visualisation
+
+            vis.append("svg:g")
+                .attr("class", "y axis")
+                .attr("transform", "translate(" + (MARGINS.left) + ",0)")
+                .call(yAxis);
+	    }
+
+
+	    var transition = vis.transition().duration(2000);
+
+	    transition.select(".x.axis").call(xAxis);
+	    transition.select(".y.axis").call(yAxis);
+
+	    var circles = vis.selectAll("circle").data(data);
+                    circles.enter()
+                        .append("svg:circle")
+                        .attr("stroke", "black")
+			.attr("r", 10)
+                        .attr("cx", function (d) {
+                        return xScale(d.year);
+                    })
+                        .attr("cy", function (d) {
+                        return yScale(d.count);
+                    })
+			.style("fill", function(d, i) {
+    return color(i);
+});
+
+	   circles.transition().duration(1000)
+    .attr("cx", function(d) {
+        return xScale(d.year);
+    })
+    .attr("cy", function(d) {
+        return yScale(d.count);
+    })
+    .attr("r", 10);
+
+circles.exit()
+    .transition().duration(1000)
+    .remove();
+	    
+$('svg circle').tipsy({
+    gravity: 'w',
+    title: function() {
+        var d = this.__data__;
+ 
+        return d.count + ' occurences found in ' + d.corpus;
+    }
+});
+
+        }
+
+        
+    </script>
+
+</body>
+
+</html>
