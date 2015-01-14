@@ -38,3 +38,4 @@ nosetests.xml
 config.py
 bigquery/*
 *.p12
+client_secret.json
