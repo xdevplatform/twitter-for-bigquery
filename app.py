@@ -27,7 +27,7 @@ class ShowChartPage(webapp2.RequestHandler):
     @decorator.oauth_required
     def get(self):
     	temp_data = {}
-    	temp_path = 'Templates/chart.html'
+    	temp_path = 'templates/chart.html'
     	queryData = {'query':'SELECT word FROM [publicdata:samples.shakespeare] LIMIT 1000'}
     	tableData = get_service().jobs()
     	response = tableData.query(projectId=PROJECT_NUMBER, body=queryData).execute()
@@ -39,7 +39,7 @@ class ShowHome(webapp2.RequestHandler):
     @decorator.oauth_required
     def get(self):
         template_data = {}
-        template_path = 'Templates/index.html'
+        template_path = 'templates/index.html'
         self.response.out.write(template.render(template_path, template_data))
 
 class GetChartData(webapp2.RequestHandler):
@@ -71,7 +71,7 @@ class DisplayChart(webapp2.RequestHandler):
     @decorator.oauth_required
     def get(self):
         template_data = {}
-        template_path = 'Templates/displayChart.html'
+        template_path = 'templates/displayChart.html'
         self.response.out.write(template.render(template_path, template_data))
 
 class DisplayChart3(webapp2.RequestHandler):
@@ -79,7 +79,7 @@ class DisplayChart3(webapp2.RequestHandler):
     @decorator.oauth_required
     def get(self):
         template_data = {}
-        template_path = 'Templates/displayChart_3.html'
+        template_path = 'templates/displayChart_3.html'
         self.response.out.write(template.render(template_path, template_data))
 
 class DisplayChart4(webapp2.RequestHandler):
@@ -87,7 +87,7 @@ class DisplayChart4(webapp2.RequestHandler):
     @decorator.oauth_required
     def get(self):
         template_data = {}
-        template_path = 'Templates/displayChart_4.html'
+        template_path = 'templates/displayChart_4.html'
         self.response.out.write(template.render(template_path, template_data))
  
 application = webapp2.WSGIApplication([
