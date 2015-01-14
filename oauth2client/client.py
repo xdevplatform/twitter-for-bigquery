@@ -45,7 +45,7 @@ try:
   if crypt.OpenSSLVerifier is not None:
     HAS_OPENSSL = True
 except ImportError as e:
-  raise e
+  pass
 
 try:
   from urlparse import parse_qsl

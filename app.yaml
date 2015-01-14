@@ -13,3 +13,11 @@ handlers:
 
 - url: /.*
   script: app.application
+  
+libraries:
+- name: pycrypto
+  version: latest
+
+- name: ssl
+  version: latest
+  
