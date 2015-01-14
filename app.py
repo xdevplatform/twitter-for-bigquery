@@ -28,7 +28,7 @@ class ShowChartPage(webapp2.RequestHandler):
     def get(self):
     	temp_data = {}
     	temp_path = 'templates/chart.html'
-    	queryData = {'query':'SELECT word FROM [publicdata:samples.shakespeare] LIMIT 1000'}
+    	queryData = {'query':'SELECT text FROM [tweets.2015_01_09] WHERE text CONTAINS \'' + inputData +  '\' LIMIT 10'}
     	tableData = get_service().jobs()
     	response = tableData.query(projectId=PROJECT_NUMBER, body=queryData).execute()
     	self.response.out.write(response)
