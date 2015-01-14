@@ -1,12 +1,22 @@
+URL = 'https://www.googleapis.com/auth/bigquery'
+
 # BigQuery project id as listed in the Google Developers Console.
 PROJECT_ID = ""
+PROJECT_NUMBER = ''
+
 DATASET_ID = "tweets"
 TABLE_ID = "2015_01_09"
 
 # Service account email address as listed in the Google Developers Console.
-SERVICE_ACCOUNT = 'ID@developer.gserviceaccount.com'
+SERVICE_ACCOUNT = ''
 
 # PKCS12 or PEM key provided by Google.
-KEY = ""
+KEY_FILE = "/PATH/TO/key.p12"
+KEY = None 
+with open(KEY_FILE, 'rb') as f:
+    KEY = f.read()
 
-RECORD_FILE = "data/sample_tweet_cleaned.json"
+SCHEMA_FILE = "data/schema.json"
+SAMPLE_TWEET_FILE = "data/sample_tweet.json"
+SAMPLE_TWEET_ERROR_FILE = "data/sample_tweet_error.json"
+SAMPLE_STREAM_FILE = "data/sample_stream.jsonr"
