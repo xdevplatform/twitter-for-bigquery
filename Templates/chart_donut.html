@@ -3,22 +3,22 @@
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Twitter for BigQuery</title>
+    <link rel="icon" href="http://getbootstrap.com/favicon.ico">
+    <title></title>
     <link href="http://getbootstrap.com/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="http://getbootstrap.com/examples/justified-nav/justified-nav.css" rel="stylesheet">
     <link href="/static/css/c3.css" rel="stylesheet" rel="stylesheet">
-    <link href="/static/css/style.css" rel="stylesheet" rel="stylesheet">
+    
 </head>
 
 <body>
 
     <div class="container">
-
+		
 		<center>
         <div id="chart">
         	<img src="/static/img/loading.gif">
         </div>
-        </center>
 
     </div>
     <!-- /container -->
@@ -29,7 +29,7 @@
 <script>
 
 function init() {
-
+    
     $.ajax({
         type: "GET",
         url: "/data",
@@ -45,7 +45,6 @@ function init() {
            console.log('Error occured');
         }
     });
-
 }
 
 function makeChart(data){
