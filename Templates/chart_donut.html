@@ -14,6 +14,42 @@
 <body>
 
     <div class="container">
+    
+    	<div class="row">
+    	
+    		<div class="col-md-4">
+
+	    		<h3>Data Source</h3>
+				<select id="source" name="source" class="form-control">
+				  <option value="sources">Tweet Sources</option>
+				  <option value="hashtags">Hashtags</option>
+				</select>
+
+    		</div>
+
+    		<div class="col-md-4">
+
+				<h3>Pivot</h3>
+				<select id="pivot" name="pivot" class="form-control">
+				  <option>Hourly</option>
+				  <option>Location</option>
+				</select>
+
+    		</div>
+
+    		<div class="col-md-4">
+
+				<h3>Chart</h3>
+				<select id="charttype" name="chart" class="form-control">
+				  <option value="donut">Donut</option>
+				  <option value="line">Line</option>
+				  <option value="timeseries">Timeseries</option>
+				  <option value="map">Map</option>
+				</select>
+
+    		</div>
+    	
+    	</div>
 		
 		<center>
         <div id="chart">
@@ -26,48 +62,7 @@
 <script type="text/javascript" src="https://code.jquery.com/jquery-1.7.1.min.js"></script>
 <script type="text/javascript" src="/static/js/d3.js"></script>
 <script type="text/javascript" src="/static/js/c3.js"></script>
-<script>
-
-function init() {
-    
-    $.ajax({
-        type: "GET",
-        url: "/data",
-        data: {
-            inputData: ""
-        },
-        dataType: "json",
-        success: function(response) {
-            console.log(response);
-			makeChart(response);
-        },
-        error: function(xhr, errorType, exception) {  
-           console.log('Error occured');
-        }
-    });
-}
-
-function makeChart(data){
-	
-	var chart = c3.generate({
-	    bindto: '#chart',
-	    data: {
-	        columns: data,
-	        type : 'donut',
-	        onclick: function (d, i) { console.log("onclick", d, i); },
-	        onmouseover: function (d, i) { console.log("onmouseover", d, i); },
-	        onmouseout: function (d, i) { console.log("onmouseout", d, i); }
-	    },
-	    donut: {
-	        title: "Tweet Sources"
-	    }
-	});
-
-}
-
-init();
-    
-</script>
+<script type="text/javascript" src="/static/js/script.js"></script>
 
 </body>
 
