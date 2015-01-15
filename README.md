@@ -20,6 +20,10 @@ Setting up with sample data source
 Sample Queries
 ---
 
+Counts (Bar/Donut/Pie)
+Time Sequence (Line)
+Location (Map)
+
 https://cloud.google.com/bigquery/query-reference
 
 - Tweet source

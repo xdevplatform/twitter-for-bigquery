@@ -44,7 +44,7 @@ class ShowHome(webapp2.RequestHandler):
         template_path = 'templates/index.html'
         self.response.out.write(template.render(template_path, template_data))
 
-class GetChartData(webapp2.RequestHandler):
+class Data(webapp2.RequestHandler):
     
     @decorator.oauth_required
     def get(self):
@@ -70,36 +70,44 @@ class GetChartData(webapp2.RequestHandler):
         self.response.headers['Content-Type'] = 'application/json'
         self.response.out.write(json.dumps(resp))
 
-class DisplayChart(webapp2.RequestHandler):
+class ChartDonut(webapp2.RequestHandler):
     
     @decorator.oauth_required
     def get(self):
         template_data = {}
-        template_path = 'templates/displayChart.html'
+        template_path = 'templates/chart_donut.html'
         self.response.out.write(template.render(template_path, template_data))
 
-class DisplayChart3(webapp2.RequestHandler):
+class ChartTimeseries(webapp2.RequestHandler):
     
     @decorator.oauth_required
     def get(self):
         template_data = {}
-        template_path = 'templates/displayChart_3.html'
+        template_path = 'templates/chart_timeseries.html'
         self.response.out.write(template.render(template_path, template_data))
 
-class DisplayChart4(webapp2.RequestHandler):
+class ChartLine(webapp2.RequestHandler):
     
     @decorator.oauth_required
     def get(self):
         template_data = {}
-        template_path = 'templates/displayChart_4.html'
+        template_path = 'templates/chart_line.html'
+        self.response.out.write(template.render(template_path, template_data))
+        
+class ChartMap(webapp2.RequestHandler):
+    
+    @decorator.oauth_required
+    def get(self):
+        template_data = {}
+        template_path = 'templates/chart_map.html'
         self.response.out.write(template.render(template_path, template_data))
  
 application = webapp2.WSGIApplication([
-    ('/chart', ShowChartPage),
-    ('/displayChart', DisplayChart),
-    ('/displayChart3', DisplayChart3),
-    ('/displayChart4', DisplayChart4),
-    ('/getChartData', GetChartData),
+    ('/chart/donut', ChartDonut),
+    ('/chart/timeseries', ChartTimeseries),
+    ('/chart/line', ChartLine),
+    ('/chart/map', ChartLine),
+    ('/data', Data),
     ('/', ShowHome),
     (decorator.callback_path, decorator.callback_handler())
 ], debug=True)
