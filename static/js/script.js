@@ -28,10 +28,10 @@ function queryData() {
 	var pivot = $("#pivot").val();
 
 	// chart type: http://c3js.org/examples.html
-	var chart = $("#chart").val();
+	var chart = $("#charttype").val();
 
 	var args = null;
-
+	
 	if (chart == 'donut') {
 
 		args = {
@@ -54,6 +54,18 @@ function queryData() {
 			}
 		}
 
+	} else if (chart == 'line') {
+		
+		args = {
+			bindto : '#chart',
+		    data: {
+		        columns: [
+		            ['data1', 30, 200, 100, 400, 150, 250],
+		            ['data2', 50, 20, 10, 40, 15, 25]
+		        ]
+		    }
+		}
+		
 	} else if (chart == 'timeseries') {
 
 		args = {
@@ -97,22 +109,6 @@ function queryData() {
 
 function makeChart(args){
 	
-	c3.generate({
-	    bindto: '#chart',
-	    data: {
-	      columns: [
-	        ['data1', 30, 200, 100, 400, 150, 250],
-	        ['data2', 50, 20, 10, 40, 15, 25]
-	      ],
-	      axes: {
-	        data2: 'y2' // ADD
-	      }
-	    },
-	    axis: {
-	      y2: {
-	        show: true // ADD
-	      }
-	    }
-	});
+	c3.generate(args);
 
 }
