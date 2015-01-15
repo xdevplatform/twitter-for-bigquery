@@ -1,4 +1,5 @@
 import os
+import re
 import httplib2
 import json
 import webapp2
@@ -14,13 +15,13 @@ from oauth2client.appengine import oauth2decorator_from_clientsecrets
 
 from config import *
 
+decorator = oauth2decorator_from_clientsecrets(
+    filename=CLIENT_SECRETS,
+    scope=SCOPES,
+    cache=memcache)
+
 def get_service():
     
-    decorator = oauth2decorator_from_clientsecrets(
-        filename=CLIENT_SECRETS,
-        scope=SCOPES,
-        cache=memcache)
-
     return build('bigquery', 'v2', http=decorator.http())
 
 class ShowChartPage(webapp2.RequestHandler):
@@ -29,7 +30,7 @@ class ShowChartPage(webapp2.RequestHandler):
     def get(self):
     	temp_data = {}
     	temp_path = 'templates/chart.html'
-    	queryData = {'query':'SELECT text FROM [tweets.2015_01_09] WHERE text CONTAINS \'' + inputData +  '\' LIMIT 10'}
+    	queryData = {'query':'SELECT source, count(*) as count FROM [tweets.2015_01_09] GROUP by source ORDER BY count DESC LIMIT 1000'}
     	tableData = get_service().jobs()
     	response = tableData.query(projectId=PROJECT_NUMBER, body=queryData).execute()
     	self.response.out.write(response)
@@ -48,21 +49,23 @@ class GetChartData(webapp2.RequestHandler):
     @decorator.oauth_required
     def get(self):
         inputData = self.request.get("inputData")
-        queryData = {'query':'SELECT SUM(word_count) as WCount,corpus_date,group_concat(corpus) as Work FROM '
-                     '[publicdata:samples.shakespeare] WHERE word="' + inputData + '" and corpus_date>0 GROUP BY corpus_date ORDER BY WCount'}
+#         queryData = {'query':'SELECT SUM(word_count) as WCount,corpus_date,group_concat(corpus) as Work FROM '
+#                      '[publicdata:samples.shakespeare] WHERE word="' + inputData + '" and corpus_date>0 GROUP BY corpus_date ORDER BY WCount'}
+        queryData = {'query': 'SELECT source as source, count(*) as count FROM [tweets.2015_01_09] GROUP by source ORDER BY count DESC LIMIT 20'}
         tableData = get_service().jobs()
         dataList = tableData.query(projectId=PROJECT_NUMBER, body=queryData).execute()
+
+        p = re.compile(r'<.*?>')
     
         resp = []
         if 'rows' in dataList:
             for row in dataList['rows']:
                 for key, dict_list in row.iteritems():
-                    count = dict_list[0]
-                    year = dict_list[1]
-                    corpus = dict_list[2]
-                    resp.append({'count': count['v'], 'year':year['v'], 'corpus':corpus['v']})
+                    source = p.sub('', dict_list[0]['v'])
+                    count = int(dict_list[1]['v'])
+                    resp.append([source, count])
         else:
-            resp.append({'count':'0', 'year':'0', 'corpus':'0'})
+            resp.append([])
     
         self.response.headers['Content-Type'] = 'application/json'
         self.response.out.write(json.dumps(resp))
