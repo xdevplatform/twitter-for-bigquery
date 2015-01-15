@@ -14,12 +14,13 @@ from oauth2client.appengine import oauth2decorator_from_clientsecrets
 
 from config import *
 
-decorator = oauth2decorator_from_clientsecrets(
-    filename=CLIENT_SECRETS,
-    scope=SCOPES,
-    cache=memcache)
-
 def get_service():
+    
+    decorator = oauth2decorator_from_clientsecrets(
+        filename=CLIENT_SECRETS,
+        scope=SCOPES,
+        cache=memcache)
+
     return build('bigquery', 'v2', http=decorator.http())
 
 class ShowChartPage(webapp2.RequestHandler):
