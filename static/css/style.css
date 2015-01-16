@@ -2,12 +2,24 @@
     margin-top: 40px;
 }
 
-#hashtags_holder {
+#canvas {
+	text-align: center;
+	margin-top: 40px;
+	margin-bottom: 40px;
+}
+
+.logo {
+	margin-top: 0px;
+	vertical-align: bottom;
+	max-height: 120px;
+	max-width: 120px;
+}
+
+.input_holder {
     margin-top: 20px;
 }
 
 .clearfix {
-  overflow: auto;
   zoom: 1;
 }
 

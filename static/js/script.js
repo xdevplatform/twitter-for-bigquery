@@ -43,13 +43,12 @@ $(document).ready(function(){
 		}
     });
 	
-	$("#charttype").change(function(){
-    });
-
 	$("#query_submit").click(function(){
 		return handleChange();
     });
 
+	$("#map").hide();
+	
 	
 })
 
@@ -80,9 +79,14 @@ function handleChange() {
 	var hashtags = getHashtags();
 
 	var args = null;
+
+	if (!source){
+		$("#chart").html("Please select a source.").show();
+		return false;
+	}
 	
 	if (source == 'hashtags' && (!hashtags || hashtags.length == 0)){
-		$("#chart").html("<h4>Please enter at least one hashtag</h4>").show();
+		$("#chart").html("Please enter at least one hashtag.").show();
 		return false;
 	}
 	
@@ -125,6 +129,11 @@ function queryData(charttype, args){
 			if (response && response.constructor == Object){
 				showChart(charttype, response);
 				$("#chart").fadeIn();
+				
+				var query = response['query'];
+				if (query){
+					$("#query").val(query);
+				}
 			} else {
 				$("#chart").html('<h4>Not yet supported</h4>');
 				$("#chart").fadeIn();

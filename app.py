@@ -30,18 +30,6 @@ def get_service():
     
     return build('bigquery', 'v2', http=decorator.http())
 
-class ShowChartPage(webapp2.RequestHandler):
-    
-    @decorator.oauth_required
-    def get(self):
-    	temp_data = {}
-    	temp_path = 'templates/chart.html'
-    	queryData = {'query':'SELECT source, count(*) as count FROM [tweets.2015_01_09] GROUP by source ORDER BY count DESC LIMIT 1000'}
-    	tableData = get_service().jobs()
-    	response = tableData.query(projectId=PROJECT_NUMBER, body=queryData).execute()
-    	self.response.out.write(response)
-    	# self.response.out.write(template.render(temp_path,temp_data))
-	
 class ShowHome(webapp2.RequestHandler):
     
     @decorator.oauth_required
@@ -71,10 +59,10 @@ class Data(webapp2.RequestHandler):
 
             if pivot == 'hour' or charttype == 'timeseries':
 
-                query = {'query': 'SELECT source as source, HOUR(TIMESTAMP(created_at)) AS create_hour, count(*) as count FROM [tweets.2015_01_09] WHERE source contains \'Twitter for\' GROUP by create_hour, source ORDER BY source ASC, create_hour ASC'}
+                query = 'SELECT source as source, HOUR(TIMESTAMP(created_at)) AS create_hour, count(*) as count FROM [tweets.2015_01_09] WHERE source contains \'Twitter for\' GROUP by create_hour, source ORDER BY source ASC, create_hour ASC'
                 
                 tableData = get_service().jobs()
-                dataList = tableData.query(projectId=PROJECT_NUMBER, body=query).execute()
+                dataList = tableData.query(projectId=PROJECT_NUMBER, body={'query':query}).execute()
                 
                 # key: source, value: [source, d1, d2, d3...]
                 buckets = {}
@@ -105,14 +93,15 @@ class Data(webapp2.RequestHandler):
                         'x' : 'x',
                         'columns' : columns 
                     },
+                    'query' : query
                 }
 
             elif charttype == 'donut' or charttype == 'bar':
                 
-                query = {'query': 'SELECT source as source, count(*) as count FROM [tweets.2015_01_09] GROUP by source ORDER BY count DESC LIMIT 20'}
+                query = 'SELECT source as source, count(*) as count FROM [tweets.2015_01_09] GROUP by source ORDER BY count DESC LIMIT 20'
         
                 tableData = get_service().jobs()
-                dataList = tableData.query(projectId=PROJECT_NUMBER, body=query).execute()
+                dataList = tableData.query(projectId=PROJECT_NUMBER, body={'query':query}).execute()
          
                 columns = []
                 if 'rows' in dataList:
@@ -137,8 +126,8 @@ class Data(webapp2.RequestHandler):
                         'width': {
                             'ratio': 0.5 
                         }
-                    }
-
+                    },
+                    'query' : query
                 }
                 
             elif pivot == 'location' or charttype == 'map':
@@ -155,11 +144,10 @@ class Data(webapp2.RequestHandler):
 
             if pivot == 'hour' or charttype == 'timeseries':
 
-                query = {'query': "SELECT entities.hashtags.text, HOUR(TIMESTAMP(created_at)) AS create_hour, count(*) as count FROM [tweets.2015_01_09] WHERE LOWER(entities.hashtags.text) in (%s) GROUP by create_hour, entities.hashtags.text ORDER BY entities.hashtags.text ASC, create_hour ASC" % (terms)}
-                print query
+                query = "SELECT entities.hashtags.text, HOUR(TIMESTAMP(created_at)) AS create_hour, count(*) as count FROM [tweets.2015_01_09] WHERE LOWER(entities.hashtags.text) in (%s) GROUP by create_hour, entities.hashtags.text ORDER BY entities.hashtags.text ASC, create_hour ASC" % (terms)
                 
                 tableData = get_service().jobs()
-                dataList = tableData.query(projectId=PROJECT_NUMBER, body=query).execute()
+                dataList = tableData.query(projectId=PROJECT_NUMBER, body={'query':query}).execute()
                 
                 # key: source, value: [source, d1, d2, d3...]
                 buckets = {}
@@ -190,14 +178,15 @@ class Data(webapp2.RequestHandler):
                         'x' : 'x',
                         'columns' : columns 
                     },
+                    'query' : query
                 }
 
             elif charttype == 'donut' or charttype == 'bar':
 
-                query = {'query': "SELECT entities.hashtags.text, count(*) as count FROM [tweets.2015_01_09] WHERE LOWER(entities.hashtags.text) in (%s) GROUP by entities.hashtags.text ORDER BY count" % (terms)}
+                query = "SELECT entities.hashtags.text, count(*) as count FROM [tweets.2015_01_09] WHERE LOWER(entities.hashtags.text) in (%s) GROUP by entities.hashtags.text ORDER BY count" % (terms)
         
                 tableData = get_service().jobs()
-                dataList = tableData.query(projectId=PROJECT_NUMBER, body=query).execute()
+                dataList = tableData.query(projectId=PROJECT_NUMBER, body={'query':query}).execute()
          
                 columns = []
                 if 'rows' in dataList:
@@ -222,8 +211,8 @@ class Data(webapp2.RequestHandler):
                         'width': {
                             'ratio': 0.5 
                         }
-                    }
-
+                    },
+                    'query' : query
                 }
                 
             elif pivot == 'location' or charttype == 'map':
@@ -242,8 +231,8 @@ class Chart(webapp2.RequestHandler):
         self.response.out.write(template.render(template_path, template_data))
 
 application = webapp2.WSGIApplication([
-    ('/chart', Chart),
     ('/data', Data),
-    ('/', ShowHome),
+    ('/chart', Chart),
+    ('/', Chart),
     (decorator.callback_path, decorator.callback_handler())
 ], debug=True)

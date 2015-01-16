@@ -17,10 +17,14 @@
     <div class="container">
     
     	<div class="row">
+
+    		<div class="col-md-1">
+    			<img src="/static/img/bird_large.png" width="100%" class="logo">
+    		</div>
     	
     		<div class="col-md-3">
 
-	    		<h3>Data Source</h3>
+	    		<h4>Data Source</h4>
 				<select id="source" name="source" class="form-control">
 				  <option value="">-- Select one --</option>
 				  <option value="hashtags">Hashtags</option>
@@ -28,7 +32,7 @@
 				  <option value="sources">Tweet sources</option>
 				</select>
 				
-				<form class="form-horizontal" id="hashtags_holder" class="clearfix">
+				<form class="form-horizontal input_holder" id="hashtags_holder">
 				
 				  <div class="form-group">
 					<div class="input-group col-sm-offset-1 col-sm-10">
@@ -57,10 +61,8 @@
 				  
 				</form>
 				
-				<form class="form-horizontal" id="mentions_holder" class="clearfix">
+				<form class="form-horizontal input_holder" id="mentions_holder">
 				
-				  <br>
-
 				  <div class="form-group">
 					<div class="input-group col-sm-offset-1 col-sm-10">
 					  <span class="input-group-addon" id="basic-addon1">#</span>
@@ -93,7 +95,7 @@
 
     		<div class="col-md-3">
 
-				<h3>Pivot</h3>
+				<h4>Pivot</h4>
 				<select id="pivot" name="pivot" class="form-control">
 				  <option value="">None</option>
 				  <option value="hour">Hourly</option>
@@ -104,7 +106,7 @@
 
     		<div class="col-md-3">
 
-				<h3>Chart</h3>
+				<h4>Chart</h4>
 				<select id="charttype" name="charttype" class="form-control">
 				  <option value="donut">Donut</option>
 				  <option value="bar">Bar</option>
@@ -114,24 +116,39 @@
 
     		</div>
     		
-    		  <h3>&nbsp;</h3>
-			  <div class="col-md-3">
-			    	<input id="query_submit" class="btn btn-default" type="submit" value="Submit">
-			  </div>
+		  <div class="col-md-2">
+    		  	<h4>&nbsp;</h4>
+  	    		<input id="query_submit" class="btn btn-primary" type="submit" value="Submit">
+		  </div>
 
     	
     	</div>
 		
 		<hr>
 		
-		<center>
 		
-		<h1>Title</h1>
+		<div id="canvas">
 		
-        <div id="chart">
+			<h1>Twitter for BigQuery</h1>
+			
+	        <div id="chart">Please select a DataSource and click "SubmitQuery"</div>
+	        
+	        <div id="map" style="position: relative; width: 750px; height: 500px;"></div>
+        
         </div>
         
-        <div id="map" style="position: relative; width: 750px; height: 500px;"></div>
+        <hr>
+        
+        <div class="row">
+			<form class="form-horizontal">
+			  <div class="form-group">
+			    <label for="inputEmail3" class="col-sm-2 control-label">Query</label>
+			    <div class="col-sm-9">
+			      <input type="text" class="form-control" id="query" placeholder="Google BigQuery query">
+			    </div>
+			  </div>
+			</form>
+        </div>
 
     </div>
     <!-- /container -->
