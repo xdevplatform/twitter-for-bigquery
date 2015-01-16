@@ -15,125 +15,130 @@
 <body>
 
     <div class="container">
-    
-    	<div class="row">
 
-    		<div class="col-md-1">
-    			<img src="/static/img/bird_large.png" width="100%" class="logo">
-    		</div>
-    	
-    		<div class="col-md-3">
-
-	    		<h5>Data Source</h5>
-				<select id="source" name="source" class="form-control">
-				  <option value="">-- Select one --</option>
-				  <option value="hashtags">Hashtags</option>
-				  <option value="mentions">User mentions</option>
-				  <option value="sources">Tweet sources</option>
-				</select>
-				
-    		</div>
-
-    		<div class="col-md-3">
-
-				<h5>Pivot</h5>
-				<select id="pivot" name="pivot" class="form-control">
-				  <option value="">None</option>
-				  <option value="hour">Hourly</option>
-<!--
-				  <option value="location">Location</option>
--->
-				</select>
-
-    		</div>
-
-    		<div class="col-md-3">
-
-				<h5>Chart</h5>
-				<select id="charttype" name="charttype" class="form-control">
-				  <option value="donut">Donut</option>
-				  <option value="bar">Bar</option>
-				  <option value="timeseries">Timeseries</option>
-<!--
-				  <option value="map">Map</option>
--->
-				</select>
-
-    		</div>
-    		
-		  <div class="col-md-2">
-    		  	<h5>&nbsp;</h5>
-  	    		<input id="query_submit" class="btn btn-primary" type="submit" value="Submit">
-		  </div>
-
-    	
-    	</div>
-    	
-		<div class="row" id="hashtags_holder">
-			<div class="col-sm-offset-1 col-sm-9">
-				<form class="form-inline input_holder">
-				
-				  <div class="form-group">
-					<div class="input-group col-sm-offset-1 col-sm-11">
-					  <span class="input-group-addon" id="basic-addon1">#</span>
-					  <input type="text" class="form-control hashtag" id="hashtag1" placeholder="Hashtag 1" aria-describedby="basic-addon1">
+		<form name="form" id="form">
+		    
+	    	<div class="row">
+	    	
+	    		<div class="col-md-1">
+	    			<img src="/static/img/bird_large.png" width="100%" class="logo">
+	    		</div>
+	    	
+	    		<div class="col-md-3">
+	
+		    		<h5>Data Source</h5>
+					<select id="source" name="source" class="form-control">
+					  <option value="">-- Select one --</option>
+					  <option value="hashtags">Hashtags</option>
+					  <option value="mentions">User mentions</option>
+					  <option value="sources">Tweet sources</option>
+					</select>
+					
+	    		</div>
+	
+	    		<div class="col-md-3">
+	
+					<h5>Pivot</h5>
+					<select id="pivot" name="pivot" class="form-control">
+					  <option value="">None</option>
+					  <option value="hour">Hourly</option>
+					  <option value="popular">Popular</option>
+	<!--
+					  <option value="location">Location</option>
+	-->
+					</select>
+	
+	    		</div>
+	
+	    		<div class="col-md-3">
+	
+					<h5>Chart</h5>
+					<select id="charttype" name="charttype" class="form-control">
+					  <option value="donut">Donut</option>
+					  <option value="bar">Bar</option>
+					  <option value="timeseries">Timeseries</option>
+	<!--
+					  <option value="map">Map</option>
+	-->
+					</select>
+	
+	    		</div>
+	    		
+			  <div class="col-md-2">
+	    		  	<h5>&nbsp;</h5>
+	  	    		<input id="query_submit" class="btn btn-primary" type="submit" value="Submit">
+			  </div>
+	
+	    	
+	    	</div>
+	    	
+			<div class="row" id="hashtags_holder">
+				<div class="col-sm-offset-1 col-sm-9">
+					<div class="form-inline input_holder">
+					
+					  <div class="form-group">
+						<div class="input-group col-sm-offset-1 col-sm-11">
+						  <span class="input-group-addon" id="basic-addon1">#</span>
+						  <input type="text" class="form-control hashtag" id="hashtag1" placeholder="Hashtag 1" aria-describedby="basic-addon1">
+						</div>
+					  </div>
+					  <div class="form-group">
+						<div class="input-group col-sm-offset-1 col-sm-11">
+						  <span class="input-group-addon" id="basic-addon1">#</span>
+						  <input type="text" class="form-control hashtag" id="hashtag2" placeholder="Hashtag 2" aria-describedby="basic-addon1">
+						</div>
+					  </div>
+					  <div class="form-group">
+						<div class="input-group col-sm-offset-1 col-sm-11">
+						  <span class="input-group-addon" id="basic-addon1">#</span>
+						  <input type="text" class="form-control hashtag" id="hashtag3" placeholder="Hashtag 3" aria-describedby="basic-addon1">
+						</div>
+					  </div>
+					  <div class="form-group">
+						<div class="input-group col-sm-offset-1 col-sm-11">
+						  <span class="input-group-addon" id="basic-addon1">#</span>
+						  <input type="text" class="form-control hashtag" id="hashtag4" placeholder="Hashtag 4" aria-describedby="basic-addon1">
+						</div>
+					  </div>
+					  
 					</div>
-				  </div>
-				  <div class="form-group">
-					<div class="input-group col-sm-offset-1 col-sm-11">
-					  <span class="input-group-addon" id="basic-addon1">#</span>
-					  <input type="text" class="form-control hashtag" id="hashtag2" placeholder="Hashtag 2" aria-describedby="basic-addon1">
-					</div>
-				  </div>
-				  <div class="form-group">
-					<div class="input-group col-sm-offset-1 col-sm-11">
-					  <span class="input-group-addon" id="basic-addon1">#</span>
-					  <input type="text" class="form-control hashtag" id="hashtag3" placeholder="Hashtag 3" aria-describedby="basic-addon1">
-					</div>
-				  </div>
-				  <div class="form-group">
-					<div class="input-group col-sm-offset-1 col-sm-11">
-					  <span class="input-group-addon" id="basic-addon1">#</span>
-					  <input type="text" class="form-control hashtag" id="hashtag4" placeholder="Hashtag 4" aria-describedby="basic-addon1">
-					</div>
-				  </div>
-				  
-				</form>
+				</div>
 			</div>
-		</div>
+			
+			<div class="row" id="mentions_holder">
+				<div class="col-sm-offset-1 col-sm-10">
+					<div class="form-inline input_holder">
+					
+					  <div class="form-group">
+						<div class="input-group col-sm-offset-1 col-sm-11">
+						  <span class="input-group-addon" id="basic-addon1">@</span>
+						  <input type="text" class="form-control mention" id="mention1" placeholder="Mention 1" aria-describedby="basic-addon1">
+						</div>
+					  </div>
+					  <div class="form-group">
+						<div class="input-group col-sm-offset-1 col-sm-11">
+						  <span class="input-group-addon" id="basic-addon1">@</span>
+						  <input type="text" class="form-control mention" id="mention2" placeholder="Mention 2" aria-describedby="basic-addon1">
+						</div>
+					  </div>
+					  <div class="form-group">
+						<div class="input-group col-sm-offset-1 col-sm-11">
+						  <span class="input-group-addon" id="basic-addon1">@</span>
+						  <input type="text" class="form-control mention" id="mention3" placeholder="Mention 3" aria-describedby="basic-addon1">
+						</div>
+					  </div>
+					  <div class="form-group">
+						<div class="input-group col-sm-offset-1 col-sm-11">
+						  <span class="input-group-addon" id="basic-addon1">@</span>
+						  <input type="text" class="form-control mention" id="mention4" placeholder="Mention 4" aria-describedby="basic-addon1">
+						</div>
+					  </div>
+					  
+					</div>
+				</div>
+			</div>
 		
-		<div class="row" id="mentions_holder">
-			<div class="col-sm-offset-1 col-sm-10">
-				<form class="form-inline input_holder">
-				
-				  <div class="form-group">
-					<div class="input-group col-sm-offset-1 col-sm-11">
-					  <span class="input-group-addon" id="basic-addon1">@</span>
-					  <input type="text" class="form-control mention" id="mention1" placeholder="Mention 1" aria-describedby="basic-addon1">
-					</div>
-				  </div>
-				  <div class="form-group">
-					<div class="input-group col-sm-offset-1 col-sm-11">
-					  <span class="input-group-addon" id="basic-addon1">@</span>
-					  <input type="text" class="form-control mention" id="mention2" placeholder="Mention 2" aria-describedby="basic-addon1">
-					</div>
-				  </div>
-				  <div class="form-group">
-					<div class="input-group col-sm-offset-1 col-sm-11">
-					  <span class="input-group-addon" id="basic-addon1">@</span>
-					  <input type="text" class="form-control mention" id="mention3" placeholder="Mention 3" aria-describedby="basic-addon1">
-					</div>
-				  </div>
-				  <div class="form-group">
-					<div class="input-group col-sm-offset-1 col-sm-11">
-					  <span class="input-group-addon" id="basic-addon1">@</span>
-					  <input type="text" class="form-control mention" id="mention4" placeholder="Mention 4" aria-describedby="basic-addon1">
-					</div>
-				  </div>
-				  
-				</form>
-			</div>
-		</div>
+		</form>
 		
 		<hr>
 		
@@ -155,7 +160,7 @@
 			  <div class="form-group">
 			    <label for="inputEmail3" class="col-sm-2 control-label">Query</label>
 			    <div class="col-sm-9">
-			      <input type="text" class="form-control" id="query" placeholder="Google BigQuery query">
+			    	<textarea id="query" class="form-control" rows="3"></textarea>
 			    </div>
 			  </div>
 			</form>

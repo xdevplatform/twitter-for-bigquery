@@ -1,5 +1,16 @@
 $(document).ready(function(){
 
+	$('#form').submit(function(event){
+
+		  // prevent default browser behaviour
+		  event.preventDefault();
+
+		  handleChange();
+		  
+		  return false;
+
+		});
+	
 	$("#source").change(function(){
     	var val = $(this).val();
     	if (val == "hashtags"){
@@ -23,6 +34,9 @@ $(document).ready(function(){
 		} else if (val == "hour"){
     		$('#charttype option[value=timeseries]').attr('selected','selected');
     		$('#charttype').prop('disabled', true);
+		} else if (val == "popular"){
+    		$('#charttype option[value=donut]').attr('selected','selected');
+    		$('#charttype').prop('disabled', true);
 		} else {
 			$('#charttype option[value=donut]').attr('selected','selected');
     		$('#charttype').prop('disabled', false);
@@ -43,10 +57,6 @@ $(document).ready(function(){
 		}
     });
 	
-	$("#query_submit").click(function(){
-		return handleChange();
-    });
-
 	$("#map").hide();
 	
 	
@@ -82,16 +92,16 @@ function handleChange() {
 	var args = null;
 
 	if (!source){
-		$("#chart").html("Please select a source.").show();
+		$("#chart").html("<span class='alert alert-warning'>Please select a source.</span>").show();
 		return false;
 	}
 	
-	if (source == 'hashtags' && (!hashtags || hashtags.length == 0)){
+	if (source == 'hashtags' && pivot != 'popular' && (!hashtags || hashtags.length == 0)){
 		$("#chart").html("<span class='alert alert-warning'>Please enter at least one #hashtag.</span>").fadeIn();
 		return false;
 	}
 
-	if (source == 'mentions' && (!mentions || mentions.length == 0)){
+	if (source == 'mentions' && pivot != 'popular' && (!mentions || mentions.length == 0)){
 		$("#chart").html("<span class='alert alert-warning'>Please enter at least one @mention.</span>").fadeIn();
 		return false;
 	}

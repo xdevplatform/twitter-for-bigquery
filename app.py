@@ -102,7 +102,7 @@ class Data(webapp2.RequestHandler):
                     'title' : "Sources by hour" 
                 }
 
-            elif charttype == 'donut' or charttype == 'bar':
+            elif charttype == 'donut' or charttype == 'bar' or charttype == 'popular':
                 
                 query = 'SELECT source as source, count(*) as count FROM [tweets.2015_01_09] GROUP by source ORDER BY count DESC LIMIT 20'
         
@@ -155,7 +155,7 @@ class Data(webapp2.RequestHandler):
 
             if pivot == 'hour' or charttype == 'timeseries':
 
-                query = "SELECT %s, HOUR(TIMESTAMP(created_at)) AS create_hour, count(*) as count FROM [tweets.2015_01_09] WHERE LOWER(%s) in (%s) GROUP by create_hour, %s ORDER BY %s ASC, create_hour ASC" % (col, terms, col, col, col)
+                query = "SELECT %s, HOUR(TIMESTAMP(created_at)) AS create_hour, count(*) as count FROM [tweets.2015_01_09] WHERE LOWER(%s) in (%s) GROUP by create_hour, %s ORDER BY %s ASC, create_hour ASC" % (col, col, terms, col, col)
                 
                 tableData = get_service().jobs()
                 dataList = tableData.query(projectId=PROJECT_NUMBER, body={'query':query}).execute()
@@ -192,6 +192,43 @@ class Data(webapp2.RequestHandler):
                     },
                     'query' : query,
                     'title' : "%s by hour" % object
+                }
+
+            elif pivot == 'popular':
+
+                query = "SELECT %s, count(*) as count FROM [tweets.2015_01_09] WHERE %s IS NOT NULL GROUP by %s ORDER BY count DESC LIMIT 20" % (col, col, col)
+        
+                tableData = get_service().jobs()
+                dataList = tableData.query(projectId=PROJECT_NUMBER, body={'query':query}).execute()
+         
+                columns = []
+                if 'rows' in dataList:
+                    for row in dataList['rows']:
+                        for key, dict_list in row.iteritems():
+                            source = dict_list[0]['v']
+                            count = int(dict_list[1]['v'])
+                            columns.append([source, count])
+                else:
+                    columns.append([])
+
+                # http://c3js.org/samples/chart_donut.html
+                # query and title are returned for display in UI
+                # cheating by always adding donut/bar attributes
+                args = {
+                    'data' : {
+                        'columns' : columns,
+                        'type' : charttype
+                    },
+                    'donut' : {
+                        'title' : "Hashtags"
+                    },
+                    'bar': {
+                        'width': {
+                            'ratio': 0.5 
+                        }
+                    },
+                    'query' : query,
+                    'title' : "%s by count" % object
                 }
 
             elif charttype == 'donut' or charttype == 'bar':
