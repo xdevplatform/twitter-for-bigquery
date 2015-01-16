@@ -36,6 +36,9 @@ function queryData() {
 
 	var args = null;
 	
+//	$("#map").hide();
+//	$("#chart").hide();
+	
 	if (chart == 'donut') {
 
 		args = {
@@ -97,10 +100,16 @@ function queryData() {
 		}
 
 	} else if (chart == 'map') {
-
+	    var map = new Datamap({element: document.getElementById('map')});
+	}
+	
+	if (chart == 'map'){
+		$("#map").fadeIn();
+	} else {
+		$("#chart").fadeIn();
+		makeChart(args);
 	}
 
-	makeChart(args);
 
 	/*
 	 * $.ajax({ type: "GET", url: "/data", data: { inputData: "" }, dataType:
