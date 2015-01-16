@@ -151,10 +151,12 @@ class Data(webapp2.RequestHandler):
             for idx, val in enumerate(hashtags):
                 h = "'" + val + "'"
                 hashtags[idx] = h
+            terms = ','.join(hashtags) 
 
             if pivot == 'hour' or charttype == 'timeseries':
 
-                query = {'query': 'SELECT source as source, HOUR(TIMESTAMP(created_at)) AS create_hour, count(*) as count FROM [tweets.2015_01_09] WHERE source contains \'Twitter for\' GROUP by create_hour, source ORDER BY source ASC, create_hour ASC'}
+                query = {'query': "SELECT entities.hashtags.text, HOUR(TIMESTAMP(created_at)) AS create_hour, count(*) as count FROM [tweets.2015_01_09] WHERE LOWER(entities.hashtags.text) in (%s) GROUP by create_hour, entities.hashtags.text ORDER BY entities.hashtags.text ASC, create_hour ASC" % (terms)}
+                print query
                 
                 tableData = get_service().jobs()
                 dataList = tableData.query(projectId=PROJECT_NUMBER, body=query).execute()
@@ -192,9 +194,7 @@ class Data(webapp2.RequestHandler):
 
             elif charttype == 'donut' or charttype == 'bar':
 
-                terms = ','.join(hashtags) 
                 query = {'query': "SELECT entities.hashtags.text, count(*) as count FROM [tweets.2015_01_09] WHERE LOWER(entities.hashtags.text) in (%s) GROUP by entities.hashtags.text ORDER BY count" % (terms)}
-                print query 
         
                 tableData = get_service().jobs()
                 dataList = tableData.query(projectId=PROJECT_NUMBER, body=query).execute()

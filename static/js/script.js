@@ -24,7 +24,22 @@ $(document).ready(function(){
     		$('#charttype option[value=timeseries]').attr('selected','selected');
     		$('#charttype').prop('disabled', true);
 		} else {
+			$('#charttype option[value=donut]').attr('selected','selected');
     		$('#charttype').prop('disabled', false);
+		}
+    });
+	
+	$("#charttype").change(function(){
+		var val = $(this).val();
+    	if (val == "timeseries"){
+    		$('#pivot option[value=location]').attr('selected','selected');
+    		$('#pivot').prop('disabled', true);
+		} else if (val == "map"){
+    		$('#pivot option[value=hour]').attr('selected','selected');
+    		$('#pivot').prop('disabled', true);
+		} else {
+			$('#pivot option[value=""]').attr('selected','selected');
+    		$('#pivot').prop('disabled', false);
 		}
     });
 	
@@ -82,7 +97,7 @@ function handleChange() {
 			charttype : charttype,
 			hashtags : hashtags
 		};
-		queryData(args);
+		queryData(charttype, args);
 
 	} else if (charttype == 'map') {
 
@@ -93,7 +108,7 @@ function handleChange() {
 	
 }
 
-function queryData(args){
+function queryData(charttype, args){
 
 	$("#chart").html('<img src="/static/img/loading.gif">');
 	$("#chart").show();
@@ -108,7 +123,7 @@ function queryData(args){
 			console.log(response);
 			
 			if (response && response.constructor == Object){
-				showChart(response);
+				showChart(charttype, response);
 				$("#chart").fadeIn();
 			} else {
 				$("#chart").html('<h4>Not yet supported</h4>');
@@ -123,9 +138,18 @@ function queryData(args){
 
 }
 
-function showChart(args){
+function showChart(charttype, args){
 	
 	args['bindto'] = '#chart';
+	if (charttype == 'timeseries'){
+		args['axis'] = {
+	        x: {
+	            tick: {
+	            	format: function (x) { return x + ":00"; }
+	            }
+	        }
+	    };
+	}
 	c3.generate(args);
 
 }
