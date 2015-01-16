@@ -14,6 +14,12 @@ $(document).ready(function(){
 		var val = $(this).val();
     	if (val == "location"){
     		$('#charttype option[value=map]').attr('selected','selected');
+    		$('#charttype').prop('disabled', true);
+		} else if (val == "hour"){
+    		$('#charttype option[value=timeseries]').attr('selected','selected');
+    		$('#charttype').prop('disabled', true);
+		} else {
+    		$('#charttype').prop('disabled', false);
 		}
     	queryData();
     });
