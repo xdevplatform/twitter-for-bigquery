@@ -86,8 +86,9 @@ class Data(webapp2.RequestHandler):
                     
                 for key, value in buckets.iteritems():
                     columns.append(value)
-                    
-                # FORMAT: timeseries
+
+                # http://c3js.org/samples/simple_multiple.html                    
+                title = "Sources by hour"
                 args = {
                     'data' : {
                         'x' : 'x',
@@ -113,7 +114,8 @@ class Data(webapp2.RequestHandler):
                 else:
                     columns.append([])
 
-                # FORMAT: donut
+                # http://c3js.org/samples/chart_donut.html
+                title = "Sources by type"
                 args = {
                     'data' : {
                         'columns' : columns,
@@ -172,7 +174,8 @@ class Data(webapp2.RequestHandler):
                 for key, value in buckets.iteritems():
                     columns.append(value)
                     
-                # FORMAT: timeseries
+                # http://c3js.org/samples/simple_multiple.html
+                title = "Hashtags by count"
                 args = {
                     'data' : {
                         'x' : 'x',
@@ -198,7 +201,8 @@ class Data(webapp2.RequestHandler):
                 else:
                     columns.append([])
 
-                # FORMAT: donut
+                # http://c3js.org/samples/chart_donut.html
+                title = "Hashtags by count"
                 args = {
                     'data' : {
                         'columns' : columns,

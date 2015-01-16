@@ -3,8 +3,8 @@
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <link rel="icon" href="http://getbootstrap.com/favicon.ico">
-    <title></title>
+    <link rel="icon" href="/static/img/bird.ico">
+    <title>Twitter &hearts; BigQuery</title>
     <link href="http://getbootstrap.com/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="http://getbootstrap.com/examples/justified-nav/justified-nav.css" rel="stylesheet">
     <link href="/static/css/c3.css" rel="stylesheet">
@@ -24,7 +24,7 @@
     	
     		<div class="col-md-3">
 
-	    		<h4>Data Source</h4>
+	    		<h5>Data Source</h5>
 				<select id="source" name="source" class="form-control">
 				  <option value="">-- Select one --</option>
 				  <option value="hashtags">Hashtags</option>
@@ -36,29 +36,33 @@
 
     		<div class="col-md-3">
 
-				<h4>Pivot</h4>
+				<h5>Pivot</h5>
 				<select id="pivot" name="pivot" class="form-control">
 				  <option value="">None</option>
 				  <option value="hour">Hourly</option>
+<!--
 				  <option value="location">Location</option>
+-->
 				</select>
 
     		</div>
 
     		<div class="col-md-3">
 
-				<h4>Chart</h4>
+				<h5>Chart</h5>
 				<select id="charttype" name="charttype" class="form-control">
 				  <option value="donut">Donut</option>
 				  <option value="bar">Bar</option>
 				  <option value="timeseries">Timeseries</option>
+<!--
 				  <option value="map">Map</option>
+-->
 				</select>
 
     		</div>
     		
 		  <div class="col-md-2">
-    		  	<h4>&nbsp;</h4>
+    		  	<h5>&nbsp;</h5>
   	    		<input id="query_submit" class="btn btn-primary" type="submit" value="Submit">
 		  </div>
 
@@ -136,9 +140,9 @@
 		
 		<div id="canvas">
 		
-			<h1>Twitter for BigQuery</h1>
+			<h1 id="title">Twitter &hearts; BigQuery</h1>
 			
-	        <div id="chart">Please select a DataSource and click "SubmitQuery"</div>
+	        <div id="chart">Please select a DataSource and click "Submit"</div>
 	        
 	        <div id="map" style="position: relative; width: 750px; height: 500px;"></div>
         

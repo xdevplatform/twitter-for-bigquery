@@ -77,6 +77,7 @@ function handleChange() {
 	var pivot = $("#pivot").val();
 	var charttype = $("#charttype").val();
 	var hashtags = getHashtags();
+	var mentions = getMentions();
 
 	var args = null;
 
@@ -86,10 +87,15 @@ function handleChange() {
 	}
 	
 	if (source == 'hashtags' && (!hashtags || hashtags.length == 0)){
-		$("#chart").html("Please enter at least one hashtag.").show();
+		$("#chart").html("<span class='alert alert-warning'>Please enter at least one #hashtag.</span>").fadeIn();
 		return false;
 	}
-	
+
+	if (source == 'mentions' && (!mentions || mentions.length == 0)){
+		$("#chart").html("<span class='alert alert-warning'>Please enter at least one @mention.</span>").fadeIn();
+		return false;
+	}
+
 	$("#map").hide();
 	$("#chart").hide();
 	
@@ -130,10 +136,9 @@ function queryData(charttype, args){
 				showChart(charttype, response);
 				$("#chart").fadeIn();
 				
-				var query = response['query'];
-				if (query){
-					$("#query").val(query);
-				}
+				$("#query").val(response['query']);
+				$("#title").val(response['title']);
+
 			} else {
 				$("#chart").html('<h4>Not yet supported</h4>');
 				$("#chart").fadeIn();
