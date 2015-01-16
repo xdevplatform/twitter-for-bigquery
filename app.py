@@ -76,13 +76,48 @@ class Data(webapp2.RequestHandler):
 #         else:
 #             resp.append([])
 
+        # FORMAT: donut
+#         args = {
+#             'data' : {
+#                 'columns' : [ [ 'data1', 30 ], [ 'data2', 120 ], ],
+#                 'type' : 'donut'
+#             },
+#             'donut' : {
+#                 'title' : "Iris Petal Width"
+#             }
+#         }
+
+        # FORMAT: line
+#         args = {
+#             'data': {
+#                 'columns': [
+#                     ['data1', 30, 200, 100, 400, 150, 250],
+#                     ['data2', 50, 20, 10, 40, 15, 25]
+#                 ]
+#             }
+#         }
+
+        # FORMAT: timeseries
         args = {
             'data' : {
-                'columns' : [ [ 'data1', 30 ], [ 'data2', 120 ], ],
-                'type' : 'donut'
+                'x' : 'x',
+                # xFormat: '%Y%m%d', // 'xFormat' can be used as custom format
+                # of 'x'
+                'columns' : [
+                        [ 'x', '2013-01-01', '2013-01-02', '2013-01-03',
+                                '2013-01-04', '2013-01-05', '2013-01-06' ],
+                        # ['x', '20130101', '20130102', '20130103', '20130104',
+                        # '20130105', '20130106'],
+                        [ 'data1', 30, 200, 100, 400, 150, 250 ],
+                        [ 'data2', 130, 340, 200, 500, 250, 350 ] ]
             },
-            'donut' : {
-                'title' : "Iris Petal Width"
+            'axis' : {
+                'x' : {
+                    'type' : 'timeseries',
+                    'tick' : {
+                        'format' : '%Y-%m-%d'
+                    }
+                }
             }
         }
     
