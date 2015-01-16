@@ -49,9 +49,13 @@ class Data(webapp2.RequestHandler):
         source = self.request.get("source")
         pivot = self.request.get("pivot")
         charttype = self.request.get("charttype")
-        hashtags = self.request.get("hashtags")
+        terms = self.request.get("terms")
+        terms = terms.split(',')
+        for idx, val in enumerate(terms):
+            h = "'" + val + "'"
+            terms[idx] = h
+        terms = ','.join(terms) 
 
-        title = None
         query = None
         args = {}
         
@@ -87,14 +91,15 @@ class Data(webapp2.RequestHandler):
                 for key, value in buckets.iteritems():
                     columns.append(value)
 
-                # http://c3js.org/samples/simple_multiple.html                    
-                title = "Sources by hour"
+                # http://c3js.org/samples/simple_multiple.html
+                # query and title are returned for display in UI
                 args = {
                     'data' : {
                         'x' : 'x',
                         'columns' : columns 
                     },
-                    'query' : query
+                    'query' : query,
+                    'title' : "Sources by hour" 
                 }
 
             elif charttype == 'donut' or charttype == 'bar':
@@ -115,7 +120,7 @@ class Data(webapp2.RequestHandler):
                     columns.append([])
 
                 # http://c3js.org/samples/chart_donut.html
-                title = "Sources by type"
+                # query and title are returned for display in UI
                 args = {
                     'data' : {
                         'columns' : columns,
@@ -129,24 +134,28 @@ class Data(webapp2.RequestHandler):
                             'ratio': 0.5 
                         }
                     },
-                    'query' : query
+                    'query' : query,
+                    'title' : "Sources by type"
                 }
                 
             elif pivot == 'location' or charttype == 'map':
 
                 pass
             
-        elif source == 'hashtags':
+        elif source == 'hashtags' or source == 'mentions':
 
-            hashtags = hashtags.split(',')
-            for idx, val in enumerate(hashtags):
-                h = "'" + val + "'"
-                hashtags[idx] = h
-            terms = ','.join(hashtags) 
+            object = None
+            col = None
+            if source == 'hashtags':
+                object = 'Hashtags'
+                col = 'entities.hashtags.text'
+            elif source == 'mentions':
+                object = 'User mentions'
+                col = 'entities.user_mentions.screen_name'
 
             if pivot == 'hour' or charttype == 'timeseries':
 
-                query = "SELECT entities.hashtags.text, HOUR(TIMESTAMP(created_at)) AS create_hour, count(*) as count FROM [tweets.2015_01_09] WHERE LOWER(entities.hashtags.text) in (%s) GROUP by create_hour, entities.hashtags.text ORDER BY entities.hashtags.text ASC, create_hour ASC" % (terms)
+                query = "SELECT %s, HOUR(TIMESTAMP(created_at)) AS create_hour, count(*) as count FROM [tweets.2015_01_09] WHERE LOWER(%s) in (%s) GROUP by create_hour, %s ORDER BY %s ASC, create_hour ASC" % (col, terms, col, col, col)
                 
                 tableData = get_service().jobs()
                 dataList = tableData.query(projectId=PROJECT_NUMBER, body={'query':query}).execute()
@@ -175,18 +184,19 @@ class Data(webapp2.RequestHandler):
                     columns.append(value)
                     
                 # http://c3js.org/samples/simple_multiple.html
-                title = "Hashtags by count"
+                # query and title are returned for display in UI
                 args = {
                     'data' : {
                         'x' : 'x',
                         'columns' : columns 
                     },
-                    'query' : query
+                    'query' : query,
+                    'title' : "%s by hour" % object
                 }
 
             elif charttype == 'donut' or charttype == 'bar':
 
-                query = "SELECT entities.hashtags.text, count(*) as count FROM [tweets.2015_01_09] WHERE LOWER(entities.hashtags.text) in (%s) GROUP by entities.hashtags.text ORDER BY count" % (terms)
+                query = "SELECT %s, count(*) as count FROM [tweets.2015_01_09] WHERE LOWER(%s) in (%s) GROUP by %s ORDER BY count" % (col, col, terms, col)
         
                 tableData = get_service().jobs()
                 dataList = tableData.query(projectId=PROJECT_NUMBER, body={'query':query}).execute()
@@ -202,7 +212,8 @@ class Data(webapp2.RequestHandler):
                     columns.append([])
 
                 # http://c3js.org/samples/chart_donut.html
-                title = "Hashtags by count"
+                # query and title are returned for display in UI
+                # cheating by always adding donut/bar attributes
                 args = {
                     'data' : {
                         'columns' : columns,
@@ -216,13 +227,14 @@ class Data(webapp2.RequestHandler):
                             'ratio': 0.5 
                         }
                     },
-                    'query' : query
+                    'query' : query,
+                    'title' : "%s by count" % object
                 }
                 
             elif pivot == 'location' or charttype == 'map':
 
                 pass
-
+            
         self.response.headers['Content-Type'] = 'application/json'
         self.response.out.write(json.dumps(args))
 

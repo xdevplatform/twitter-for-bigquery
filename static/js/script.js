@@ -105,7 +105,7 @@ function handleChange() {
 			source : source,
 			pivot : pivot,
 			charttype : charttype,
-			hashtags : hashtags
+			terms : source == 'hashtags' ? hashtags : source == 'mentions' ? mentions : null  
 		};
 		queryData(charttype, args);
 
