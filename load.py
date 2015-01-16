@@ -1,6 +1,8 @@
 import json
 import tweepy
 
+from httplib import IncompleteRead
+
 from bigquery import get_client
 from bigquery import schema_from_record
 
@@ -30,7 +32,11 @@ def main():
     stream = tweepy.Stream(auth, l)
     # Choose stream: filtered or sample
     # stream.filter(track=['programming'])
-    stream.sample()
+    while True:
+        try:
+            stream.sample()
+        except IncompleteRead:
+            pass
 
 #     Utils.import_from_file(client, DATASET_ID, TABLE_ID, 'data/sample_stream.jsonr', single_tweet=False)
 
