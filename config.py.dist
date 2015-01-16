@@ -2,16 +2,18 @@ URL = 'https://www.googleapis.com/auth/bigquery'
 
 # BigQuery project id as listed in the Google Developers Console.
 PROJECT_ID = ""
-PROJECT_NUMBER = ''
+PROJECT_NUMBER = ""
 
 DATASET_ID = "tweets"
 TABLE_ID = "2015_01_09"
 
 # Service account email address as listed in the Google Developers Console.
-SERVICE_ACCOUNT = ''
+SERVICE_ACCOUNT = ""
+
+CLIENT_SECRETS = "client_secrets.json"
 
 # PKCS12 or PEM key provided by Google.
-KEY_FILE = "/PATH/TO/key.p12"
+KEY_FILE = "key.p12"
 KEY = None 
 with open(KEY_FILE, 'rb') as f:
     KEY = f.read()

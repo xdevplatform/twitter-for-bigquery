@@ -15,6 +15,10 @@ from oauth2client.appengine import oauth2decorator_from_clientsecrets
 
 from config import *
 
+SCOPES = [
+    'https://www.googleapis.com/auth/bigquery'
+]
+
 decorator = oauth2decorator_from_clientsecrets(
     filename=CLIENT_SECRETS,
     scope=SCOPES,
