@@ -61,6 +61,7 @@ class Data(webapp2.RequestHandler):
         source = self.request.get("source")
         pivot = self.request.get("pivot")
         charttype = self.request.get("charttype")
+        hashtags = self.request.get("hashtags")
 
         title = None
         query = None
@@ -131,6 +132,91 @@ class Data(webapp2.RequestHandler):
                     },
                     'donut' : {
                         'title' : "Tweet sources"
+                    },
+                    'bar': {
+                        'width': {
+                            'ratio': 0.5 
+                        }
+                    }
+
+                }
+                
+            elif pivot == 'location' or charttype == 'map':
+
+                pass
+            
+        elif source == 'hashtags':
+
+            hashtags = hashtags.split(',')
+            for idx, val in enumerate(hashtags):
+                h = "'" + val + "'"
+                hashtags[idx] = h
+
+            if pivot == 'hour' or charttype == 'timeseries':
+
+                query = {'query': 'SELECT source as source, HOUR(TIMESTAMP(created_at)) AS create_hour, count(*) as count FROM [tweets.2015_01_09] WHERE source contains \'Twitter for\' GROUP by create_hour, source ORDER BY source ASC, create_hour ASC'}
+                
+                tableData = get_service().jobs()
+                dataList = tableData.query(projectId=PROJECT_NUMBER, body=query).execute()
+                
+                # key: source, value: [source, d1, d2, d3...]
+                buckets = {}
+                columns = [['x', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23' ]]
+                if 'rows' in dataList:
+                    for row in dataList['rows']:
+                        for key, dict_list in row.iteritems():
+                            source = REMOVE_HTML.sub('', dict_list[0]['v'])
+                            hour = int(dict_list[1]['v'])
+                            count = int(dict_list[2]['v'])
+                            
+                            column = buckets.get(source, None)
+                            if not column:
+                                column = [0] * 25
+                                column[0] = source
+                                buckets[source] = column
+
+                            column[hour + 1] = count
+                else:
+                    columns.append([])
+                    
+                for key, value in buckets.iteritems():
+                    columns.append(value)
+                    
+                # FORMAT: timeseries
+                args = {
+                    'data' : {
+                        'x' : 'x',
+                        'columns' : columns 
+                    },
+                }
+
+            elif charttype == 'donut' or charttype == 'bar':
+
+                terms = ','.join(hashtags) 
+                query = {'query': "SELECT entities.hashtags.text, count(*) as count FROM [tweets.2015_01_09] WHERE LOWER(entities.hashtags.text) in (%s) GROUP by entities.hashtags.text ORDER BY count" % (terms)}
+                print query 
+        
+                tableData = get_service().jobs()
+                dataList = tableData.query(projectId=PROJECT_NUMBER, body=query).execute()
+         
+                columns = []
+                if 'rows' in dataList:
+                    for row in dataList['rows']:
+                        for key, dict_list in row.iteritems():
+                            source = REMOVE_HTML.sub('', dict_list[0]['v'])
+                            count = int(dict_list[1]['v'])
+                            columns.append([source, count])
+                else:
+                    columns.append([])
+
+                # FORMAT: donut
+                args = {
+                    'data' : {
+                        'columns' : columns,
+                        'type' : charttype
+                    },
+                    'donut' : {
+                        'title' : "Hashtags"
                     },
                     'bar': {
                         'width': {

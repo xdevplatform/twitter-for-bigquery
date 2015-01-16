@@ -7,8 +7,8 @@ $(document).ready(function(){
     	} else {
     		$("#hashtags_holder").hide();
     	}
-    	handleChange();
     });
+    $("#source").change();
 	
 	$("#pivot").change(function(){
 		var val = $(this).val();
@@ -21,26 +21,43 @@ $(document).ready(function(){
 		} else {
     		$('#charttype').prop('disabled', false);
 		}
-    	handleChange();
     });
 	
 	$("#charttype").change(function(){
-		handleChange();
     });
-    
-    $("#source").change();
+
+	$("#query_submit").click(function(){
+		return handleChange();
+    });
+
 	
 })
+
+function getHashtags(){
+	var hashtags = [];
+
+	$('.hashtag').each( function(i,e) {
+		val = $(e).val();
+		if (val){
+			hashtags.push(val);
+		}
+	});
+	return hashtags.join();
+}
 
 function handleChange() {
 
 	var source = $("#source").val();
 	var pivot = $("#pivot").val();
-
-	// chart type: http://c3js.org/examples.html
 	var charttype = $("#charttype").val();
+	var hashtags = getHashtags();
 
 	var args = null;
+	
+	if (source == 'hashtags' && (!hashtags || hashtags.length == 0)){
+		$("#chart").html("<h4>Please enter at least one hashtag</h4>").show();
+		return false;
+	}
 	
 	$("#map").hide();
 	$("#chart").hide();
@@ -51,7 +68,7 @@ function handleChange() {
 			source : source,
 			pivot : pivot,
 			charttype : charttype,
-			hashtags : []
+			hashtags : hashtags
 		};
 		queryData(args);
 
