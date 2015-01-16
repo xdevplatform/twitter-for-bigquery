@@ -43,12 +43,9 @@ function handleChange() {
 	var args = null;
 	
 	$("#map").hide();
-	$("#chart").hide();
 	
 	if (charttype == 'donut') {
 
-		$("#chart").fadeIn();
-		
 		var args = {
 			source : source,
 			pivot : pivot,
@@ -59,8 +56,6 @@ function handleChange() {
 
 	} else if (charttype == 'line') {
 		
-		$("#chart").fadeIn();
-		
 		var args = {
 				source : source,
 				pivot : pivot,
@@ -70,8 +65,6 @@ function handleChange() {
 		queryData(args);
 		
 	} else if (charttype == 'timeseries') {
-		
-		$("#chart").fadeIn();
 		
 		var args = {
 				source : source,
@@ -93,6 +86,8 @@ function handleChange() {
 
 function queryData(args){
 
+	$("#chart").html('<img src="/static/img/loading.gif">');
+	
 	 $.ajax({
 		type : "GET",
 		url : "/data",
@@ -113,9 +108,10 @@ function queryData(args){
 
 function showChart(args){
 	
-	args['bindto'] = '#chart'; 
+	args['bindto'] = '#chart';
+	
 	c3.generate(args);
-
+	$("#chart").fadeIn();
 }
 
 function showMap(){

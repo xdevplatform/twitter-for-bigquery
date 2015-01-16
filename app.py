@@ -24,6 +24,8 @@ decorator = oauth2decorator_from_clientsecrets(
     scope=SCOPES,
     cache=memcache)
 
+REMOVE_HTML = re.compile(r'<.*?>')
+
 def get_service():
     
     return build('bigquery', 'v2', http=decorator.http())
@@ -48,6 +50,9 @@ class ShowHome(webapp2.RequestHandler):
         template_path = 'templates/index.html'
         self.response.out.write(template.render(template_path, template_data))
 
+#         queryData = {'query':'SELECT SUM(word_count) as WCount,corpus_date,group_concat(corpus) as Work FROM '
+#                      '[publicdata:samples.shakespeare] WHERE word="' + inputData + '" and corpus_date>0 GROUP BY corpus_date ORDER BY WCount'}
+
 class Data(webapp2.RequestHandler):
     
     @decorator.oauth_required
@@ -56,36 +61,96 @@ class Data(webapp2.RequestHandler):
         source = self.request.get("source")
         pivot = self.request.get("pivot")
         charttype = self.request.get("charttype")
+
+        title = None
+        query = None
         
-#         queryData = {'query':'SELECT SUM(word_count) as WCount,corpus_date,group_concat(corpus) as Work FROM '
-#                      '[publicdata:samples.shakespeare] WHERE word="' + inputData + '" and corpus_date>0 GROUP BY corpus_date ORDER BY WCount'}
+        if source == 'sources':
 
-#         queryData = {'query': 'SELECT source as source, count(*) as count FROM [tweets.2015_01_09] GROUP by source ORDER BY count DESC LIMIT 20'}
-#         tableData = get_service().jobs()
-#         dataList = tableData.query(projectId=PROJECT_NUMBER, body=queryData).execute()
-# 
-#         p = re.compile(r'<.*?>')
-#     
-#         resp = []
-#         if 'rows' in dataList:
-#             for row in dataList['rows']:
-#                 for key, dict_list in row.iteritems():
-#                     source = p.sub('', dict_list[0]['v'])
-#                     count = int(dict_list[1]['v'])
-#                     resp.append([source, count])
-#         else:
-#             resp.append([])
+            if pivot == 'hour':
 
-        # FORMAT: donut
-#         args = {
-#             'data' : {
-#                 'columns' : [ [ 'data1', 30 ], [ 'data2', 120 ], ],
-#                 'type' : 'donut'
-#             },
-#             'donut' : {
-#                 'title' : "Iris Petal Width"
-#             }
-#         }
+                query = {'query': 'SELECT source as source, HOUR(TIMESTAMP(created_at)) AS create_hour, count(*) as count FROM [tweets.2015_01_09] GROUP by create_hour, source ORDER BY source ASC, create_hour ASC'}
+                
+                tableData = get_service().jobs()
+                dataList = tableData.query(projectId=PROJECT_NUMBER, body=query).execute()
+                
+                # key: source, value: [source, d1, d2, d3...]
+                buckets = {}
+                columns = [['x', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11' ]]
+                if 'rows' in dataList:
+                    for row in dataList['rows']:
+                        for key, dict_list in row.iteritems():
+                            source = REMOVE_HTML.sub('', dict_list[0]['v'])
+                            hour = int(dict_list[1]['v'])
+                            count = int(dict_list[2]['v'])
+                            
+                            column = buckets.get(source, None)
+                            if not column:
+                                column = [0] * 25
+                                column[0] = source
+                                buckets[source] = column
+
+                            column[hour + 1] = count
+                else:
+                    columns.append([])
+                    
+                for key, value in buckets.iteritems():
+                    columns.append(value)
+                    
+                # FORMAT: timeseries
+                args = {
+                    'data' : {
+                        'x' : 'x',
+                        # xFormat: '%Y%m%d', // 'xFormat' can be used as custom format
+                        # of 'x'
+                        'columns' : columns 
+#                         [
+#                             [ 'x', '0', '1', '2'],
+#                             [ 'iPhone', 30, 200, 100],
+#                             [ 'Android', 130, 340, 200] 
+#                         ]
+                    },
+#                     'axis' : {
+#                         'x' : {
+#                             'type' : 'timeseries',
+#                             'tick' : {
+#                                 'format' : '%Y-%m-%d'
+#                             }
+#                         }
+#                     }
+                }
+
+            elif pivot == 'location':
+
+                pass
+
+            else:
+                
+                query = {'query': 'SELECT source as source, count(*) as count FROM [tweets.2015_01_09] GROUP by source ORDER BY count DESC LIMIT 20'}
+        
+                tableData = get_service().jobs()
+                dataList = tableData.query(projectId=PROJECT_NUMBER, body=query).execute()
+         
+                columns = []
+                if 'rows' in dataList:
+                    for row in dataList['rows']:
+                        for key, dict_list in row.iteritems():
+                            source = REMOVE_HTML.sub('', dict_list[0]['v'])
+                            count = int(dict_list[1]['v'])
+                            columns.append([source, count])
+                else:
+                    columns.append([])
+
+                # FORMAT: donut
+                args = {
+                    'data' : {
+                        'columns' : columns,
+                        'type' : 'donut'
+                    },
+                    'donut' : {
+                        'title' : "Iris Petal Width"
+                    }
+                }
 
         # FORMAT: line
 #         args = {
@@ -97,30 +162,6 @@ class Data(webapp2.RequestHandler):
 #             }
 #         }
 
-        # FORMAT: timeseries
-        args = {
-            'data' : {
-                'x' : 'x',
-                # xFormat: '%Y%m%d', // 'xFormat' can be used as custom format
-                # of 'x'
-                'columns' : [
-                        [ 'x', '2013-01-01', '2013-01-02', '2013-01-03',
-                                '2013-01-04', '2013-01-05', '2013-01-06' ],
-                        # ['x', '20130101', '20130102', '20130103', '20130104',
-                        # '20130105', '20130106'],
-                        [ 'data1', 30, 200, 100, 400, 150, 250 ],
-                        [ 'data2', 130, 340, 200, 500, 250, 350 ] ]
-            },
-            'axis' : {
-                'x' : {
-                    'type' : 'timeseries',
-                    'tick' : {
-                        'format' : '%Y-%m-%d'
-                    }
-                }
-            }
-        }
-    
         self.response.headers['Content-Type'] = 'application/json'
         self.response.out.write(json.dumps(args))
 
