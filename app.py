@@ -64,10 +64,11 @@ class Data(webapp2.RequestHandler):
 
         title = None
         query = None
+        args = {}
         
         if source == 'sources':
 
-            if pivot == 'hour':
+            if pivot == 'hour' or charttype == 'timeseries':
 
                 query = {'query': 'SELECT source as source, HOUR(TIMESTAMP(created_at)) AS create_hour, count(*) as count FROM [tweets.2015_01_09] WHERE source contains \'Twitter for\' GROUP by create_hour, source ORDER BY source ASC, create_hour ASC'}
                 
@@ -103,21 +104,9 @@ class Data(webapp2.RequestHandler):
                         'x' : 'x',
                         'columns' : columns 
                     },
-#                     'axis' : {
-#                         'x' : {
-#                             'type' : 'timeseries',
-#                             'tick' : {
-#                                 'format' : '%Y-%m-%d'
-#                             }
-#                         }
-#                     }
                 }
 
-            elif pivot == 'location':
-
-                pass
-
-            else:
+            elif charttype == 'donut' or charttype == 'bar':
                 
                 query = {'query': 'SELECT source as source, count(*) as count FROM [tweets.2015_01_09] GROUP by source ORDER BY count DESC LIMIT 20'}
         
@@ -138,22 +127,22 @@ class Data(webapp2.RequestHandler):
                 args = {
                     'data' : {
                         'columns' : columns,
-                        'type' : 'donut'
+                        'type' : charttype
                     },
                     'donut' : {
                         'title' : "Tweet sources"
+                    },
+                    'bar': {
+                        'width': {
+                            'ratio': 0.5 
+                        }
                     }
-                }
 
-        # FORMAT: line
-#         args = {
-#             'data': {
-#                 'columns': [
-#                     ['data1', 30, 200, 100, 400, 150, 250],
-#                     ['data2', 50, 20, 10, 40, 15, 25]
-#                 ]
-#             }
-#         }
+                }
+                
+            elif pivot == 'location' or charttype == 'map':
+
+                pass
 
         self.response.headers['Content-Type'] = 'application/json'
         self.response.out.write(json.dumps(args))

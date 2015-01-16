@@ -77,7 +77,14 @@ function queryData(args){
 		success : function(response) {
 			
 			console.log(response);
-			showChart(response);
+			
+			if (response && response.constructor == Object){
+				showChart(response);
+				$("#chart").fadeIn();
+			} else {
+				$("#chart").html('<h4>Not yet supported</h4>');
+				$("#chart").fadeIn();
+			} 
 			
 		},
 		error : function(xhr, errorType, exception) {
@@ -90,9 +97,8 @@ function queryData(args){
 function showChart(args){
 	
 	args['bindto'] = '#chart';
-	
 	c3.generate(args);
-	$("#chart").fadeIn();
+
 }
 
 function showMap(){
