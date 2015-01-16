@@ -52,27 +52,42 @@ class Data(webapp2.RequestHandler):
     
     @decorator.oauth_required
     def get(self):
-        inputData = self.request.get("inputData")
+        
+        source = self.request.get("source")
+        pivot = self.request.get("pivot")
+        charttype = self.request.get("charttype")
+        
 #         queryData = {'query':'SELECT SUM(word_count) as WCount,corpus_date,group_concat(corpus) as Work FROM '
 #                      '[publicdata:samples.shakespeare] WHERE word="' + inputData + '" and corpus_date>0 GROUP BY corpus_date ORDER BY WCount'}
-        queryData = {'query': 'SELECT source as source, count(*) as count FROM [tweets.2015_01_09] GROUP by source ORDER BY count DESC LIMIT 20'}
-        tableData = get_service().jobs()
-        dataList = tableData.query(projectId=PROJECT_NUMBER, body=queryData).execute()
 
-        p = re.compile(r'<.*?>')
-    
-        resp = []
-        if 'rows' in dataList:
-            for row in dataList['rows']:
-                for key, dict_list in row.iteritems():
-                    source = p.sub('', dict_list[0]['v'])
-                    count = int(dict_list[1]['v'])
-                    resp.append([source, count])
-        else:
-            resp.append([])
+#         queryData = {'query': 'SELECT source as source, count(*) as count FROM [tweets.2015_01_09] GROUP by source ORDER BY count DESC LIMIT 20'}
+#         tableData = get_service().jobs()
+#         dataList = tableData.query(projectId=PROJECT_NUMBER, body=queryData).execute()
+# 
+#         p = re.compile(r'<.*?>')
+#     
+#         resp = []
+#         if 'rows' in dataList:
+#             for row in dataList['rows']:
+#                 for key, dict_list in row.iteritems():
+#                     source = p.sub('', dict_list[0]['v'])
+#                     count = int(dict_list[1]['v'])
+#                     resp.append([source, count])
+#         else:
+#             resp.append([])
+
+        args = {
+            'data' : {
+                'columns' : [ [ 'data1', 30 ], [ 'data2', 120 ], ],
+                'type' : 'donut'
+            },
+            'donut' : {
+                'title' : "Iris Petal Width"
+            }
+        }
     
         self.response.headers['Content-Type'] = 'application/json'
-        self.response.out.write(json.dumps(resp))
+        self.response.out.write(json.dumps(args))
 
 class Chart(webapp2.RequestHandler):
     
