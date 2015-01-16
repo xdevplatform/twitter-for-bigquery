@@ -7,6 +7,7 @@
     <title>Twitter &hearts; BigQuery</title>
     <link href="http://getbootstrap.com/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="http://getbootstrap.com/examples/justified-nav/justified-nav.css" rel="stylesheet">
+    <link href="/static/css/theme/styles.css" rel="stylesheet">
     <link href="/static/css/c3.css" rel="stylesheet">
     <link href="/static/css/style.css" rel="stylesheet">
     
@@ -14,19 +15,19 @@
 
 <body>
 
-    <div class="container">
+    <div class="container page_header">
 
 		<form name="form" id="form">
 		    
 	    	<div class="row">
 	    	
-	    		<div class="col-md-1">
+	    		<div class="col-md-1 hidden-sm hidden-xs">
 	    			<img src="/static/img/bird_large.png" width="100%" class="logo">
 	    		</div>
 	    	
 	    		<div class="col-md-3">
 	
-		    		<h5>Data Source</h5>
+		    		<h4>Data Source</h4>
 					<select id="source" name="source" class="form-control">
 					  <option value="">-- Select one --</option>
 					  <option value="hashtags">Hashtags</option>
@@ -38,7 +39,7 @@
 	
 	    		<div class="col-md-3">
 	
-					<h5>Pivot</h5>
+					<h4>Pivot</h4>
 					<select id="pivot" name="pivot" class="form-control">
 					  <option value="">None</option>
 					  <option value="hour">Hourly</option>
@@ -52,7 +53,7 @@
 	
 	    		<div class="col-md-3">
 	
-					<h5>Chart</h5>
+					<h4>Chart</h4>
 					<select id="charttype" name="charttype" class="form-control">
 					  <option value="donut">Donut</option>
 					  <option value="bar">Bar</option>
@@ -65,7 +66,7 @@
 	    		</div>
 	    		
 			  <div class="col-md-2">
-	    		  	<h5>&nbsp;</h5>
+	    		  	<h4>&nbsp;</h4>
 	  	    		<input id="query_submit" class="btn btn-primary" type="submit" value="Submit">
 			  </div>
 	
@@ -73,29 +74,29 @@
 	    	</div>
 	    	
 			<div class="row" id="hashtags_holder">
-				<div class="col-sm-offset-1 col-sm-9">
+				<div class="col-sm-offset-1 col-sm-12">
 					<div class="form-inline input_holder">
 					
 					  <div class="form-group">
-						<div class="input-group col-sm-offset-1 col-sm-11">
+						<div class="input-group col-sm-10">
 						  <span class="input-group-addon" id="basic-addon1">#</span>
 						  <input type="text" class="form-control hashtag" id="hashtag1" placeholder="Hashtag 1" aria-describedby="basic-addon1">
 						</div>
 					  </div>
 					  <div class="form-group">
-						<div class="input-group col-sm-offset-1 col-sm-11">
+						<div class="input-group col-sm-10">
 						  <span class="input-group-addon" id="basic-addon1">#</span>
 						  <input type="text" class="form-control hashtag" id="hashtag2" placeholder="Hashtag 2" aria-describedby="basic-addon1">
 						</div>
 					  </div>
 					  <div class="form-group">
-						<div class="input-group col-sm-offset-1 col-sm-11">
+						<div class="input-group col-sm-10">
 						  <span class="input-group-addon" id="basic-addon1">#</span>
 						  <input type="text" class="form-control hashtag" id="hashtag3" placeholder="Hashtag 3" aria-describedby="basic-addon1">
 						</div>
 					  </div>
 					  <div class="form-group">
-						<div class="input-group col-sm-offset-1 col-sm-11">
+						<div class="input-group col-sm-10">
 						  <span class="input-group-addon" id="basic-addon1">#</span>
 						  <input type="text" class="form-control hashtag" id="hashtag4" placeholder="Hashtag 4" aria-describedby="basic-addon1">
 						</div>
@@ -106,29 +107,29 @@
 			</div>
 			
 			<div class="row" id="mentions_holder">
-				<div class="col-sm-offset-1 col-sm-10">
+				<div class="col-sm-offset-1 col-sm-12">
 					<div class="form-inline input_holder">
 					
 					  <div class="form-group">
-						<div class="input-group col-sm-offset-1 col-sm-11">
+						<div class="input-group col-sm-10">
 						  <span class="input-group-addon" id="basic-addon1">@</span>
 						  <input type="text" class="form-control mention" id="mention1" placeholder="Mention 1" aria-describedby="basic-addon1">
 						</div>
 					  </div>
 					  <div class="form-group">
-						<div class="input-group col-sm-offset-1 col-sm-11">
+						<div class="input-group col-sm-10">
 						  <span class="input-group-addon" id="basic-addon1">@</span>
 						  <input type="text" class="form-control mention" id="mention2" placeholder="Mention 2" aria-describedby="basic-addon1">
 						</div>
 					  </div>
 					  <div class="form-group">
-						<div class="input-group col-sm-offset-1 col-sm-11">
+						<div class="input-group col-sm-10">
 						  <span class="input-group-addon" id="basic-addon1">@</span>
 						  <input type="text" class="form-control mention" id="mention3" placeholder="Mention 3" aria-describedby="basic-addon1">
 						</div>
 					  </div>
 					  <div class="form-group">
-						<div class="input-group col-sm-offset-1 col-sm-11">
+						<div class="input-group col-sm-10">
 						  <span class="input-group-addon" id="basic-addon1">@</span>
 						  <input type="text" class="form-control mention" id="mention4" placeholder="Mention 4" aria-describedby="basic-addon1">
 						</div>
@@ -139,22 +140,30 @@
 			</div>
 		
 		</form>
-		
-		<hr>
-		
-		
+	</div>
+	
+	<hr>
+
+	<div class="container page_body">
+				
 		<div id="canvas">
+
+			<center>
+				<h1 id="title">Twitter <span class="heart">&hearts;</span> BigQuery</h1>
+			</center>
 		
-			<h1 id="title">Twitter &hearts; BigQuery</h1>
-			
 	        <div id="chart">Please select a DataSource and click "Submit".</div>
 	        
 	        <div id="map" style="position: relative; width: 750px; height: 500px;"></div>
         
         </div>
         
-        <hr>
-        
+    </div>
+    
+	<hr>
+
+    <div class="container page_footer">
+    
         <div class="row">
 			<form class="form-horizontal">
 			  <div class="form-group">
