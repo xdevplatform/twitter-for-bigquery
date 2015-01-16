@@ -18,6 +18,11 @@ KEY = None
 with open(KEY_FILE, 'rb') as f:
     KEY = f.read()
 
+CONSUMER_KEY = ''
+CONSUMER_SECRET = ''
+ACCESS_TOKEN = ''
+ACCESS_TOKEN_SECRET = ''
+
 SCHEMA_FILE = "data/schema.json"
 SAMPLE_TWEET_FILE = "data/sample_tweet.json"
 SAMPLE_TWEET_ERROR_FILE = "data/sample_tweet_error.json"

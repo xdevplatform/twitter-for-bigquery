@@ -69,14 +69,14 @@ class Data(webapp2.RequestHandler):
 
             if pivot == 'hour':
 
-                query = {'query': 'SELECT source as source, HOUR(TIMESTAMP(created_at)) AS create_hour, count(*) as count FROM [tweets.2015_01_09] GROUP by create_hour, source ORDER BY source ASC, create_hour ASC'}
+                query = {'query': 'SELECT source as source, HOUR(TIMESTAMP(created_at)) AS create_hour, count(*) as count FROM [tweets.2015_01_09] WHERE source contains \'Twitter for\' GROUP by create_hour, source ORDER BY source ASC, create_hour ASC'}
                 
                 tableData = get_service().jobs()
                 dataList = tableData.query(projectId=PROJECT_NUMBER, body=query).execute()
                 
                 # key: source, value: [source, d1, d2, d3...]
                 buckets = {}
-                columns = [['x', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11' ]]
+                columns = [['x', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23' ]]
                 if 'rows' in dataList:
                     for row in dataList['rows']:
                         for key, dict_list in row.iteritems():
@@ -101,14 +101,7 @@ class Data(webapp2.RequestHandler):
                 args = {
                     'data' : {
                         'x' : 'x',
-                        # xFormat: '%Y%m%d', // 'xFormat' can be used as custom format
-                        # of 'x'
                         'columns' : columns 
-#                         [
-#                             [ 'x', '0', '1', '2'],
-#                             [ 'iPhone', 30, 200, 100],
-#                             [ 'Android', 130, 340, 200] 
-#                         ]
                     },
 #                     'axis' : {
 #                         'x' : {
@@ -148,7 +141,7 @@ class Data(webapp2.RequestHandler):
                         'type' : 'donut'
                     },
                     'donut' : {
-                        'title' : "Iris Petal Width"
+                        'title' : "Tweet sources"
                     }
                 }
 

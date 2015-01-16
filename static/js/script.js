@@ -43,8 +43,9 @@ function handleChange() {
 	var args = null;
 	
 	$("#map").hide();
+	$("#chart").hide();
 	
-	if (charttype == 'donut') {
+	if (charttype == 'donut' || charttype == 'bar' || charttype == 'timeseries') {
 
 		var args = {
 			source : source,
@@ -52,27 +53,6 @@ function handleChange() {
 			charttype : charttype,
 			hashtags : []
 		};
-		queryData(args);
-
-	} else if (charttype == 'line') {
-		
-		var args = {
-				source : source,
-				pivot : pivot,
-				charttype : charttype,
-				hashtags : []
-			};
-		queryData(args);
-		
-	} else if (charttype == 'timeseries') {
-		
-		var args = {
-				source : source,
-				pivot : pivot,
-				charttype : charttype,
-				hashtags : []
-			};
-
 		queryData(args);
 
 	} else if (charttype == 'map') {
@@ -87,6 +67,7 @@ function handleChange() {
 function queryData(args){
 
 	$("#chart").html('<img src="/static/img/loading.gif">');
+	$("#chart").show();
 	
 	 $.ajax({
 		type : "GET",
