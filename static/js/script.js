@@ -7,6 +7,11 @@ $(document).ready(function(){
     	} else {
     		$("#hashtags_holder").hide();
     	}
+    	if (val == "mentions"){
+    		$("#mentions_holder").fadeIn();
+    	} else {
+    		$("#mentions_holder").hide();
+    	}
     });
     $("#source").change();
 	
@@ -33,16 +38,23 @@ $(document).ready(function(){
 	
 })
 
-function getHashtags(){
-	var hashtags = [];
+function getMentions(){
+	return getValuesByClass('.mention');
+}
 
-	$('.hashtag').each( function(i,e) {
+function getHashtags(){
+	return getValuesByClass('.hashtag');
+}
+
+function getValuesByClass(sel){
+	var arr = [];
+	$(sel).each( function(i,e) {
 		val = $(e).val();
 		if (val){
-			hashtags.push(val);
+			arr.push(val);
 		}
 	});
-	return hashtags.join();
+	return arr.join();
 }
 
 function handleChange() {
