@@ -11,6 +11,10 @@ $(document).ready(function(){
     });
 	
 	$("#pivot").change(function(){
+		var val = $(this).val();
+    	if (val == "location"){
+    		$('#charttype option[value=map]').attr('selected','selected');
+		}
     	queryData();
     });
 	

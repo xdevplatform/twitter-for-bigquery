@@ -70,43 +70,16 @@ class Data(webapp2.RequestHandler):
         self.response.headers['Content-Type'] = 'application/json'
         self.response.out.write(json.dumps(resp))
 
-class ChartDonut(webapp2.RequestHandler):
+class Chart(webapp2.RequestHandler):
     
     @decorator.oauth_required
     def get(self):
         template_data = {}
-        template_path = 'templates/chart_donut.html'
+        template_path = 'templates/chart.html'
         self.response.out.write(template.render(template_path, template_data))
 
-class ChartTimeseries(webapp2.RequestHandler):
-    
-    @decorator.oauth_required
-    def get(self):
-        template_data = {}
-        template_path = 'templates/chart_timeseries.html'
-        self.response.out.write(template.render(template_path, template_data))
-
-class ChartLine(webapp2.RequestHandler):
-    
-    @decorator.oauth_required
-    def get(self):
-        template_data = {}
-        template_path = 'templates/chart_line.html'
-        self.response.out.write(template.render(template_path, template_data))
-        
-class ChartMap(webapp2.RequestHandler):
-    
-    @decorator.oauth_required
-    def get(self):
-        template_data = {}
-        template_path = 'templates/chart_map.html'
-        self.response.out.write(template.render(template_path, template_data))
- 
 application = webapp2.WSGIApplication([
-    ('/chart/donut', ChartDonut),
-    ('/chart/timeseries', ChartTimeseries),
-    ('/chart/line', ChartLine),
-    ('/chart/map', ChartLine),
+    ('/chart', Chart),
     ('/data', Data),
     ('/', ShowHome),
     (decorator.callback_path, decorator.callback_handler())
