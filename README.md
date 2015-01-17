@@ -1,9 +1,9 @@
 Twitter for BigQuery
 ===
 
-<img src="static/img/screenshot.png" style="width: 70%;"/>
-
 This sample code will help you streaming Twitter data into BigQuery, and running simple visualizations. This sample also generates the queries you can run directly in the BigQuery interface, or extend for your applications.
+
+<img src="static/img/screenshot.png" style="width: 70%;"/>
 
 Additionally, you can use other public or private datasets in BigQuery to do additional joins and developer othe insights/correlations.
 
@@ -12,20 +12,21 @@ Requirements
 
 - This sample code (http://github.com/twitterdev/twitter-for-bigquery)
 - Twitter App (http://apps.twitter.com)
-- Google Cloud account 
-- Google BigQuery account
-- Google AppEngine (GAE) Launcher (???)
+- Google Cloud Platform account (https://cloud.google.com/)
+- Google App Engine SDK for Python (https://cloud.google.com/appengine/downloads)
 
 Configuration
 ---
 
-To work with Google Cloud and BigQuery, follow the below instructions:
+To work with Google Cloud and BigQuery, follow the below instructions to create a new project, service account and get your PEM file.
 
 - Go to http://console.developers.google.com
-- Create a Project
+- Click on "Create Project"
+- Open the project dashboard by clicking on the new project
 - Open "APIs & auth->Credentials"
+- Click on "Create new Client ID", "Service account" and "Create Client ID"
 - Note your Service Account email (Under "EMAIL ADDRESS")
-- Generate and store your P12 key
+- Generate and store your P12 key (Or save from auto-download)
 - Convert the P12 key to a PEM file with the following:
 
 	`cat key.p12 | openssl pkcs12 -nodes -nocerts -passin pass:notasecret | openssl rsa > key.pem`
@@ -76,16 +77,16 @@ To set up the app using the GAE Launcher, do the following:
 - Click "Run".
 - Open your browser to http://localhost:8080.
 
-Running on Google AppEngine
+Running on Google App Engine
 ---
 
-To run in Google AppEngine, you first need to have it running from the GAE console. (See instructions above.) 
+To run in Google App Engine, you first need to have it running from the GAE console. (See instructions above.) 
 
 Once this is complete, you can click on "Deploy" to deploy it to the cloud.
 
 To confirm the deploy worked, you can do the following to view the logs:
 
-- Open a browser to https://appengine.google.com
+- Open a browser to https://App Engine.google.com
 - Click on "Logs" to the left
 - Find the entry with an orange "E" (for Error) and click on the "+" to expand it
 
@@ -164,8 +165,8 @@ The following documents serve as additional information on streaming data from T
 
 - *How to stream data from Twitter with tweepy [Python]:* http://runnable.com/Us9rrMiTWf9bAAW3/how-to-stream-data-from-twitter-with-tweepy-for-python
 - *Authorizing Access to the Google BigQuery API using OAuth 2.0:* https://cloud.google.com/bigquery/authorization
-- *Codelab: Creating a BigQuery Dashboard:* https://cloud.google.com/bigquery/articles/dashboard#newappengineproject
-- *Uploading Your Application:* https://cloud.google.com/appengine/docs/python/gettingstartedpython27/uploading
+- *Codelab: Creating a BigQuery Dashboard:* https://cloud.google.com/bigquery/articles/dashboard#newApp Engineproject
+- *Uploading Your Application:* https://cloud.google.com/App Engine/docs/python/gettingstartedpython27/uploading
 - *Data Visualization App Using GAE Python, D3.js and Google BigQuery:* http://code.tutsplus.com/tutorials/data-visualization-app-using-gae-python-d3js-and-google-bigquery--cms-22175
 
 
