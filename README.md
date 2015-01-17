@@ -41,7 +41,11 @@ The enclosed sample includes a simple `load.py` file to stream Tweets directly i
 - Fill out the following fields:
 
 	<img src="static/img/config_fields.png" style="width: 70%;"/>
-	
+
+- Go to [http://console.developers.google.com](http://console.developers.google.com)
+- Go to your project
+- Click on the down arrow by the project, select "Create new dataset" and enter "tweets"
+- Click on the down arrow by the dataset, select "Create new table" and enter "2015_01_17" (or whatever is configured in config.py)
 - Run `python load.py` 
 
 Running the app

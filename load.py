@@ -23,7 +23,10 @@ def main():
     
     # create table BigQuery table
     created = client.create_table(DATASET_ID, TABLE_ID, schema)
-    print "created: %s" % created
+    print "created result: %s" % created
+    if (len(created) == 0):
+        print "failed to create table"
+        return
     
     l = BigQueryListener(client, DATASET_ID, TABLE_ID)
     auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
