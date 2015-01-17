@@ -65,7 +65,7 @@ To set up the app using the GAE Launcher, do the following:
 - Click "Run".
 - Open your browser to http://localhost:8080.
 
-Running on AppEngine
+Running on Google AppEngine
 ---
 
 To run in Google AppEngine, you first need to have it running from the GAE console. (See instructions above.) 
@@ -127,17 +127,16 @@ Users that tweet the most.
 To learn more about querying, go to https://cloud.google.com/bigquery/query-reference
 
 
-Other projects/ideas
+Going further
 ---
 
-Twitter data becomes even more interesting when combined with other sources of information or analysis. Here are some ideas
-that people have done that might inspire your next project 
+Using BigQuery allows you to combine Twitter data with other public sources of information. Here are some ideas to inspire your next project:
 
-- Cross referencing Twitter data with other sources to show vertical/topical trending data (inspired by http://apassant.net/2014/11/25/24-discover-youtube-music-trends-twitter/)
-- Sentiment analysis on twwet
+- Perform and store sentiment analysis on tweet text for worldwide sentiment
+- Cross reference 
+- ???
 
-
-Further Reading
+Additional reading
 ---
 
 The following documents serve as additional information on streaming data from Twitter and working with BigQuery.
