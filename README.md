@@ -10,17 +10,17 @@ Additionally, you can use other public or private datasets in BigQuery to do add
 Requirements
 ---
 
-- This sample code (http://github.com/twitterdev/twitter-for-bigquery)
-- Twitter App (http://apps.twitter.com)
-- Google Cloud Platform account (https://cloud.google.com/)
-- Google App Engine SDK for Python (https://cloud.google.com/appengine/downloads)
+- Twitter for BigQuery sample code [sample code](http://github.com/twitterdev/twitter-for-bigquery)
+- [Twitter App](http://apps.twitter.com) created with keys/tokens
+- [Google Cloud Platform](https://cloud.google.com/) account 
+- [Google App Engine SDK for Python](https://cloud.google.com/appengine/downloads)
 
 Configuration
 ---
 
 To work with Google Cloud and BigQuery, follow the below instructions to create a new project, service account and get your PEM file.
 
-- Go to http://console.developers.google.com
+- Go to [http://console.developers.google.com](http://console.developers.google.com)
 - Click on "Create Project"
 - Open the project dashboard by clicking on the new project
 - Open "APIs & auth->Credentials"
@@ -75,7 +75,7 @@ To set up the app using the GAE Launcher, do the following:
 
 - Click "Update".
 - Click "Run".
-- Open your browser to http://localhost:8080.
+- Open your browser to http://localhost:8080](http://localhost:8080).
 
 Running on Google App Engine
 ---
@@ -139,7 +139,7 @@ Users that tweet the most.
 
 	SELECT user.screen_name, count(*) as count FROM [tweets.2015_01_09] GROUP BY user.screen_name ORDER BY count DESC LIMIT 10
 	
-To learn more about querying, go to https://cloud.google.com/bigquery/query-reference
+To learn more about querying, go to [https://cloud.google.com/bigquery/query-reference]https://cloud.google.com/bigquery/query-reference)
 
 
 Going further
@@ -148,12 +148,7 @@ Going further
 Using BigQuery allows you to combine Twitter data with other public sources of information. Here are some ideas to inspire your next project:
 
 - Perform and store sentiment analysis on tweet text for worldwide sentiment
-- Cross reference 
-- ???
-
-For a list of interesting and recent publicly available sources, please visit:
-
-???
+- Cross reference Twitter data to other [public data sets](https://cloud.google.com/bigquery/docs/sample-tables)
 
 You can also visit http://demo.redash.io/ to perform queries and visualizations against publicly available data sources.
 
@@ -163,11 +158,11 @@ Additional reading
 
 The following documents serve as additional information on streaming data from Twitter and working with BigQuery.
 
-- *How to stream data from Twitter with tweepy [Python]:* http://runnable.com/Us9rrMiTWf9bAAW3/how-to-stream-data-from-twitter-with-tweepy-for-python
-- *Authorizing Access to the Google BigQuery API using OAuth 2.0:* https://cloud.google.com/bigquery/authorization
-- *Codelab: Creating a BigQuery Dashboard:* https://cloud.google.com/bigquery/articles/dashboard#newApp Engineproject
-- *Uploading Your Application:* https://cloud.google.com/App Engine/docs/python/gettingstartedpython27/uploading
-- *Data Visualization App Using GAE Python, D3.js and Google BigQuery:* http://code.tutsplus.com/tutorials/data-visualization-app-using-gae-python-d3js-and-google-bigquery--cms-22175
+- *How to stream data from Twitter with tweepy [Python]:* [http://runnable.com/Us9rrMiTWf9bAAW3/how-to-stream-data-from-twitter-with-tweepy-for-python](http://runnable.com/Us9rrMiTWf9bAAW3/how-to-stream-data-from-twitter-with-tweepy-for-python)
+- *Authorizing Access to the Google BigQuery API using OAuth 2.0:* https://cloud.google.com/bigquery/authorization](https://cloud.google.com/bigquery/authorization)
+- *Codelab: Creating a BigQuery Dashboard:* [https://cloud.google.com/bigquery/articles/dashboard#newApp Engineproject](https://cloud.google.com/bigquery/articles/dashboard#newApp Engineproject)
+- *Uploading Your Application:* [https://cloud.google.com/App Engine/docs/python/gettingstartedpython27/uploading](https://cloud.google.com/App Engine/docs/python/gettingstartedpython27/uploading)
+- *Data Visualization App Using GAE Python, D3.js and Google BigQuery:* [http://code.tutsplus.com/tutorials/data-visualization-app-using-gae-python-d3js-and-google-bigquery--cms-22175](http://code.tutsplus.com/tutorials/data-visualization-app-using-gae-python-d3js-and-google-bigquery--cms-22175)
 
 
 
@@ -176,8 +171,8 @@ Credits
 
 The following developers and bloggers have aided greatly in the development of this source. I'm  appreciative of contributions and knowledge sharing.
 
-- @felipehoffa - https://github.com/felipehoffa
-- @tyler_treat - https://github.com/tylertreat/BigQuery-Python/
-- @apassant - https://github.com/apassant
-- @jay3dec - https://twitter.com/jay3dec
+- [@felipehoffa](https://twitter.com/felipehoffa) - [https://github.com/felipehoffa](https://github.com/felipehoffa)
+- [@tyler_treat](https://twitter.com/tyler_treat) - [https://github.com/tylertreat/BigQuery-Python/](https://github.com/tyler_treat)
+- [@apassant](https://twitter.com/apassant) - [https://github.com/apassant](https://github.com/apassant)
+- [@jay3dec](https://twitter.com/jay3dec) - [https://twitter.com/jay3dec](https://twitter.com/jay3dec)
 
