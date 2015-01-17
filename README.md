@@ -1,6 +1,11 @@
 Twitter for BigQuery
 ===
 
+<img src="static/img/screenshot.png" style="width: 70%;"/>
+
+This sample code will help you streaming Twitter data into BigQuery, and running simple visualizations. This sample also generates the queries you can run directly in the BigQuery interface, or extend for your applications.
+
+Additionally, you can use other public or private datasets in BigQuery to do additional joins and developer othe insights/correlations.
 
 Requirements
 ---
@@ -9,7 +14,7 @@ Requirements
 - Twitter App (http://apps.twitter.com)
 - Google Cloud account 
 - Google BigQuery account
-- AppEngine Client (???)
+- Google AppEngine (GAE) Launcher (???)
 
 Configuration
 ---
@@ -27,81 +32,99 @@ To save data into BigQuery, follow the below instructions to generate the necess
 Loading Twitter data into BigQuery
 ---
 
-Running locally
+Running the app
 ---
 
-### Running from command line
+### Running locally from command line
 
 From the command line, you can use dev_appserver.py to run your local server. You'll need to specify your service account and private key file on the command line, as such:
 
 	`dev_appserver.py . --appidentity_email_address="YOUR_TOKEN@developer.gserviceaccount.com" --appidentity_private_key_path=/PATH/TO/key.pem`
+	
+Once this is complete, open your browser to http://localhost:8080.
 
-### Running from GAE
+### Running locally from the GAE Launcher
 
-To set up the app using the GAE, do the following:
+To set up the app using the GAE Launcher, do the following:
 
-- Open GAE.
+- Open the GAE Launcher.
 - Click on "File->New Application".
 - Specify the application ID (twitter-for-bigquery) and application directory (path where twitter-for-bigquery exists). 
 - Click "Save".
 - Select the Application in the list and click on "Edit->Application Settings".
+
+<img src="static/img/settings_1.png" style="width: 70%;"/>
+
 - In the "Extra Flags" section, add the command line flags, as above:
 
 	`--appidentity_email_address="YOUR_TOKEN@developer.gserviceaccount.com" --appidentity_private_key_path=/PATH_TO/key.pem`
+	
+<img src="static/img/settings_2.png" style="width: 70%;"/>
 
 - Click "Update".
 - Click "Run".
-- Open your browser to http://localhost:8080
+- Open your browser to http://localhost:8080.
 
 Running on AppEngine
 ---
 
-To run in Google AppEngine, you first need to have it running from the GAE console. (See instructions above.) Once this is complete, you can click on "Deploy" to deploy it to the cloud.
+To run in Google AppEngine, you first need to have it running from the GAE console. (See instructions above.) 
 
-To confirm the deploy worked, you can go to the below URL to view the logs:
+Once this is complete, you can click on "Deploy" to deploy it to the cloud.
 
+To confirm the deploy worked, you can do the following to view the logs:
 
+???
 
-Setting up with sample data source
+The dataset
 ---
 
-Sample Queries
----
+### Schema
 
-Counts (Bar/Donut/Pie)
-Time Sequence (Line)
-Location (Map)
+The `load.py` file takes tweets and loads them one-by-one into BigQuery. Some basic scrubbing of the data is done to simplify the dataset. (For more information, view the `Utils.scrub()` function.) 
 
-https://cloud.google.com/bigquery/query-reference
+ JSON files are provided in `/data` as samples of the data formats from Twitter and stored into BigQuery.
 
-- Tweet source
+- `sample_stream.jsonr` - Small sample of Twitter Stream, written to file
+- `sample_tweet_cleaned.json` - Tweet from stream, but scrubbed to be consistent with BigQuery/schema.json
+- `sample_tweet.json` - Tweet from stream 
+- `schema.json` - Tweet representation as BigQuery table schema
 
-    SELECT source, count(*) as count FROM [tweets.2015_01_09] GROUP by source ORDER BY count DESC LIMIT 1000
-    
-- Text search
+### Sample queries
+
+To help you get started, below are some sample queries.
+
+##### Text search
+
+Querying for tweets contain a specific word or phrase.
 
 	SELECT text FROM [tweets.2015_01_09] WHERE text CONTAINS ' something ' LIMIT 10
 
-- Geolocation
+##### #Hashtag search
 
-	SELECT text FROM [tweets.2015_01_09] WHERE coordinates.coordinates.lat IS NOT NULL LIMIT 10
+Searching for specific hashtags.
 
-- Media/URLs shared
+	SELECT entities.hashtags.text, HOUR(TIMESTAMP(created_at)) AS create_hour, count(*) as count FROM [tweets.2015_01_09] WHERE LOWER(entities.hashtags.text) in ('John', 'Paul', 'George', 'Ringo') GROUP by create_hour, entities.hashtags.text ORDER BY entities.hashtags.text ASC, create_hour ASC
 
-	SELECT entities.media.type as media_type, count(*) as count FROM [tweets.2015_01_09] GROUP BY media_type ORDER BY count LIMIT 10
+##### Tweet source
+
+Listing the most popular Twitter applications.
+
+    SELECT source, count(*) as count FROM [tweets.2015_01_09] GROUP by source ORDER BY count DESC LIMIT 1000
+
+##### Media/URLs shared
+
+Finding the most popular content shared on Twitter.
+
 	SELECT text, entities.urls.url FROM [tweets.2015_01_09] WHERE entities.urls.url IS NOT NULL LIMIT 10
 
-- User activity
+##### User activity
+
+Users that tweet the most.
 
 	SELECT user.screen_name, count(*) as count FROM [tweets.2015_01_09] GROUP BY user.screen_name ORDER BY count DESC LIMIT 10
-
-
-Loading more recent data
----
-
-The sample Twitter data set is useful to get you exploring with Twitter data. If you want to explore with more data, you can use the 
-included pipeline code to populate data directly from the Twitter stream.
-
+	
+To learn more about querying, go to https://cloud.google.com/bigquery/query-reference
 
 
 Other projects/ideas
@@ -113,17 +136,6 @@ that people have done that might inspire your next project
 - Cross referencing Twitter data with other sources to show vertical/topical trending data (inspired by http://apassant.net/2014/11/25/24-discover-youtube-music-trends-twitter/)
 - Sentiment analysis on twwet
 
-Sample JSON files
----
-
-The below JSON files are provided in `/data` as samples of the data formats from Twitter and stored into BigQuery.
-
-/data
-
-- sample_stream.jsonr - Small sample of Twitter Stream, written to file
-- sample_tweet_cleaned.json - Tweet from stream, but scrubbed to be consistent with BigQuery/schema.json
-- sample_tweet.json - Tweet from stream 
-- schema.json - Tweet representation as BigQuery table schema
 
 Further Reading
 ---
@@ -141,10 +153,10 @@ The following documents serve as additional information on streaming data from T
 Credits
 ---
 
-The following developers and bloggers have aided greatly in the development of this source. I'm deeply appreciative
-of their open source code and knowledge sharing to make this possible!
+The following developers and bloggers have aided greatly in the development of this source. I'm  appreciative of contributions and knowledge sharing.
 
+@felipehoffa - https://github.com/felipehoffa
 @tyler_treat - https://github.com/tylertreat/BigQuery-Python/
 @apassant - https://github.com/apassant
-@jay3dec (https://twitter.com/jay3dec) - http://code.tutsplus.com/tutorials/data-visualization-app-using-gae-python-d3js-and-google-bigquery--cms-22175
+@jay3dec - https://twitter.com/jay3dec
 
