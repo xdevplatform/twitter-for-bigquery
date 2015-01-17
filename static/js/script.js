@@ -13,12 +13,13 @@ $(document).ready(function(){
 	
 	$("#source").change(function(){
     	var val = $(this).val();
-    	if (val == "hashtags"){
+    	var pivot = $("#pivot").val();
+    	if (val == "hashtags" && pivot != "popular"){
     		$("#hashtags_holder").fadeIn();
     	} else {
     		$("#hashtags_holder").hide();
     	}
-    	if (val == "mentions"){
+    	if (val == "mentions" && pivot != "popular"){
     		$("#mentions_holder").fadeIn();
     	} else {
     		$("#mentions_holder").hide();
@@ -28,15 +29,31 @@ $(document).ready(function(){
 	
 	$("#pivot").change(function(){
 		var val = $(this).val();
+		var source = $("#source").val();
     	if (val == "location"){
     		$('#charttype option[value=map]').attr('selected','selected');
     		$('#charttype').prop('disabled', true);
 		} else if (val == "hour"){
     		$('#charttype option[value=timeseries]').attr('selected','selected');
     		$('#charttype').prop('disabled', true);
+    		
+    		$("#mentions_holder").hide();
+    		$("#hashtags_holder").hide();
+    		
+    		if (source == 'mentions'){
+        		$("#mentions_holder").fadeIn();
+    		}
+    		if (source == 'hashtags'){
+        		$("#hashtags_holder").fadeIn();
+    		}
+    		
 		} else if (val == "popular"){
     		$('#charttype option[value=donut]').attr('selected','selected');
     		$('#charttype').prop('disabled', true);
+
+    		$("#mentions_holder").hide();
+    		$("#hashtags_holder").hide();
+    		
 		} else {
 			$('#charttype option[value=donut]').attr('selected','selected');
     		$('#charttype').prop('disabled', false);
@@ -58,7 +75,8 @@ $(document).ready(function(){
     });
 	
 	$("#map").hide();
-	
+	$("#hashtags_holder").hide();
+	$("#mentions_holder").hide();
 	
 })
 

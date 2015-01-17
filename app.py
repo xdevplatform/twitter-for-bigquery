@@ -24,6 +24,9 @@ decorator = oauth2decorator_from_clientsecrets(
     scope=SCOPES,
     cache=memcache)
 
+# [tweets:2015_01_09]
+FROM_CLAUSE = "[%s.%s]" % (DATASET_ID, TABLE_ID) 
+
 REMOVE_HTML = re.compile(r'<.*?>')
 
 def get_service():
@@ -63,7 +66,7 @@ class Data(webapp2.RequestHandler):
 
             if pivot == 'hour' or charttype == 'timeseries':
 
-                query = 'SELECT source as source, HOUR(TIMESTAMP(created_at)) AS create_hour, count(*) as count FROM [tweets.2015_01_09] WHERE source contains \'Twitter for\' GROUP by create_hour, source ORDER BY source ASC, create_hour ASC'
+                query = "SELECT source as source, HOUR(TIMESTAMP(created_at)) AS create_hour, count(*) as count FROM %s WHERE source contains 'Twitter for' GROUP by create_hour, source ORDER BY source ASC, create_hour ASC" % (FROM_CLAUSE)
                 
                 tableData = get_service().jobs()
                 dataList = tableData.query(projectId=PROJECT_NUMBER, body={'query':query}).execute()
@@ -104,7 +107,7 @@ class Data(webapp2.RequestHandler):
 
             elif charttype == 'donut' or charttype == 'bar' or charttype == 'popular':
                 
-                query = 'SELECT source as source, count(*) as count FROM [tweets.2015_01_09] GROUP by source ORDER BY count DESC LIMIT 20'
+                query = "SELECT source as source, count(*) as count FROM %s GROUP by source ORDER BY count DESC LIMIT 20" % (FROM_CLAUSE)
         
                 tableData = get_service().jobs()
                 dataList = tableData.query(projectId=PROJECT_NUMBER, body={'query':query}).execute()
@@ -145,17 +148,21 @@ class Data(webapp2.RequestHandler):
         elif source == 'hashtags' or source == 'mentions':
 
             object = None
+            prefix = None
             col = None
+            
             if source == 'hashtags':
                 object = 'Hashtags'
+                prefix = '#'
                 col = 'entities.hashtags.text'
             elif source == 'mentions':
                 object = 'User mentions'
+                prefix = '@'
                 col = 'entities.user_mentions.screen_name'
 
             if pivot == 'hour' or charttype == 'timeseries':
 
-                query = "SELECT %s, HOUR(TIMESTAMP(created_at)) AS create_hour, count(*) as count FROM [tweets.2015_01_09] WHERE LOWER(%s) in (%s) GROUP by create_hour, %s ORDER BY %s ASC, create_hour ASC" % (col, col, terms, col, col)
+                query = "SELECT %s, HOUR(TIMESTAMP(created_at)) AS create_hour, count(*) as count FROM %s WHERE LOWER(%s) in (%s) GROUP by create_hour, %s ORDER BY %s ASC, create_hour ASC" % (col, FROM_CLAUSE, col, terms, col, col)
                 
                 tableData = get_service().jobs()
                 dataList = tableData.query(projectId=PROJECT_NUMBER, body={'query':query}).execute()
@@ -166,7 +173,7 @@ class Data(webapp2.RequestHandler):
                 if 'rows' in dataList:
                     for row in dataList['rows']:
                         for key, dict_list in row.iteritems():
-                            source = REMOVE_HTML.sub('', dict_list[0]['v'])
+                            source = prefix + REMOVE_HTML.sub('', dict_list[0]['v'])
                             hour = int(dict_list[1]['v'])
                             count = int(dict_list[2]['v'])
                             
@@ -196,7 +203,8 @@ class Data(webapp2.RequestHandler):
 
             elif pivot == 'popular':
 
-                query = "SELECT %s, count(*) as count FROM [tweets.2015_01_09] WHERE %s IS NOT NULL GROUP by %s ORDER BY count DESC LIMIT 20" % (col, col, col)
+                query = "SELECT %s, count(*) as count FROM %s WHERE %s IS NOT NULL GROUP by %s ORDER BY count DESC LIMIT 10" % (col, FROM_CLAUSE, col, col)
+                print query
         
                 tableData = get_service().jobs()
                 dataList = tableData.query(projectId=PROJECT_NUMBER, body={'query':query}).execute()
@@ -205,7 +213,7 @@ class Data(webapp2.RequestHandler):
                 if 'rows' in dataList:
                     for row in dataList['rows']:
                         for key, dict_list in row.iteritems():
-                            source = dict_list[0]['v']
+                            source = prefix + dict_list[0]['v']
                             count = int(dict_list[1]['v'])
                             columns.append([source, count])
                 else:
@@ -233,7 +241,7 @@ class Data(webapp2.RequestHandler):
 
             elif charttype == 'donut' or charttype == 'bar':
 
-                query = "SELECT %s, count(*) as count FROM [tweets.2015_01_09] WHERE LOWER(%s) in (%s) GROUP by %s ORDER BY count" % (col, col, terms, col)
+                query = "SELECT %s, count(*) as count FROM %s WHERE LOWER(%s) in (%s) GROUP by %s ORDER BY count" % (col, FROM_CLAUSE, col, terms, col)
         
                 tableData = get_service().jobs()
                 dataList = tableData.query(projectId=PROJECT_NUMBER, body={'query':query}).execute()
@@ -242,7 +250,7 @@ class Data(webapp2.RequestHandler):
                 if 'rows' in dataList:
                     for row in dataList['rows']:
                         for key, dict_list in row.iteritems():
-                            source = REMOVE_HTML.sub('', dict_list[0]['v'])
+                            source = prefix + REMOVE_HTML.sub('', dict_list[0]['v'])
                             count = int(dict_list[1]['v'])
                             columns.append([source, count])
                 else:
