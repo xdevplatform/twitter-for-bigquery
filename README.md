@@ -34,6 +34,15 @@ To work with Google Cloud and BigQuery, follow the below instructions:
 Loading Twitter data into BigQuery
 ---
 
+The enclosed sample includes a simple `load.py` file to stream Tweets directly into BigQuery.
+
+- Copy `config.py.dist` to `config.py`
+- Fill out the following fields:
+
+	<img src="static/img/config_fields.png" style="width: 70%;"/>
+	
+- Run `python load.py` 
+
 Running the app
 ---
 
@@ -141,6 +150,13 @@ Using BigQuery allows you to combine Twitter data with other public sources of i
 - Cross reference 
 - ???
 
+For a list of interesting and recent publicly available sources, please visit:
+
+???
+
+You can also visit http://demo.redash.io/ to perform queries and visualizations against publicly available data sources.
+
+
 Additional reading
 ---
 
@@ -159,8 +175,8 @@ Credits
 
 The following developers and bloggers have aided greatly in the development of this source. I'm  appreciative of contributions and knowledge sharing.
 
-@felipehoffa - https://github.com/felipehoffa
-@tyler_treat - https://github.com/tylertreat/BigQuery-Python/
-@apassant - https://github.com/apassant
-@jay3dec - https://twitter.com/jay3dec
+- @felipehoffa - https://github.com/felipehoffa
+- @tyler_treat - https://github.com/tylertreat/BigQuery-Python/
+- @apassant - https://github.com/apassant
+- @jay3dec - https://twitter.com/jay3dec
 

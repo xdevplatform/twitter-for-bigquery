@@ -38,7 +38,8 @@ def main():
         except IncompleteRead:
             pass
 
-#     Utils.import_from_file(client, DATASET_ID, TABLE_ID, 'data/sample_stream.jsonr', single_tweet=False)
+    # Can also test loading data from a local file
+    # Utils.import_from_file(client, DATASET_ID, TABLE_ID, 'data/sample_stream.jsonr', single_tweet=False)
 
 if __name__ == "__main__":
     main()
