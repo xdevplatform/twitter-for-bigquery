@@ -1,18 +1,66 @@
 Twitter for BigQuery
 ===
 
+
 Requirements
 ---
 
+- This sample code (http://github.com/twitterdev/twitter-for-bigquery)
+- Twitter App (http://apps.twitter.com)
+- Google Cloud account 
+- Google BigQuery account
+- AppEngine Client (???)
 
-Relevant Reading
+Configuration
 ---
 
-- *Authorizing Access to the Google BigQuery API using OAuth 2.0:* https://cloud.google.com/bigquery/authorization
-- *Codelab: Creating a BigQuery Dashboard:* https://cloud.google.com/bigquery/articles/dashboard#newappengineproject
-- *Uploading Your Application:* https://cloud.google.com/appengine/docs/python/gettingstartedpython27/uploading
-- *Data Visualization App Using GAE Python, D3.js and Google BigQuery:* http://code.tutsplus.com/tutorials/data-visualization-app-using-gae-python-d3js-and-google-bigquery--cms-22175
-- *How to stream data from Twitter with tweepy [Python]:* http://runnable.com/Us9rrMiTWf9bAAW3/how-to-stream-data-from-twitter-with-tweepy-for-python
+To save data into BigQuery, follow the below instructions to generate the necessary service account and BigQuery keys.
+
+- Visit XXX
+- Generate a service account username ()
+- Create a P12 key 
+- Convert the P12 key to a PEM file with the following:
+
+	`cat key.p12 | openssl pkcs12 -nodes -nocerts -passin pass:notasecret | openssl rsa > key.pem`
+
+
+Loading Twitter data into BigQuery
+---
+
+Running locally
+---
+
+### Running from command line
+
+From the command line, you can use dev_appserver.py to run your local server. You'll need to specify your service account and private key file on the command line, as such:
+
+	`dev_appserver.py . --appidentity_email_address="YOUR_TOKEN@developer.gserviceaccount.com" --appidentity_private_key_path=/PATH/TO/key.pem`
+
+### Running from GAE
+
+To set up the app using the GAE, do the following:
+
+- Open GAE.
+- Click on "File->New Application".
+- Specify the application ID (twitter-for-bigquery) and application directory (path where twitter-for-bigquery exists). 
+- Click "Save".
+- Select the Application in the list and click on "Edit->Application Settings".
+- In the "Extra Flags" section, add the command line flags, as above:
+
+	`--appidentity_email_address="YOUR_TOKEN@developer.gserviceaccount.com" --appidentity_private_key_path=/PATH_TO/key.pem`
+
+- Click "Update".
+- Click "Run".
+- Open your browser to http://localhost:8080
+
+Running on AppEngine
+---
+
+To run in Google AppEngine, you first need to have it running from the GAE console. (See instructions above.) Once this is complete, you can click on "Deploy" to deploy it to the cloud.
+
+To confirm the deploy worked, you can go to the below URL to view the logs:
+
+
 
 Setting up with sample data source
 ---
@@ -76,6 +124,18 @@ The below JSON files are provided in `/data` as samples of the data formats from
 - sample_tweet_cleaned.json - Tweet from stream, but scrubbed to be consistent with BigQuery/schema.json
 - sample_tweet.json - Tweet from stream 
 - schema.json - Tweet representation as BigQuery table schema
+
+Further Reading
+---
+
+The following documents serve as additional information on streaming data from Twitter and working with BigQuery.
+
+- *How to stream data from Twitter with tweepy [Python]:* http://runnable.com/Us9rrMiTWf9bAAW3/how-to-stream-data-from-twitter-with-tweepy-for-python
+- *Authorizing Access to the Google BigQuery API using OAuth 2.0:* https://cloud.google.com/bigquery/authorization
+- *Codelab: Creating a BigQuery Dashboard:* https://cloud.google.com/bigquery/articles/dashboard#newappengineproject
+- *Uploading Your Application:* https://cloud.google.com/appengine/docs/python/gettingstartedpython27/uploading
+- *Data Visualization App Using GAE Python, D3.js and Google BigQuery:* http://code.tutsplus.com/tutorials/data-visualization-app-using-gae-python-d3js-and-google-bigquery--cms-22175
+
 
 
 Credits

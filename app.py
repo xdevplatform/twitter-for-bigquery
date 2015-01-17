@@ -10,18 +10,14 @@ from google.appengine.api import memcache
 from apiclient.discovery import build
 from apiclient import errors
 
-from oauth2client.appengine import oauth2decorator_from_clientsecrets
+from oauth2client import appengine
 
 from config import *
 
-SCOPES = [
-    'https://www.googleapis.com/auth/bigquery'
-]
+_SCOPE = 'https://www.googleapis.com/auth/bigquery'
 
-decorator = oauth2decorator_from_clientsecrets(
-    filename=CLIENT_SECRETS,
-    scope=SCOPES,
-    cache=memcache)
+credentials = appengine.AppAssertionCredentials(scope=_SCOPE)
+http = credentials.authorize(httplib2.Http())
 
 # [tweets:2015_01_09]
 FROM_CLAUSE = "[%s.%s]" % (DATASET_ID, TABLE_ID) 
@@ -30,11 +26,10 @@ REMOVE_HTML = re.compile(r'<.*?>')
 
 def get_service():
     
-    return build('bigquery', 'v2', http=decorator.http())
+    return build('bigquery', 'v2', http=http)
 
 class ShowHome(webapp2.RequestHandler):
     
-    @decorator.oauth_required
     def get(self):
         template_data = {}
         template_path = 'templates/index.html'
@@ -45,7 +40,6 @@ class ShowHome(webapp2.RequestHandler):
 
 class Data(webapp2.RequestHandler):
     
-    @decorator.oauth_required
     def get(self):
         
         source = self.request.get("source")
@@ -285,15 +279,13 @@ class Data(webapp2.RequestHandler):
 
 class Chart(webapp2.RequestHandler):
     
-    @decorator.oauth_required
     def get(self):
         template_data = {}
-        template_path = 'templates/chart.html'
+        template_path = 'Templates/chart.html'
         self.response.out.write(template.render(template_path, template_data))
 
 application = webapp2.WSGIApplication([
     ('/data', Data),
     ('/chart', Chart),
     ('/', Chart),
-    (decorator.callback_path, decorator.callback_handler())
 ], debug=True)
