@@ -3,7 +3,6 @@ import re
 import httplib2
 import json
 import webapp2
-import logging
 
 from google.appengine.ext.webapp import template
 from google.appengine.api import memcache
@@ -53,11 +52,12 @@ class Data(webapp2.RequestHandler):
         pivot = self.request.get("pivot")
         charttype = self.request.get("charttype")
         terms = self.request.get("terms")
-        terms = terms.split(',')
-        for idx, val in enumerate(terms):
-            h = "'" + val + "'"
-            terms[idx] = h
-        terms = ','.join(terms) 
+        if terms:
+            terms = terms.lower().split(',')
+            for idx, val in enumerate(terms):
+                h = "'" + val + "'"
+                terms[idx] = h
+            terms = ','.join(terms) 
 
         query = None
         args = {}
