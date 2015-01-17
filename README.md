@@ -19,11 +19,13 @@ Requirements
 Configuration
 ---
 
-To save data into BigQuery, follow the below instructions to generate the necessary service account and BigQuery keys.
+To work with Google Cloud and BigQuery, follow the below instructions:
 
-- Visit XXX
-- Generate a service account username ()
-- Create a P12 key 
+- Go to http://console.developers.google.com
+- Create a Project
+- Open "APIs & auth->Credentials"
+- Note your Service Account email (Under "EMAIL ADDRESS")
+- Generate and store your P12 key
 - Convert the P12 key to a PEM file with the following:
 
 	`cat key.p12 | openssl pkcs12 -nodes -nocerts -passin pass:notasecret | openssl rsa > key.pem`
@@ -74,7 +76,10 @@ Once this is complete, you can click on "Deploy" to deploy it to the cloud.
 
 To confirm the deploy worked, you can do the following to view the logs:
 
-???
+- Open a browser to https://appengine.google.com
+- Click on "Logs" to the left
+- Find the entry with an orange "E" (for Error) and click on the "+" to expand it
+
 
 The dataset
 ---
