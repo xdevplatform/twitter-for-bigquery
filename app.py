@@ -156,7 +156,14 @@ class Data(webapp2.RequestHandler):
 
             if pivot == 'hour' or charttype == 'timeseries':
 
-                query = "SELECT %s, HOUR(TIMESTAMP(created_at)) AS create_hour, count(*) as count FROM %s WHERE LOWER(%s) in (%s) GROUP by create_hour, %s ORDER BY %s ASC, create_hour ASC" % (col, FROM_CLAUSE, col, terms, col, col)
+                query = """SELECT
+                      LOWER(%s),
+                      HOUR(TIMESTAMP(created_at)) AS create_hour,
+                      COUNT(*) AS COUNT
+                    FROM %s 
+                    WHERE LOWER(%s) IN (%s)
+                    GROUP BY create_hour, 1
+                    ORDER BY 1, create_hour ASC""" % (col, FROM_CLAUSE, col, terms)
                 
                 tableData = get_service().jobs()
                 dataList = tableData.query(projectId=PROJECT_NUMBER, body={'query':query}).execute()

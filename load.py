@@ -1,7 +1,7 @@
 import json
 import tweepy
 
-from httplib import IncompleteRead
+from httplib import *
 
 from bigquery import get_client
 from bigquery import schema_from_record
@@ -24,9 +24,9 @@ def main():
     # create table BigQuery table
     created = client.create_table(DATASET_ID, TABLE_ID, schema)
     print "created result: %s" % created
-    if (len(created) == 0):
-        print "failed to create table"
-        return
+#     if (len(created) == 0):
+#         print "failed to create table"
+#         return
     
     l = BigQueryListener(client, DATASET_ID, TABLE_ID)
     auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
@@ -38,6 +38,8 @@ def main():
     while True:
         try:
             stream.sample()
+        except BadStatusLine:
+            pass
         except IncompleteRead:
             pass
 
