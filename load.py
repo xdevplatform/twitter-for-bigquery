@@ -39,7 +39,7 @@ TRACK_ITEMS = [
 
 def main():
     
-    Utils.enable_logging()
+#    Utils.enable_logging()
     
     # get client
     client = get_client(PROJECT_ID, service_account=SERVICE_ACCOUNT, private_key=KEY, readonly=False)
