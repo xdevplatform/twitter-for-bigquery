@@ -12,6 +12,7 @@ class BigQueryListener(tweepy.StreamListener):
       self.client = client
       self.dataset_id = dataset_id
       self.table_id = table_id
+      self.count = 0
       
     def on_data(self, data):
         
@@ -24,11 +25,23 @@ class BigQueryListener(tweepy.StreamListener):
             Utils.insert_record(self.client, self.dataset_id, self.table_id, record_scrubbed)
             
             print '@%s: %s' % (record['user']['screen_name'], record['text'].encode('ascii', 'ignore'))
+#             if self.count % 10 == 0:
+#                 sys.stdout.write(str(self.count))
+#                 sys.stdout.write(" ")
+#                 sys.stdout.flush()
+            
+            self.count = self.count + 1
             
             return True
 
-    def on_error(self, status):
-        print status
+    #handle errors without closing stream:
+    def on_error(self, status_code):
+        print >> sys.stderr, 'Error with status code:', status_code
+        return True 
+
+    def on_timeout(self):
+        print >> sys.stderr, 'Timeout...'
+        return True 
         
 class Utils:
 

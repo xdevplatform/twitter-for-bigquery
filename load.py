@@ -9,6 +9,34 @@ from bigquery import schema_from_record
 from utils import Utils, BigQueryListener
 from config import *
 
+TRACK_ITEMS = [
+    '@JetBlue',
+    '@southwestair',
+    '@AirAsia',
+    '@AmericanAir',
+    '@flyPAL',
+    '@TAMAirlines',
+    '@Delta',
+    '@virginamerica',
+    '@klm',
+    '@turkishairlines',
+    '@BritishAirways',
+    '@usairways',
+    '@British_Airways',
+    '@westjet',
+    '@MAS',
+    '@United',
+    '@baltiausa',
+    '@Lufthansa_DE',
+    '@virginatlantic',
+    '@virginaustralia',
+    '@AlaskaAir',
+    '@DeltaAssist',
+    '@aircanada',
+    '@easyJet',
+    '@vueling'
+]
+
 def main():
     
     Utils.enable_logging()
@@ -33,15 +61,20 @@ def main():
     auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
  
     stream = tweepy.Stream(auth, l)
-    # Choose stream: filtered or sample
-    # stream.filter(track=['programming'])
+    
     while True:
         try:
-            stream.sample()
+            
+            # Choose stream: filtered or sample
+            # stream.sample()
+            stream.filter(track=TRACK_ITEMS)
+            
         except BadStatusLine:
             pass
         except IncompleteRead:
             pass
+        except:
+            print "Unexpected error:", sys.exc_info()[0]
 
     # Can also test loading data from a local file
     # Utils.import_from_file(client, DATASET_ID, TABLE_ID, 'data/sample_stream.jsonr', single_tweet=False)
