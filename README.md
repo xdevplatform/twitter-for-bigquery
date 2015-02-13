@@ -5,7 +5,7 @@ This sample code will help you streaming Twitter data into BigQuery, and running
 
 <img src="static/img/screenshot.png" style="width: 70%;"/>
 
-Additionally, you can use other public or private datasets in BigQuery to do additional joins and developer othe insights/correlations.
+Additionally, you can use other public or private datasets in BigQuery to do additional joins and develop other insights/correlations.
 
 Requirements
 ---
@@ -47,6 +47,24 @@ The enclosed sample includes a simple `load.py` file to stream Tweets directly i
 - Click on the down arrow by the project, select "Create new dataset" and enter "tweets"
 - Click on the down arrow by the dataset, select "Create new table" and enter "2015_01_17" (or whatever is configured in config.py)
 - Run `python load.py` 
+
+When developing on top of the Twitter platform, you must abide by the [Developer Agreement & Policy](https://dev.twitter.com/overview/terms/agreement-and-policy).
+Most notably, you must respect the section entitled "Maintain the Integrity of Twitter’s Products", including removing all relevant
+Content with regard to unfavorites, deletes and other user actions. 
+
+Loading Twitter data into BigQuery from Google Compute Engine
+---
+
+As you might expect, you can also choose to [Google Compute Engine](https://cloud.google.com/compute/) instance and run the script there.
+To install requirements, be sure to install using:
+
+	`pip install -r requirements.txt`
+
+You may need the following instructions on how to install Git:
+
+- [Stack Overflow: How to Install git in google compute engine?](http://stackoverflow.com/questions/27460923/how-to-install-git-in-google-compute-engine)
+- [Installing libffi](http://askubuntu.com/questions/499714/error-installing-scrapy-in-virtualenv-using-pip)
+- [Working around GCC issues with 'sudo apt-get install python-dev'](http://stackoverflow.com/questions/21530577/fatal-error-python-h-no-such-file-or-directory)
 
 Running the app
 ---
