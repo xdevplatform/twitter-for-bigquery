@@ -40,4 +40,5 @@ bigquery/*
 *.p12
 *.pem
 client_secrets.json
-out.txt
+logs/out.txt
+logs/logging.conf
