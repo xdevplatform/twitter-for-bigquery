@@ -1,3 +1,5 @@
+import os
+import sys
 import json
 import tweepy
 
@@ -39,19 +41,19 @@ TRACK_ITEMS = [
 
 def main():
     
-#    Utils.enable_logging()
+    logger = Utils.enable_logging()
     
     # get client
     client = get_client(PROJECT_ID, service_account=SERVICE_ACCOUNT, private_key=KEY, readonly=False)
     client.swallow_results = False
-    print "client: %s" % client
+    logger.info("client: %s" % client)
     
     schema_str = Utils.read_file(SCHEMA_FILE)
     schema = json.loads(schema_str)
     
     # create table BigQuery table
     created = client.create_table(DATASET_ID, TABLE_ID, schema)
-    print "created result: %s" % created
+    logger.info("created result: %s" % created)
 #     if (len(created) == 0):
 #         print "failed to create table"
 #         return
@@ -74,7 +76,7 @@ def main():
         except IncompleteRead:
             pass
         except:
-            print "Unexpected error:", sys.exc_info()[0]
+            logger.info("Unexpected error: %s" % sys.exc_info()[0])
 
     # Can also test loading data from a local file
     # Utils.import_from_file(client, DATASET_ID, TABLE_ID, 'data/sample_stream.jsonr', single_tweet=False)

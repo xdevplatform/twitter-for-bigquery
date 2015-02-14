@@ -1,18 +1,20 @@
+import os
 import sys
 import time
-import logging
+import logging.config
 import json
 import tweepy
 
 # Write records to BigQuery
 class BigQueryListener(tweepy.StreamListener):
     
-    def __init__(self, client, dataset_id, table_id):
+    def __init__(self, client, dataset_id, table_id, logger=None):
 
       self.client = client
       self.dataset_id = dataset_id
       self.table_id = table_id
       self.count = 0
+      self.logger = logger
       
     def on_data(self, data):
         
@@ -24,11 +26,8 @@ class BigQueryListener(tweepy.StreamListener):
             record_scrubbed = Utils.scrub(record)
             Utils.insert_record(self.client, self.dataset_id, self.table_id, record_scrubbed)
             
-            print '@%s: %s' % (record['user']['screen_name'], record['text'].encode('ascii', 'ignore'))
-#             if self.count % 10 == 0:
-#                 sys.stdout.write(str(self.count))
-#                 sys.stdout.write(" ")
-#                 sys.stdout.flush()
+            if self.logger:
+                self.logger.info('@%s: %s' % (record['user']['screen_name'], record['text'].encode('ascii', 'ignore')))
             
             self.count = self.count + 1
             
@@ -36,11 +35,17 @@ class BigQueryListener(tweepy.StreamListener):
 
     #handle errors without closing stream:
     def on_error(self, status_code):
-        print >> sys.stderr, 'Error with status code:', status_code
+        
+        if self.logger:
+            self.logger.info('Error with status code: %s' % status_code)
+
         return True 
 
     def on_timeout(self):
-        print >> sys.stderr, 'Timeout...'
+        
+        if self.logger:
+            self.logger.info('Timeout...')
+
         return True 
         
 class Utils:
@@ -141,12 +146,9 @@ class Utils:
     @staticmethod
     def enable_logging():
     
-        root = logging.getLogger()
-        root.setLevel(logging.DEBUG)
-         
-        ch = logging.StreamHandler(sys.stdout)
-        ch.setLevel(logging.DEBUG)
-        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-        ch.setFormatter(formatter)
-        root.addHandler(ch)
+        LOGGING_CONFIG = os.path.join(os.path.dirname(__file__), "logs", "logging.conf")
+        logging.config.fileConfig(LOGGING_CONFIG)
+        root = logging.getLogger("root")
+    
+        return root
 

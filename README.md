@@ -10,7 +10,7 @@ Additionally, you can use other public or private datasets in BigQuery to do add
 Requirements
 ---
 
-- Twitter for BigQuery sample code [sample code](http://github.com/twitterdev/twitter-for-bigquery)
+- Twitter for BigQuery [sample code](http://github.com/twitterdev/twitter-for-bigquery)
 - [Twitter App](http://apps.twitter.com) created with keys/tokens
 - [Google Cloud Platform](https://cloud.google.com/) account 
 - [Google App Engine SDK for Python](https://cloud.google.com/appengine/downloads)
