@@ -67,9 +67,11 @@ To install pip:
 
 	`curl --silent --show-error --retry 5 https://bootstrap.pypa.io/get-pip.py | sudo python2.7`
 	
-Lastly, be sure to install the required Python libraries:
+Be sure to install the required Python libraries:
 
 	`sudo pip install -r requirements.txt`
+	
+Lastly, you'll want to copy `logging.conf.dist` to `logging.conf` and customize it to your machine.
 
 You may need the following instructions on how to install Git:
 
