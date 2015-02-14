@@ -56,15 +56,27 @@ Loading Twitter data into BigQuery from Google Compute Engine
 ---
 
 As you might expect, you can also choose to [Google Compute Engine](https://cloud.google.com/compute/) instance and run the script there.
-To install requirements, be sure to install using:
+To setup the instance, install git and required libraries:
 
-	`pip install -r requirements.txt`
+	`sudo apt-get update`
+	`sudo apt-get install git`
+	`sudo apt-get install python-dev`
+	`sudo apt-get install libffi-dev`
+	
+To install pip:
+
+	`curl --silent --show-error --retry 5 https://bootstrap.pypa.io/get-pip.py | sudo python2.7`
+	
+Lastly, be sure to install the required Python libraries:
+
+	`sudo pip install -r requirements.txt`
 
 You may need the following instructions on how to install Git:
 
 - [Stack Overflow: How to Install git in google compute engine?](http://stackoverflow.com/questions/27460923/how-to-install-git-in-google-compute-engine)
-- [Installing libffi](http://askubuntu.com/questions/499714/error-installing-scrapy-in-virtualenv-using-pip)
+- [Stack Overflow: What is the official “preferred” way to install pip and virtualenv systemwide?](http://stackoverflow.com/questions/5585875/what-is-the-official-preferred-way-to-install-pip-and-virtualenv-systemwide)
 - [Working around GCC issues with 'sudo apt-get install python-dev'](http://stackoverflow.com/questions/21530577/fatal-error-python-h-no-such-file-or-directory)
+- [Installing libffi-dev](http://askubuntu.com/questions/499714/error-installing-scrapy-in-virtualenv-using-pip)
 
 Running the app
 ---
