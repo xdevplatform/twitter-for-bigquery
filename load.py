@@ -58,7 +58,7 @@ def main():
 #         print "failed to create table"
 #         return
     
-    l = BigQueryListener(client, DATASET_ID, TABLE_ID)
+    l = BigQueryListener(client, DATASET_ID, TABLE_ID, logger=logger)
     auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
     auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
  
@@ -76,7 +76,7 @@ def main():
         except IncompleteRead:
             pass
         except:
-            logger.info("Unexpected error: %s" % sys.exc_info()[0])
+            logger.exception("Unexpected error:");
 
     # Can also test loading data from a local file
     # Utils.import_from_file(client, DATASET_ID, TABLE_ID, 'data/sample_stream.jsonr', single_tweet=False)
