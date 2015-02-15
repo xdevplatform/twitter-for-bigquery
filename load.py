@@ -76,14 +76,14 @@ class BigQueryListener(tweepy.StreamListener):
         if self.logger:
             self.logger.info('Error with status code: %s' % status_code)
 
-        return True 
+        return False 
 
     def on_timeout(self):
         
         if self.logger:
             self.logger.info('Timeout...')
 
-        return True 
+        return False 
 
 def main():
     
@@ -115,7 +115,7 @@ def main():
             
             # Choose stream: filtered or sample
             # stream.sample()
-            stream.filter(track=TRACK_ITEMS)
+            stream.filter(track=TRACK_ITEMS) # async=True
             
         except BadStatusLine:
             pass
