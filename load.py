@@ -81,7 +81,9 @@ class BigQueryListener(tweepy.StreamListener):
     def on_timeout(self):
         
         if self.logger:
-            self.logger.info('Timeout...')
+            self.logger.info('Timeout, sleeping for 60 seconds')
+
+        time.sleep(60)
 
         return False 
 
@@ -117,11 +119,8 @@ def main():
             # stream.sample()
             stream.filter(track=TRACK_ITEMS) # async=True
             
-        except BadStatusLine:
-            pass
-        except IncompleteRead:
-            pass
         except:
+            stream.disconnect()
             logger.exception("Unexpected error:");
 
     # Can also test loading data from a local file
