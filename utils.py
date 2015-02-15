@@ -3,51 +3,7 @@ import sys
 import time
 import logging.config
 import json
-import tweepy
 
-# Write records to BigQuery
-class BigQueryListener(tweepy.StreamListener):
-    
-    def __init__(self, client, dataset_id, table_id, logger=None):
-
-      self.client = client
-      self.dataset_id = dataset_id
-      self.table_id = table_id
-      self.count = 0
-      self.logger = logger
-      
-    def on_data(self, data):
-        
-        # Twitter returns data in JSON format - we need to decode it first
-        record = json.loads(data)
-        
-        if not record.get('delete', None):
-
-            record_scrubbed = Utils.scrub(record)
-            Utils.insert_record(self.client, self.dataset_id, self.table_id, record_scrubbed)
-            
-            if self.logger:
-                self.logger.info('@%s: %s' % (record['user']['screen_name'], record['text'].encode('ascii', 'ignore')))
-            
-            self.count = self.count + 1
-            
-            return True
-
-    #handle errors without closing stream:
-    def on_error(self, status_code):
-        
-        if self.logger:
-            self.logger.info('Error with status code: %s' % status_code)
-
-        return True 
-
-    def on_timeout(self):
-        
-        if self.logger:
-            self.logger.info('Timeout...')
-
-        return True 
-        
 class Utils:
 
     @staticmethod
