@@ -126,18 +126,27 @@ def main():
     auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
     auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
  
-    stream = tweepy.Stream(auth, l, headers = {"Accept-Encoding": "deflate, gzip"})
-    
     while True:
+
+        stream = None
+
         try:
             
+            # stream = tweepy.Stream(auth, l, headers = {"Accept-Encoding": "deflate, gzip"})
+            stream = tweepy.Stream(auth, l)
+
             # Choose stream: filtered or sample
             # stream.sample()
             stream.filter(track=TRACK_ITEMS) # async=True
             
         except:
-            stream.disconnect()
+
             logger.exception("Unexpected error:");
+
+            if stream:
+                stream.disconnect()
+
+            time.sleep(60)
 
     # Can also test loading data from a local file
     # Utils.import_from_file(client, DATASET_ID, TABLE_ID, 'data/sample_stream.jsonr', single_tweet=False)
