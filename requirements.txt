@@ -1,2 +1,2 @@
-tweepy
+tweepy==3.2.0 
 bigquery-python

@@ -72,6 +72,15 @@ class BigQueryListener(tweepy.StreamListener):
 
     #handle errors without closing stream:
     def on_error(self, status_code):
+
+        if status_code == 420:
+
+            time.sleep(60)
+
+            if self.logger:
+                self.logger.info('420, sleeping for 60 seconds')
+
+            return True
         
         if self.logger:
             self.logger.info('Error with status code: %s' % status_code)
@@ -80,10 +89,17 @@ class BigQueryListener(tweepy.StreamListener):
 
     def on_timeout(self):
         
+        time.sleep(60)
+
         if self.logger:
             self.logger.info('Timeout, sleeping for 60 seconds')
 
-        time.sleep(60)
+        return False 
+
+    def on_exception(self, exception):
+        
+        if self.logger:
+            self.logger.exception('Exception')
 
         return False 
 
@@ -110,7 +126,7 @@ def main():
     auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
     auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
  
-    stream = tweepy.Stream(auth, l)
+    stream = tweepy.Stream(auth, l, headers = {"Accept-Encoding": "deflate, gzip"})
     
     while True:
         try:
