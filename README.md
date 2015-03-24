@@ -41,15 +41,19 @@ The enclosed sample includes a simple `load.py` file to stream Tweets directly i
 - Fill out the following fields:
 
 	<img src="static/img/config_fields.png" style="width: 70%;"/>
-
+- Create a [BigQuery|https://cloud.google.com/bigquery/] account.
 - Go to [http://console.developers.google.com](http://console.developers.google.com)
-- Go to your project
-- Click on the down arrow by the project, select "Create new dataset" and enter "tweets"
+- Click on your project name, then click on the down arrow on the left
+  next to your project name
+- Select "Billing & Settings" and under Billing, select "enable billing"
+- On the left, click on the down arrow by "Big Data", select "BigQuery"
+- Now inside the BigQuery console, click on the down arrow by your project name
+- Select "Create new dataset" and enter "tweets"
 - Click on the down arrow by the dataset, select "Create new table" and enter "2015_01_17" (or whatever is configured in config.py)
 - Run `python load.py` 
 
 When developing on top of the Twitter platform, you must abide by the [Developer Agreement & Policy](https://dev.twitter.com/overview/terms/agreement-and-policy).
-Most notably, you must respect the section entitled "Maintain the Integrity of Twitter’s Products", including removing all relevant
+Most notably, you must respect the section entitled "Maintain the Integrity of Twitter's Products", including removing all relevant
 Content with regard to unfavorites, deletes and other user actions. 
 
 Loading Twitter data into BigQuery from Google Compute Engine
