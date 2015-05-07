@@ -44,6 +44,7 @@ The enclosed sample includes a simple `load.py` file to stream Tweets directly i
 
 - Go to [http://console.developers.google.com](http://console.developers.google.com)
 - Go to your project
+- In the left-hand side, click on "Big Data->BigQuery" to open the BigQuery console
 - Click on the down arrow by the project, select "Create new dataset" and enter "tweets"
 - Click on the down arrow by the dataset, select "Create new table" and enter "2015_01_17" (or whatever is configured in config.py)
 - Run `python load.py` 
@@ -211,4 +212,5 @@ The following developers and bloggers have aided greatly in the development of t
 - [@tyler_treat](https://twitter.com/tyler_treat) - [https://github.com/tylertreat/BigQuery-Python/](https://github.com/tyler_treat)
 - [@apassant](https://twitter.com/apassant) - [https://github.com/apassant](https://github.com/apassant)
 - [@jay3dec](https://twitter.com/jay3dec) - [https://twitter.com/jay3dec](https://twitter.com/jay3dec)
+- [@alexhanna](https://twitter.com/alexhanna) - [http://badhessian.org/2012/10/collecting-real-time-twitter-data-with-the-streaming-api/]
 
