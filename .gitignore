@@ -42,3 +42,5 @@ bigquery/*
 client_secrets.json
 logs/output.txt
 logs/logging.conf
+
+*.sh
