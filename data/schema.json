@@ -141,6 +141,40 @@
                         "name": "source_status_id",
                         "mode": "nullable"
                     },
+					{
+						"fields":[
+							{
+								"type": "integer",
+								"name": "aspect_ratio",
+								"mode": "repeated"
+							},
+							{
+								"fields":[
+									{
+										"type": "string",
+										"name": "url",
+										"mode": "nullable"
+									},
+									{
+										"type": "integer",
+										"name": "bitrate",
+										"mode": "nullable"
+									},
+									{
+										"type": "string",
+										"name": "content_type",
+										"mode": "nullable"
+									}
+								],
+								"type": "record",
+								"name": "variants",
+								"mode": "repeated"
+							}
+						],
+						"type": "record",
+						"name": "video_info",
+						"mode": "nullable"
+					},
                     {
                         "type": "string",
                         "name": "id_str",
