@@ -1,3 +1,4 @@
+
 [
     {
         "fields": [
@@ -113,6 +114,11 @@
                 "fields": [
                     {
                         "type": "string",
+                        "name": "source_status_id_str",
+                        "mode": "nullable"
+                    },
+                    {
+                        "type": "string",
                         "name": "expanded_url",
                         "mode": "nullable"
                     },
@@ -131,6 +137,45 @@
                         "name": "media_url_https",
                         "mode": "nullable"
                     },
+                    {
+                        "type": "integer",
+                        "name": "source_status_id",
+                        "mode": "nullable"
+                    },
+					{
+						"fields":[
+							{
+								"type": "integer",
+								"name": "aspect_ratio",
+								"mode": "repeated"
+							},
+							{
+								"fields":[
+									{
+										"type": "string",
+										"name": "url",
+										"mode": "nullable"
+									},
+									{
+										"type": "integer",
+										"name": "bitrate",
+										"mode": "nullable"
+									},
+									{
+										"type": "string",
+										"name": "content_type",
+										"mode": "nullable"
+									}
+								],
+								"type": "record",
+								"name": "variants",
+								"mode": "repeated"
+							}
+						],
+						"type": "record",
+						"name": "video_info",
+						"mode": "nullable"
+					},
                     {
                         "type": "string",
                         "name": "id_str",
@@ -509,7 +554,7 @@
                 "mode": "nullable"
             },
             {
-                "type": "timestamp",
+                "type": "string",
                 "name": "location",
                 "mode": "nullable"
             },
@@ -833,40 +878,6 @@
                     {
                         "type": "integer",
                         "name": "source_status_id",
-                        "mode": "nullable"
-                    },
-                    {
-                        "fields": [
-                            {
-                                "type": "integer",
-                                "name": "aspect_ratio",
-                                "mode": "repeated"
-                            },
-                            {
-                                "fields": [
-                                    {
-                                        "type": "string",
-                                        "name": "url",
-                                        "mode": "nullable"
-                                    },
-                                    {
-                                        "type": "integer",
-                                        "name": "bitrate",
-                                        "mode": "nullable"
-                                    },
-                                    {
-                                        "type": "string",
-                                        "name": "content_type",
-                                        "mode": "nullable"
-                                    }
-                                ],
-                                "type": "record",
-                                "name": "variants",
-                                "mode": "repeated"
-                            }
-                        ],
-                        "type": "record",
-                        "name": "video_info",
                         "mode": "nullable"
                     },
                     {

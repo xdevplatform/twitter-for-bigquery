@@ -13,9 +13,10 @@ def main():
     print "generating schema for %s" % tweet_str
     
     schema = Utils.generate_schema_from_tweet(tweet_str)
+    print schema
     
-    with open('data/schema.json', 'wt') as out:
-        res = json.dump(schema, out, sort_keys=False, indent=4, separators=(',', ': '))
+#     with open('data/schema.json', 'wt') as out:
+#         res = json.dump(schema, out, sort_keys=False, indent=4, separators=(',', ': '))
     
 main()    
     
