@@ -87,12 +87,27 @@ class BigQueryListener(tweepy.StreamListener):
 
         return False 
 
-    def on_timeout(self):
+    # got disconnect notice
+    def on_disconnect(self, notice):
+        """Called when twitter sends a disconnect notice
+    
+        Disconnect codes are listed here:
+        https://dev.twitter.com/docs/streaming-apis/messages#Disconnect_messages_disconnect
+        """
         
+        if self.logger:
+            self.logger.info('Disconnect, sleeping for 60 seconds')
+
         time.sleep(60)
 
+        return False
+
+    def on_timeout(self):
+        
         if self.logger:
             self.logger.info('Timeout, sleeping for 60 seconds')
+
+        time.sleep(60)
 
         return False 
 
