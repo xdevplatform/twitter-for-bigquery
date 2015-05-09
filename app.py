@@ -4,6 +4,9 @@ import httplib2
 import json
 import webapp2
 
+from datetime import datetime
+import time
+
 from google.appengine.ext.webapp import template
 from google.appengine.api import memcache
 
@@ -22,6 +25,7 @@ http = credentials.authorize(httplib2.Http())
 # [tweets:2015_01_09]
 FROM_CLAUSE = "[%s.%s]" % (DATASET_ID, TABLE_ID) 
 
+ONE_DAY = 1000 * 60 * 60 * 24
 REMOVE_HTML = re.compile(r'<.*?>')
 
 def get_service():
@@ -45,7 +49,9 @@ class Data(webapp2.RequestHandler):
         source = self.request.get("source")
         pivot = self.request.get("pivot")
         charttype = self.request.get("charttype")
+        interval = self.request.get("interval")
         terms = self.request.get("terms")
+
         if terms:
             terms = terms.lower().split(',')
             for idx, val in enumerate(terms):
@@ -55,12 +61,32 @@ class Data(webapp2.RequestHandler):
 
         query = None
         args = {}
+
+        dt = datetime.now()
+        TIME_LIMIT = time.mktime(dt.timetuple())
+        if interval == 1:
+            TIME_LIMIT = TIME_LIMIT - (ONE_DAY)
+        elif interval == 31:
+            TIME_LIMIT = TIME_LIMIT - (ONE_DAY * 31)
+        else: # interval == 7
+            TIME_LIMIT = TIME_LIMIT - (ONE_DAY * 7)
+        TIME_FILTER = "created_at > %s AND " % TIME_LIMIT    
         
         if source == 'sources':
 
             if pivot == 'hour' or charttype == 'timeseries':
 
-                query = "SELECT source as source, HOUR(TIMESTAMP(created_at)) AS create_hour, count(*) as count FROM %s WHERE source contains 'Twitter for' GROUP by create_hour, source ORDER BY source ASC, create_hour ASC" % (FROM_CLAUSE)
+                query = """
+                SELECT 
+                    source as source, 
+                    HOUR(TIMESTAMP(created_at)) AS create_hour, 
+                    count(*) as count 
+                FROM %s 
+                WHERE 
+                    %s 
+                    source contains 'Twitter for' 
+                GROUP by create_hour, source 
+                ORDER BY source ASC, create_hour ASC""" % (FROM_CLAUSE, TIME_FILTER)
                 
                 tableData = get_service().jobs()
                 dataList = tableData.query(projectId=PROJECT_NUMBER, body={'query':query}).execute()
@@ -101,7 +127,15 @@ class Data(webapp2.RequestHandler):
 
             elif charttype == 'donut' or charttype == 'bar' or charttype == 'popular':
                 
-                query = "SELECT source as source, count(*) as count FROM %s GROUP by source ORDER BY count DESC LIMIT 20" % (FROM_CLAUSE)
+                query = """
+                SELECT source as source, count(*) as count 
+                FROM %s 
+                WHERE 
+                    %s 
+                    text is not null
+                GROUP by source 
+                ORDER BY count DESC 
+                LIMIT 20""" % (FROM_CLAUSE, TIME_FILTER)
         
                 tableData = get_service().jobs()
                 dataList = tableData.query(projectId=PROJECT_NUMBER, body={'query':query}).execute()
@@ -156,14 +190,17 @@ class Data(webapp2.RequestHandler):
 
             if pivot == 'hour' or charttype == 'timeseries':
 
-                query = """SELECT
-                      LOWER(%s),
-                      HOUR(TIMESTAMP(created_at)) AS create_hour,
-                      COUNT(*) AS COUNT
-                    FROM %s 
-                    WHERE LOWER(%s) IN (%s)
-                    GROUP BY create_hour, 1
-                    ORDER BY 1, create_hour ASC""" % (col, FROM_CLAUSE, col, terms)
+                query = """
+                SELECT
+                    LOWER(%s),
+                    HOUR(TIMESTAMP(created_at)) AS create_hour,
+                    COUNT(*) AS COUNT
+                FROM %s 
+                WHERE
+                    %s
+                    LOWER(%s) IN (%s)
+                GROUP BY create_hour, 1
+                ORDER BY 1, create_hour ASC""" % (col, FROM_CLAUSE, TIME_FILTER, col, terms)
                 
                 tableData = get_service().jobs()
                 dataList = tableData.query(projectId=PROJECT_NUMBER, body={'query':query}).execute()
@@ -204,7 +241,16 @@ class Data(webapp2.RequestHandler):
 
             elif pivot == 'popular':
 
-                query = "SELECT %s, count(*) as count FROM %s WHERE %s IS NOT NULL GROUP by %s ORDER BY count DESC LIMIT 10" % (col, FROM_CLAUSE, col, col)
+                query = """
+                SELECT 
+                    %s, 
+                    count(*) as count 
+                FROM %s 
+                WHERE 
+                    %s
+                    %s IS NOT NULL 
+                GROUP by %s 
+                ORDER BY count DESC LIMIT 10""" % (col, FROM_CLAUSE, TIME_FILTER, col, col)
                 print query
         
                 tableData = get_service().jobs()
@@ -242,7 +288,17 @@ class Data(webapp2.RequestHandler):
 
             elif charttype == 'donut' or charttype == 'bar':
 
-                query = "SELECT %s, count(*) as count FROM %s WHERE LOWER(%s) in (%s) GROUP by %s ORDER BY count" % (col, FROM_CLAUSE, col, terms, col)
+                query = """
+                    SELECT 
+                        %s, 
+                        count(*) as count 
+                    FROM 
+                        %s 
+                    WHERE 
+                        %s
+                        LOWER(%s) in (%s) 
+                    GROUP by %s 
+                    ORDER BY count""" % (col, FROM_CLAUSE, TIME_FILTER, col, terms, col)
         
                 tableData = get_service().jobs()
                 dataList = tableData.query(projectId=PROJECT_NUMBER, body={'query':query}).execute()
