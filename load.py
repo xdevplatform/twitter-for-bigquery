@@ -9,7 +9,6 @@ import tweepy
 from httplib import *
 
 from bigquery import get_client
-from bigquery import schema_from_record
 
 from config import *
 from utils import Utils
