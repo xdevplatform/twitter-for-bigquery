@@ -1,0 +1,380 @@
+2015-05-08 15:56:33,097 - root - INFO - client: <bigquery.client.BigQueryClient object at 0x10aa7f290>
+2015-05-08 15:56:33,444 - root - ERROR - Cannot create table tweets.2015_02_12_airlines
+Http Error: 
+2015-05-08 15:56:33,444 - root - INFO - created result: {}
+2015-05-08 15:56:34,695 - root - ERROR - Exception
+Traceback (most recent call last):
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/tweepy/streaming.py", line 231, in _run
+    verify=self.verify)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/requests/sessions.py", line 457, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/requests/sessions.py", line 569, in send
+    r = adapter.send(request, **kwargs)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/requests/adapters.py", line 362, in send
+    timeout=timeout
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/requests/packages/urllib3/connectionpool.py", line 516, in urlopen
+    body=body, headers=headers)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/requests/packages/urllib3/connectionpool.py", line 308, in _make_request
+    conn.request(method, url, **httplib_request_kw)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/httplib.py", line 973, in request
+    self._send_request(method, url, body, headers)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/httplib.py", line 1007, in _send_request
+    self.endheaders(body)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/httplib.py", line 969, in endheaders
+    self._send_output(message_body)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/httplib.py", line 833, in _send_output
+    self.send(message_body)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/httplib.py", line 805, in send
+    self.sock.sendall(data)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/requests/packages/urllib3/contrib/pyopenssl.py", line 203, in sendall
+    return self.connection.sendall(data)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/OpenSSL/SSL.py", line 969, in sendall
+    raise TypeError("buf must be a byte string")
+TypeError: buf must be a byte string
+2015-05-08 15:56:34,703 - root - ERROR - Unexpected error:
+Traceback (most recent call last):
+  File "load.py", line 140, in main
+    stream.filter(track=TRACK_ITEMS) # async=True
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/tweepy/streaming.py", line 421, in filter
+    self._start(async)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/tweepy/streaming.py", line 338, in _start
+    self._run()
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/tweepy/streaming.py", line 278, in _run
+    raise exception
+TypeError: buf must be a byte string
+2015-05-08 15:57:35,910 - root - ERROR - Exception
+Traceback (most recent call last):
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/tweepy/streaming.py", line 231, in _run
+    verify=self.verify)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/requests/sessions.py", line 457, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/requests/sessions.py", line 569, in send
+    r = adapter.send(request, **kwargs)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/requests/adapters.py", line 362, in send
+    timeout=timeout
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/requests/packages/urllib3/connectionpool.py", line 516, in urlopen
+    body=body, headers=headers)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/requests/packages/urllib3/connectionpool.py", line 308, in _make_request
+    conn.request(method, url, **httplib_request_kw)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/httplib.py", line 973, in request
+    self._send_request(method, url, body, headers)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/httplib.py", line 1007, in _send_request
+    self.endheaders(body)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/httplib.py", line 969, in endheaders
+    self._send_output(message_body)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/httplib.py", line 833, in _send_output
+    self.send(message_body)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/httplib.py", line 805, in send
+    self.sock.sendall(data)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/requests/packages/urllib3/contrib/pyopenssl.py", line 203, in sendall
+    return self.connection.sendall(data)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/OpenSSL/SSL.py", line 969, in sendall
+    raise TypeError("buf must be a byte string")
+TypeError: buf must be a byte string
+2015-05-08 15:57:35,912 - root - ERROR - Unexpected error:
+Traceback (most recent call last):
+  File "load.py", line 140, in main
+    stream.filter(track=TRACK_ITEMS) # async=True
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/tweepy/streaming.py", line 421, in filter
+    self._start(async)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/tweepy/streaming.py", line 338, in _start
+    self._run()
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/tweepy/streaming.py", line 278, in _run
+    raise exception
+TypeError: buf must be a byte string
+2015-05-08 15:58:37,506 - root - ERROR - Exception
+Traceback (most recent call last):
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/tweepy/streaming.py", line 231, in _run
+    verify=self.verify)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/requests/sessions.py", line 457, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/requests/sessions.py", line 569, in send
+    r = adapter.send(request, **kwargs)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/requests/adapters.py", line 362, in send
+    timeout=timeout
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/requests/packages/urllib3/connectionpool.py", line 516, in urlopen
+    body=body, headers=headers)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/requests/packages/urllib3/connectionpool.py", line 308, in _make_request
+    conn.request(method, url, **httplib_request_kw)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/httplib.py", line 973, in request
+    self._send_request(method, url, body, headers)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/httplib.py", line 1007, in _send_request
+    self.endheaders(body)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/httplib.py", line 969, in endheaders
+    self._send_output(message_body)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/httplib.py", line 833, in _send_output
+    self.send(message_body)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/httplib.py", line 805, in send
+    self.sock.sendall(data)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/requests/packages/urllib3/contrib/pyopenssl.py", line 203, in sendall
+    return self.connection.sendall(data)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/OpenSSL/SSL.py", line 969, in sendall
+    raise TypeError("buf must be a byte string")
+TypeError: buf must be a byte string
+2015-05-08 15:58:37,508 - root - ERROR - Unexpected error:
+Traceback (most recent call last):
+  File "load.py", line 140, in main
+    stream.filter(track=TRACK_ITEMS) # async=True
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/tweepy/streaming.py", line 421, in filter
+    self._start(async)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/tweepy/streaming.py", line 338, in _start
+    self._run()
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/tweepy/streaming.py", line 278, in _run
+    raise exception
+TypeError: buf must be a byte string
+2015-05-08 15:59:40,177 - root - ERROR - Exception
+Traceback (most recent call last):
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/tweepy/streaming.py", line 231, in _run
+    verify=self.verify)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/requests/sessions.py", line 457, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/requests/sessions.py", line 569, in send
+    r = adapter.send(request, **kwargs)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/requests/adapters.py", line 362, in send
+    timeout=timeout
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/requests/packages/urllib3/connectionpool.py", line 516, in urlopen
+    body=body, headers=headers)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/requests/packages/urllib3/connectionpool.py", line 308, in _make_request
+    conn.request(method, url, **httplib_request_kw)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/httplib.py", line 973, in request
+    self._send_request(method, url, body, headers)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/httplib.py", line 1007, in _send_request
+    self.endheaders(body)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/httplib.py", line 969, in endheaders
+    self._send_output(message_body)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/httplib.py", line 833, in _send_output
+    self.send(message_body)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/httplib.py", line 805, in send
+    self.sock.sendall(data)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/requests/packages/urllib3/contrib/pyopenssl.py", line 203, in sendall
+    return self.connection.sendall(data)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/OpenSSL/SSL.py", line 969, in sendall
+    raise TypeError("buf must be a byte string")
+TypeError: buf must be a byte string
+2015-05-08 15:59:40,182 - root - ERROR - Unexpected error:
+Traceback (most recent call last):
+  File "load.py", line 140, in main
+    stream.filter(track=TRACK_ITEMS) # async=True
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/tweepy/streaming.py", line 421, in filter
+    self._start(async)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/tweepy/streaming.py", line 338, in _start
+    self._run()
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/tweepy/streaming.py", line 278, in _run
+    raise exception
+TypeError: buf must be a byte string
+2015-05-08 16:00:40,423 - root - ERROR - Exception
+Traceback (most recent call last):
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/tweepy/streaming.py", line 231, in _run
+    verify=self.verify)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/requests/sessions.py", line 457, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/requests/sessions.py", line 569, in send
+    r = adapter.send(request, **kwargs)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/requests/adapters.py", line 362, in send
+    timeout=timeout
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/requests/packages/urllib3/connectionpool.py", line 516, in urlopen
+    body=body, headers=headers)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/requests/packages/urllib3/connectionpool.py", line 308, in _make_request
+    conn.request(method, url, **httplib_request_kw)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/httplib.py", line 973, in request
+    self._send_request(method, url, body, headers)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/httplib.py", line 1007, in _send_request
+    self.endheaders(body)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/httplib.py", line 969, in endheaders
+    self._send_output(message_body)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/httplib.py", line 833, in _send_output
+    self.send(message_body)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/httplib.py", line 805, in send
+    self.sock.sendall(data)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/requests/packages/urllib3/contrib/pyopenssl.py", line 203, in sendall
+    return self.connection.sendall(data)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/OpenSSL/SSL.py", line 969, in sendall
+    raise TypeError("buf must be a byte string")
+TypeError: buf must be a byte string
+2015-05-08 16:00:40,426 - root - ERROR - Unexpected error:
+Traceback (most recent call last):
+  File "load.py", line 140, in main
+    stream.filter(track=TRACK_ITEMS) # async=True
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/tweepy/streaming.py", line 421, in filter
+    self._start(async)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/tweepy/streaming.py", line 338, in _start
+    self._run()
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/tweepy/streaming.py", line 278, in _run
+    raise exception
+TypeError: buf must be a byte string
+2015-05-08 21:26:43,381 - root - INFO - client: <bigquery.client.BigQueryClient object at 0x1060f82d0>
+2015-05-08 21:26:43,614 - root - ERROR - Cannot create table tweets.2015_02_12_airlines
+Http Error: 
+2015-05-08 21:26:43,614 - root - INFO - created result: {}
+2015-05-08 21:26:43,826 - root - ERROR - Exception
+Traceback (most recent call last):
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/tweepy/streaming.py", line 231, in _run
+    verify=self.verify)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/requests/sessions.py", line 457, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/requests/sessions.py", line 569, in send
+    r = adapter.send(request, **kwargs)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/requests/adapters.py", line 362, in send
+    timeout=timeout
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/requests/packages/urllib3/connectionpool.py", line 516, in urlopen
+    body=body, headers=headers)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/requests/packages/urllib3/connectionpool.py", line 308, in _make_request
+    conn.request(method, url, **httplib_request_kw)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/httplib.py", line 973, in request
+    self._send_request(method, url, body, headers)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/httplib.py", line 1007, in _send_request
+    self.endheaders(body)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/httplib.py", line 969, in endheaders
+    self._send_output(message_body)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/httplib.py", line 833, in _send_output
+    self.send(message_body)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/httplib.py", line 805, in send
+    self.sock.sendall(data)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/requests/packages/urllib3/contrib/pyopenssl.py", line 203, in sendall
+    return self.connection.sendall(data)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/OpenSSL/SSL.py", line 969, in sendall
+    raise TypeError("buf must be a byte string")
+TypeError: buf must be a byte string
+2015-05-08 21:26:43,833 - root - ERROR - Unexpected error:
+Traceback (most recent call last):
+  File "load.py", line 155, in main
+    stream.filter(track=TRACK_ITEMS) # async=True
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/tweepy/streaming.py", line 421, in filter
+    self._start(async)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/tweepy/streaming.py", line 338, in _start
+    self._run()
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/tweepy/streaming.py", line 278, in _run
+    raise exception
+TypeError: buf must be a byte string
+2015-05-08 21:28:13,818 - root - INFO - client: <bigquery.client.BigQueryClient object at 0x106b2b2d0>
+2015-05-08 21:28:14,023 - root - ERROR - Cannot create table tweets.2015_02_12_airlines
+Http Error: 
+2015-05-08 21:28:14,023 - root - INFO - created result: {}
+2015-05-08 21:28:14,247 - root - ERROR - Exception
+Traceback (most recent call last):
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/tweepy/streaming.py", line 231, in _run
+    verify=self.verify)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/requests/sessions.py", line 457, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/requests/sessions.py", line 569, in send
+    r = adapter.send(request, **kwargs)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/requests/adapters.py", line 362, in send
+    timeout=timeout
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/requests/packages/urllib3/connectionpool.py", line 516, in urlopen
+    body=body, headers=headers)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/requests/packages/urllib3/connectionpool.py", line 308, in _make_request
+    conn.request(method, url, **httplib_request_kw)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/httplib.py", line 973, in request
+    self._send_request(method, url, body, headers)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/httplib.py", line 1007, in _send_request
+    self.endheaders(body)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/httplib.py", line 969, in endheaders
+    self._send_output(message_body)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/httplib.py", line 833, in _send_output
+    self.send(message_body)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/httplib.py", line 805, in send
+    self.sock.sendall(data)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/requests/packages/urllib3/contrib/pyopenssl.py", line 203, in sendall
+    return self.connection.sendall(data)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/OpenSSL/SSL.py", line 969, in sendall
+    raise TypeError("buf must be a byte string")
+TypeError: buf must be a byte string
+2015-05-08 21:28:14,250 - root - ERROR - Unexpected error:
+Traceback (most recent call last):
+  File "load.py", line 140, in main
+    stream.filter(track=TRACK_ITEMS) # async=True
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/tweepy/streaming.py", line 421, in filter
+    self._start(async)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/tweepy/streaming.py", line 338, in _start
+    self._run()
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/tweepy/streaming.py", line 278, in _run
+    raise exception
+TypeError: buf must be a byte string
+2015-05-08 21:28:55,293 - root - INFO - client: <bigquery.client.BigQueryClient object at 0x110bfd290>
+2015-05-08 21:28:55,488 - root - ERROR - Cannot create table tweets.2015_02_12_airlines
+Http Error: 
+2015-05-08 21:28:55,488 - root - INFO - created result: {}
+2015-05-08 21:28:55,700 - root - ERROR - Exception
+Traceback (most recent call last):
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/tweepy/streaming.py", line 231, in _run
+    verify=self.verify)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/requests/sessions.py", line 457, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/requests/sessions.py", line 569, in send
+    r = adapter.send(request, **kwargs)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/requests/adapters.py", line 362, in send
+    timeout=timeout
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/requests/packages/urllib3/connectionpool.py", line 516, in urlopen
+    body=body, headers=headers)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/requests/packages/urllib3/connectionpool.py", line 308, in _make_request
+    conn.request(method, url, **httplib_request_kw)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/httplib.py", line 973, in request
+    self._send_request(method, url, body, headers)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/httplib.py", line 1007, in _send_request
+    self.endheaders(body)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/httplib.py", line 969, in endheaders
+    self._send_output(message_body)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/httplib.py", line 833, in _send_output
+    self.send(message_body)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/httplib.py", line 805, in send
+    self.sock.sendall(data)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/requests/packages/urllib3/contrib/pyopenssl.py", line 203, in sendall
+    return self.connection.sendall(data)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/OpenSSL/SSL.py", line 969, in sendall
+    raise TypeError("buf must be a byte string")
+TypeError: buf must be a byte string
+2015-05-08 21:28:55,702 - root - ERROR - Unexpected error:
+Traceback (most recent call last):
+  File "load.py", line 140, in main
+    stream.filter(track=TRACK_ITEMS) # async=True
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/tweepy/streaming.py", line 421, in filter
+    self._start(async)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/tweepy/streaming.py", line 338, in _start
+    self._run()
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/tweepy/streaming.py", line 278, in _run
+    raise exception
+TypeError: buf must be a byte string
+2015-05-08 21:31:52,399 - root - INFO - client: <bigquery.client.BigQueryClient object at 0x1064d7290>
+2015-05-08 21:31:52,619 - root - ERROR - Cannot create table tweets.2015_02_12_airlines
+Http Error: 
+2015-05-08 21:31:52,619 - root - INFO - created result: {}
+2015-05-08 21:31:53,950 - root - ERROR - Exception
+Traceback (most recent call last):
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/tweepy/streaming.py", line 231, in _run
+    verify=self.verify)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/requests/sessions.py", line 457, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/requests/sessions.py", line 569, in send
+    r = adapter.send(request, **kwargs)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/requests/adapters.py", line 362, in send
+    timeout=timeout
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/requests/packages/urllib3/connectionpool.py", line 516, in urlopen
+    body=body, headers=headers)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/requests/packages/urllib3/connectionpool.py", line 308, in _make_request
+    conn.request(method, url, **httplib_request_kw)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/httplib.py", line 973, in request
+    self._send_request(method, url, body, headers)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/httplib.py", line 1007, in _send_request
+    self.endheaders(body)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/httplib.py", line 969, in endheaders
+    self._send_output(message_body)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/httplib.py", line 833, in _send_output
+    self.send(message_body)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/httplib.py", line 805, in send
+    self.sock.sendall(data)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/requests/packages/urllib3/contrib/pyopenssl.py", line 203, in sendall
+    return self.connection.sendall(data)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/OpenSSL/SSL.py", line 969, in sendall
+    raise TypeError("buf must be a byte string")
+TypeError: buf must be a byte string
+2015-05-08 21:31:53,952 - root - ERROR - Unexpected error:
+Traceback (most recent call last):
+  File "load.py", line 140, in main
+    stream.filter(track=TRACK_ITEMS) # async=True
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/tweepy/streaming.py", line 421, in filter
+    self._start(async)
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/tweepy/streaming.py", line 338, in _start
+    self._run()
+  File "/opt/twitter/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/tweepy/streaming.py", line 278, in _run
+    raise exception
+TypeError: buf must be a byte string

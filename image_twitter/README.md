@@ -32,8 +32,9 @@ us-central1-b
 gcloud compute instances list
 gcloud compute --project "twitter-for-bigquery" ssh --zone "us-central1-b" "examplecontainervm01" 
 
-# run instance of image 
-docker run gcr.io/twitter_for_bigquery/image_twitter
+# pull & run instance of image 
+sudo docker pull gcr.io/twitter_for_bigquery/image_twitter
+sudo docker run gcr.io/twitter_for_bigquery/image_twitter
 
 # see logs
 sudo -s
