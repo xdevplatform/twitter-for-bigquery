@@ -52,8 +52,11 @@ class BigQueryListener(tweepy.StreamListener):
       self.table_id = table_id
       self.count = 0
       self.logger = logger
+      self.calm_count = 0
       
     def on_data(self, data):
+        
+        self.calm_count = 0
         
         # Twitter returns data in JSON format - we need to decode it first
         record = json.loads(data)
@@ -69,17 +72,13 @@ class BigQueryListener(tweepy.StreamListener):
             self.count = self.count + 1
             
             return True
-
+        
     #handle errors without closing stream:
     def on_error(self, status_code):
 
         if status_code == 420:
-
-            time.sleep(60)
-
-            if self.logger:
-                self.logger.info('420, sleeping for 60 seconds')
-
+            
+            self.backoff('Status 420')
             return True
         
         if self.logger:
@@ -89,26 +88,13 @@ class BigQueryListener(tweepy.StreamListener):
 
     # got disconnect notice
     def on_disconnect(self, notice):
-        """Called when twitter sends a disconnect notice
-    
-        Disconnect codes are listed here:
-        https://dev.twitter.com/docs/streaming-apis/messages#Disconnect_messages_disconnect
-        """
         
-        if self.logger:
-            self.logger.info('Disconnect, sleeping for 60 seconds')
-
-        time.sleep(60)
-
+        self.backoff('Disconnect')
         return False
 
     def on_timeout(self):
         
-        if self.logger:
-            self.logger.info('Timeout, sleeping for 60 seconds')
-
-        time.sleep(60)
-
+        self.backoff('Timeout')
         return False 
 
     def on_exception(self, exception):
@@ -117,6 +103,21 @@ class BigQueryListener(tweepy.StreamListener):
             self.logger.exception('Exception')
 
         return False 
+    
+    def backoff(self, msg):
+
+        self.calm_count = self.calm_count + 1
+        sleep_time = 60 * self.calm_count
+        
+        if sleep_time > 320:
+            sleep_time = 320
+        
+        if self.logger:
+            self.logger.info(msg + ", sleeping for %s" % sleep_time)
+
+        time.sleep(60 * self.calm_count)
+
+        return
 
 def main():
     
@@ -125,14 +126,14 @@ def main():
     # get client
     client = get_client(PROJECT_ID, service_account=SERVICE_ACCOUNT, private_key=KEY, readonly=False)
     client.swallow_results = False
-    logger.info("client: %s" % client)
+    logger.info("BigQuery client: %s" % client)
     
     schema_str = Utils.read_file(SCHEMA_FILE)
     schema = json.loads(schema_str)
     
     # create table BigQuery table
     created = client.create_table(DATASET_ID, TABLE_ID, schema)
-    logger.info("created result: %s" % created)
+    logger.info("BigQuery create table result: %s" % created)
 #     if (len(created) == 0):
 #         print "failed to create table"
 #         return
@@ -143,6 +144,8 @@ def main():
  
     while True:
 
+        logger.info("Connecting to Twitter stream")
+
         stream = None
 
         try:
@@ -151,12 +154,12 @@ def main():
             stream = tweepy.Stream(auth, l)
 
             # Choose stream: filtered or sample
-            stream.sample()
-            # stream.filter(track=TRACK_ITEMS) # async=True
+            # stream.sample()
+            stream.filter(track=TRACK_ITEMS) # async=True
             
         except:
 
-            logger.exception("Unexpected error:");
+            logger.exception("Unexpected error:" + sys.exc_info()[0]);
 
             if stream:
                 stream.disconnect()
