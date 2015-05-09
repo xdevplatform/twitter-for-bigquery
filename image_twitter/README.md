@@ -23,7 +23,7 @@ gcloud compute instances create examplecontainervm01 \
     --image container-vm \
     --metadata-from-file google-container-manifest=./image_twitter/container.yaml \
     --zone us-central1-b \
-    --machine-type f1-micro
+    --machine-type n1-highcpu-2
     
 # zone    
 us-central1-b
@@ -34,7 +34,7 @@ gcloud compute --project "twitter-for-bigquery" ssh --zone "us-central1-b" "exam
 
 # pull & run instance of image 
 sudo docker pull gcr.io/twitter_for_bigquery/image_twitter
-sudo docker run gcr.io/twitter_for_bigquery/image_twitter
+sudo docker run -d gcr.io/twitter_for_bigquery/image_twitter
 
 # see logs
 sudo -s
