@@ -154,12 +154,12 @@ def main():
             stream = tweepy.Stream(auth, l)
 
             # Choose stream: filtered or sample
-            # stream.sample()
-            stream.filter(track=TRACK_ITEMS) # async=True
+            stream.sample()
+#             stream.filter(track=TRACK_ITEMS) # async=True
             
         except:
 
-            logger.exception("Unexpected error:" + sys.exc_info()[0]);
+            logger.exception("Unexpected error");
 
             if stream:
                 stream.disconnect()

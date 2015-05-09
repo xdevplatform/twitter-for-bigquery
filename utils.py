@@ -4,6 +4,8 @@ import time
 import logging.config
 import json
 
+from bigquery import schema_from_record
+
 class Utils:
 
     @staticmethod
@@ -91,9 +93,8 @@ class Utils:
         return data    
     
     @staticmethod 
-    def generate_schema_from_tweet():
+    def generate_schema_from_tweet(record_str):
         
-        record_str = read_file(SAMPLE_TWEET_FILE)
         record = json.loads(record_str)
         schema_str = schema_from_record(record)
         

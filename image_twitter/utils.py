@@ -93,7 +93,7 @@ class Utils:
     @staticmethod 
     def generate_schema_from_tweet():
         
-        record_str = read_file(SAMPLE_TWEET_FILE)
+        record_str = Utils.read_file(SAMPLE_TWEET_FILE)
         record = json.loads(record_str)
         schema_str = schema_from_record(record)
         

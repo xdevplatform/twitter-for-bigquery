@@ -124,6 +124,16 @@
 				"url":"http://t.co/aWwQ9d4Cmk",
 				"media_url_https":"https://pbs.twimg.com/media/B609YuTCMAAi7LT.jpg",
 				"source_status_id":553165866712317952,
+				"video_info": {
+					"aspect_ratio": [16, 9], 
+					"variants": [
+						{
+							"url": "https://pbs.twimg.com/tweet_video/CEiUI_jUsAEdCbH.mp4", 
+							"bitrate": 0, 
+							"content_type": "video/mp4"
+						}
+					]	
+				},
 				"id_str":"553165824190459904",
 				"sizes":{
 					"large":{
