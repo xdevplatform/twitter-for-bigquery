@@ -9,6 +9,9 @@
 		"displayName":"Twitter for iPhone"
 	},
 	"twitter_filter_level":"low",
+	"geo":{
+		"type":"Point"
+	},
 	"gnip":{
 		"matching_rules":[
 			{
