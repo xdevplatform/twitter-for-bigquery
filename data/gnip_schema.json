@@ -193,11 +193,11 @@
                     
                     {
                           "mode": "nullable",
-                          "name": "place",
+                          "name": "objectType",
                           "type": "string"
                     }
                     ],
-                    "mode": "repeated",
+                    "mode": "nullable",
                     "name": "location",
                     "type": "record"
             },
