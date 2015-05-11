@@ -249,6 +249,7 @@
 							16,
 							9
 						],
+						"duration_millis": 15032,
 						"variants":[
 							{
 								"url":"https://pbs.twimg.com/tweet_video/CEiUI_jUsAEdCbH.mp4",
@@ -299,7 +300,8 @@
 					"media_url_https":"https://pbs.twimg.com/media/CEje5HCWIAAF3JZ.jpg",
 					"source_status_id":596972127808544768,
 				"video_info": {
-					"aspect_ratio": [16, 9], 
+					"aspect_ratio": [16, 9],
+					"duration_millis": 15032,
 					"variants": [
 						{
 							"url": "https://pbs.twimg.com/tweet_video/CEiUI_jUsAEdCbH.mp4", 
@@ -348,7 +350,8 @@
 					"media_url_https":"https://pbs.twimg.com/media/CEje5e2XIAARAvY.jpg",
 					"source_status_id":596972127808544768,
 				"video_info": {
-					"aspect_ratio": [16, 9], 
+					"aspect_ratio": [16, 9],
+					"duration_millis": 15032,
 					"variants": [
 						{
 							"url": "https://pbs.twimg.com/tweet_video/CEiUI_jUsAEdCbH.mp4", 
@@ -397,7 +400,8 @@
 					"media_url_https":"https://pbs.twimg.com/media/CEje5k9W0AAlPFH.jpg",
 					"source_status_id":596972127808544768,
 				"video_info": {
-					"aspect_ratio": [16, 9], 
+					"aspect_ratio": [16, 9],
+					"duration_millis": 15032,
 					"variants": [
 						{
 							"url": "https://pbs.twimg.com/tweet_video/CEiUI_jUsAEdCbH.mp4", 
@@ -467,7 +471,15 @@
 		"image":"https://pbs.twimg.com/profile_images/1208429969/37cea5d7f5793f54ee60f6728e2263d9_normal.jpeg",
 		"verified":false,
 		"location":{
-			"displayName":"\u5343\u8449",
+			"displayName":"Stonebank, WI",
+			"name":"Stonebank",
+			"link":"https://api.twitter.com/1.1/geo/id/01b72b265646b45f.json",
+			"twitter_country_code":"US",
+			"country_code":"United States",
+			"geo":{
+				"type":"Polygon"
+			},
+			"twitter_place_type":"city",
 			"objectType":"place"
 		},
 		"statusesCount":17533,
@@ -515,7 +527,8 @@
 				"media_url_https":"https://pbs.twimg.com/media/CEje5exW0AEa8EV.jpg",
 				"source_status_id":596972127808544768,
 				"video_info": {
-					"aspect_ratio": [16, 9], 
+					"aspect_ratio": [16, 9],
+					"duration_millis": 15032,
 					"variants": [
 						{
 							"url": "https://pbs.twimg.com/tweet_video/CEiUI_jUsAEdCbH.mp4", 
@@ -635,7 +648,8 @@
 				"media_url_https":"https://pbs.twimg.com/media/CEje5exW0AEa8EV.jpg",
 				"source_status_id":596972127808544768,
 				"video_info": {
-					"aspect_ratio": [16, 9], 
+					"aspect_ratio": [16, 9],
+					"duration_millis": 15032,
 					"variants": [
 						{
 							"url": "https://pbs.twimg.com/tweet_video/CEiUI_jUsAEdCbH.mp4", 
@@ -684,7 +698,8 @@
 				"media_url_https":"https://pbs.twimg.com/media/CEje5HCWIAAF3JZ.jpg",
 				"source_status_id":596972127808544768,
 				"video_info": {
-					"aspect_ratio": [16, 9], 
+					"aspect_ratio": [16, 9],
+					"duration_millis": 15032,
 					"variants": [
 						{
 							"url": "https://pbs.twimg.com/tweet_video/CEiUI_jUsAEdCbH.mp4", 
@@ -734,6 +749,7 @@
 				"source_status_id":596972127808544768,
 				"video_info": {
 					"aspect_ratio": [16, 9], 
+					"duration_millis": 15032,
 					"variants": [
 						{
 							"url": "https://pbs.twimg.com/tweet_video/CEiUI_jUsAEdCbH.mp4", 
@@ -783,6 +799,7 @@
 				"source_status_id":596972127808544768,
 				"video_info": {
 					"aspect_ratio": [16, 9], 
+					"duration_millis": 15032,
 					"variants": [
 						{
 							"url": "https://pbs.twimg.com/tweet_video/CEiUI_jUsAEdCbH.mp4", 
