@@ -9,10 +9,12 @@ from utils import Utils
 
 def main():
     
-    tweet_str = Utils.read_file(SAMPLE_TWEET_FILE)
-    print "generating schema for %s" % tweet_str
+    tweet_str = Utils.read_file("data/sample_tweet_powertrack.json")
+#     print "generating schema for %s" % tweet_str
     
     schema = Utils.generate_schema_from_tweet(tweet_str)
+    schema = json.dumps(schema)
+#     schema.replace("'", '"')
     print schema
     
 #     with open('data/schema.json', 'wt') as out:

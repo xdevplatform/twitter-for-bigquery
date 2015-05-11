@@ -77,28 +77,28 @@ class BigQueryGnipListener(object):
       
     def on_data(self, data):
 
-        print "Data type: %s" % type(data)
-        print "Data: " + data
+#         print "Data type: %s" % type(data)
+#         print "Data: " + data
         
         records_str = data.strip().split(NEWLINE)
 
-        print "Records: %s" % len(records_str) 
+#         print "Records: %s" % len(records_str) 
         
         for r in records_str:
         
             # Twitter returns data in JSON format - we need to decode it first
 #             temp_str = json.dumps(data)
-            print "********************"
-            print "Record type: %s" % type(r)
-            print "Record: " + r 
+#             print "********************"
+#             print "Record type: %s" % type(r)
+#             print "Record: " + r 
 
             record = json.loads(r)
     
             if not record.get('delete', None):
     
                 record_scrubbed = Utils.scrub(record)
-                print "Scrubbed Record"
-                print record_scrubbed
+#                 print "Scrubbed Record"
+#                 print record_scrubbed
                 Utils.insert_record(self.client, self.dataset_id, self.table_id, record_scrubbed)
                 
                 if self.logger:
