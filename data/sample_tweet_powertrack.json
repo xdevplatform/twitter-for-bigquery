@@ -46,6 +46,9 @@
 			"displayName":"Tweetbot for i\u039fS"
 		},
 		"twitter_filter_level":"low",
+		"geo":{
+			"type":"Point"
+		},
 		"favoritesCount":205,
 		"object":{
 			"postedTime":"2015-05-11T03:43:24.000Z",
