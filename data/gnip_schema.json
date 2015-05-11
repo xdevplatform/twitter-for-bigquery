@@ -1,0 +1,467 @@
+[
+
+    {
+        "mode": "nullable", 
+        "name": "body", 
+        "type": "string"
+    },
+    {
+        "mode": "nullable", 
+        "name": "retweetCount", 
+        "type": "integer"
+    },
+    
+    {   
+        "fields": [
+            {
+                "mode": "nullable", 
+                "name": "link", 
+                "type": "string"
+            },
+            {
+                "mode": "nullable", 
+                "name": "displayName", 
+                "type": "string"
+            }
+
+        ],
+        "mode": "nullable",
+        "name": "generator",
+        "type": "record"
+    },
+ 
+    {
+        "mode": "nullable", 
+        "name": "twitter_filter_level", 
+        "type": "string"
+    },
+
+    {
+        "fields"    : [
+
+            {
+                "fields": [
+                    {
+                        "mode": "nullable",
+                        "name": "tag",
+                        "type": "string"
+                    },
+                    {
+                        "mode": "nullable",
+                        "name": "value",
+                        "type": "string"
+                    }
+                    ],
+              
+                    "mode": "repeated",
+                    "name": "matching_rules",
+                    "type": "record"
+            },
+            {
+                "fields": [
+                    {
+                        "mode": "nullable",
+                        "name": "value",
+                        "type": "string"
+                    }
+                    ],
+                    "mode": "nullable",
+                    "name": "language",
+                    "type": "record"
+            },
+
+            {"fields": [
+                    {
+                        "mode": "nullable",
+                        "name": "url",
+                        "type": "string"
+                    },
+                    {
+                        "mode": "nullable",
+                        "name": "expanded_status",
+                        "type": "integer"
+                    },
+                    {
+                        "mode": "nullable",
+                        "name": "expanded_url",
+                        "type": "string"
+                    }
+                    ],
+                    "mode": "repeated",
+                    "name": "urls",
+                    "type": "record"
+                }
+                ],
+                "mode": "nullable",
+                "name": "gnip",
+                "type": "record"
+                },
+    {
+        "mode": "nullable", 
+        "name": "favoritesCount", 
+        "type": "integer"
+    },
+    {
+        "fields": [
+            {
+                "mode": "nullable",
+                "name": "postedTime",
+                "type": "timestamp"
+            },
+            {
+                "mode": "nullable", 
+                "name": "summary", 
+                "type": "string"
+            },
+            {
+                "mode": "nullable", 
+                "name": "link", 
+                "type": "string"
+            },
+            {
+                "mode": "nullable", 
+                "name": "id", 
+                "type": "string"
+            },
+            {
+                "mode": "nullable", 
+                "name": "objectType", 
+                "type": "string"
+            }
+            ],
+            "mode": "nullable",
+            "name": "object",
+            "type": "record"
+            },
+
+    {
+        "fields": [
+            {
+                "mode": "nullable",
+                "name": "preferredUsername",
+                "type": "string"
+            },
+            {
+                "mode": "nullable", 
+                "name": "displayName", 
+                "type": "string"
+            },
+            
+            {
+                "fields": [
+                    {
+                            "mode": "nullable",
+                            "name": "href",
+                            "type": "string"
+                    },
+                    
+                    {
+                          "mode": "nullable",
+                          "name": "rel",
+                          "type": "string"
+                    }
+                    ],
+                    "mode": "repeated",
+                    "name": "links",
+                    "type": "record"
+            },
+            {
+                "mode": "nullable",
+                "name": "twitterTimeZone",
+                "type": "string"
+            },
+            
+            {
+                "mode": "nullable", 
+                "name": "image", 
+                "type": "string"
+            },
+            
+            {
+                "mode": "nullable", 
+                "name": "verified", 
+                "type": "boolean"
+            },
+            
+            { 
+                "mode": "nullable",
+                "name": "statusesCount",
+                "type": "integer"
+            },
+            
+            {
+                "mode": "nullable", 
+                "name": "summary", 
+                "type": "string"
+            },
+            
+            {
+                "mode": "repeated", 
+                "name": "languages", 
+                "type": "string"
+            },
+            
+            {
+                "mode": "nullable", 
+                "name": "utcOffset", 
+                "type": "string"
+            },
+            {
+                "mode": "nullable", 
+                "name": "link", 
+                "type": "string"
+            },
+            {
+                "mode": "nullable",
+                "name": "followersCount",
+                "type": "integer"
+            },
+            {
+                "mode": "nullable",
+                "name": "favoritesCount",
+                "type": "integer"
+            },
+            
+            {   
+                "mode": "nullable",
+                "name": "friendsCount",
+                "type": "integer"
+            },
+            
+            {
+                "mode": "nullable", 
+                "name": "listedCount", 
+                "type": "integer"
+            },
+            
+            {
+                "mode": "nullable",
+                "name": "postedTime",
+                "type": "timestamp"
+            },
+            
+            {
+                "mode": "nullable", 
+                "name": "id", 
+                "type": "string"
+            },
+            {
+                "mode": "nullable", 
+                "name": "objectType", 
+                "type": "string"
+            }
+            ],
+             "mode": "nullable",
+             "name": "actor",
+             "type": "record"
+            },
+    
+    {
+        "mode": "nullable", 
+        "name": "twitter_lang", 
+        "type": "string"
+    },
+ 
+    {
+        "fields": [
+            {
+                "fields": [
+                
+                {
+                    "mode": "nullable",
+                    "name": "id",
+                    "type": "integer"
+                },
+                {
+                    "mode": "repeated",
+                    "name": "indices",
+                    "type": "integer"
+                },
+                {
+                    "mode": "nullable",
+                    "name": "id_str",
+                    "type": "string"
+                },
+                {
+                    "mode": "nullable",
+                    "name": "screen_name",
+                    "type": "string"
+                },
+                {
+                    "mode": "nullable",
+                    "name": "name",
+                    "type": "string"
+                }
+                ],
+                "mode": "repeated",
+                "name": "user_mentions",
+                "type": "record"
+            },
+            {
+                "fields": [
+                    {
+                        "mode": "repeated",
+                        "name": "indices",
+                        "type": "integer"
+                    },
+                    {
+                        "mode": "nullable",
+                        "name": "text",
+                        "type": "string"
+                    }
+                    ],
+                    "mode": "repeated",
+                    "name": "symbols",
+                    "type": "record"
+                    },
+             {
+                "fields": [
+                    {
+                        "mode": "nullable",
+                        "name": "woeid",
+                        "type": "integer"
+                    },
+                    {
+                        "mode": "nullable",
+                        "name": "name",
+                        "type": "string"
+                    },
+                    {   "mode": "nullable",
+                        "name": "countryCode",
+                        "type": "string"
+                    },
+                    {
+                        "mode": "nullable",
+                        "name": "url",
+                        "type": "string"
+                    },
+                    {
+                        "mode": "nullable",
+                        "name": "country",
+                        "type": "string"
+                    },
+                    
+                    {   
+                        "fields": [
+                            {   
+                                "mode": "nullable",
+                                "name": "code",
+                                "type": "integer"
+                            },
+                            {
+                                "mode": "nullable",
+                                "name": "name",
+                                "type": "string"
+                            }
+                            ],
+                            "mode": "nullable",
+                            "name": "placeType",
+                            "type": "record"
+                        },
+                        {
+                            "mode": "nullable",
+                            "name": "parentid",
+                            "type": "integer"
+                        }
+                        ],
+                        "mode": "repeated",
+                        "name": "trends",
+                        "type": "record"
+                        },
+             {
+                "fields": [
+                    {
+                        "mode": "repeated",
+                        "name": "indices",
+                        "type": "integer"
+                    },
+                    {
+                        "mode": "nullable",
+                        "name": "text",
+                        "type": "string"
+                    }
+                    ],
+                    "mode": "repeated",
+                    "name": "hashtags",
+                    "type": "record"
+            },
+            {
+                "fields": [
+                    {
+                        "mode": "nullable",
+                        "name": "url",
+                        "type": "string"
+                    },
+                    {
+                        "mode": "repeated",
+                        "name": "indices",
+                        "type": "integer"
+                    },
+                    {
+                        "mode": "nullable",
+                        "name": "expanded_url",
+                        "type": "string"
+                    },
+                    {
+                        "mode": "nullable",
+                        "name": "display_url",
+                        "type": "string"
+                    }
+                    ],
+                    "mode": "repeated",
+                    "name": "urls",
+                    "type": "record"
+                    }
+                    ],
+                    "mode": "nullable",
+                    "name": "twitter_entities",
+                    "type": "record"
+                },
+    {
+        "mode": "nullable", 
+        "name": "verb", 
+        "type": "string"
+    },
+    {
+        "mode": "nullable", 
+        "name": "link", 
+        "type": "string"
+    },
+    {
+        "fields": [
+            {
+                "mode": "nullable", 
+                "name": "link", 
+                "type": "string"
+            },
+            {
+                "mode": "nullable", 
+                "name": "displayName", 
+                "type": "string"
+            },
+            {
+                "mode": "nullable", 
+                "name": "objectType",
+                "type": "string"
+            }
+            ],
+            "mode": "nullable",
+            "name": "provider",
+            "type": "record"
+    },
+    {
+        "mode": "nullable", 
+        "name": "postedTime", 
+        "type": "timestamp"
+    },
+    {
+        "mode": "nullable", 
+        "name": "id", 
+        "type": "string"
+    },
+    {
+        "mode": "nullable", 
+        "name": "objectType", 
+        "type": "string"
+    }
+    ]
