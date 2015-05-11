@@ -294,6 +294,16 @@
 					"url":"http://t.co/ILm5ou5d1A",
 					"media_url_https":"https://pbs.twimg.com/media/CEje5HCWIAAF3JZ.jpg",
 					"source_status_id":596972127808544768,
+				"video_info": {
+					"aspect_ratio": [16, 9], 
+					"variants": [
+						{
+							"url": "https://pbs.twimg.com/tweet_video/CEiUI_jUsAEdCbH.mp4", 
+							"bitrate": 0, 
+							"content_type": "video/mp4"
+						}
+					]	
+				},
 					"id_str":"596972023349387264",
 					"sizes":{
 						"small":{
@@ -333,6 +343,16 @@
 					"url":"http://t.co/ILm5ou5d1A",
 					"media_url_https":"https://pbs.twimg.com/media/CEje5e2XIAARAvY.jpg",
 					"source_status_id":596972127808544768,
+				"video_info": {
+					"aspect_ratio": [16, 9], 
+					"variants": [
+						{
+							"url": "https://pbs.twimg.com/tweet_video/CEiUI_jUsAEdCbH.mp4", 
+							"bitrate": 0, 
+							"content_type": "video/mp4"
+						}
+					]	
+				},
 					"id_str":"596972029741572096",
 					"sizes":{
 						"small":{
@@ -372,6 +392,16 @@
 					"url":"http://t.co/ILm5ou5d1A",
 					"media_url_https":"https://pbs.twimg.com/media/CEje5k9W0AAlPFH.jpg",
 					"source_status_id":596972127808544768,
+				"video_info": {
+					"aspect_ratio": [16, 9], 
+					"variants": [
+						{
+							"url": "https://pbs.twimg.com/tweet_video/CEiUI_jUsAEdCbH.mp4", 
+							"bitrate": 0, 
+							"content_type": "video/mp4"
+						}
+					]	
+				},
 					"id_str":"596972031381524480",
 					"sizes":{
 						"small":{
@@ -480,6 +510,16 @@
 				"url":"http://t.co/ILm5ou5d1A",
 				"media_url_https":"https://pbs.twimg.com/media/CEje5exW0AEa8EV.jpg",
 				"source_status_id":596972127808544768,
+				"video_info": {
+					"aspect_ratio": [16, 9], 
+					"variants": [
+						{
+							"url": "https://pbs.twimg.com/tweet_video/CEiUI_jUsAEdCbH.mp4", 
+							"bitrate": 0, 
+							"content_type": "video/mp4"
+						}
+					]	
+				},
 				"id_str":"596972029720580097",
 				"sizes":{
 					"small":{
@@ -590,6 +630,16 @@
 				"url":"http://t.co/ILm5ou5d1A",
 				"media_url_https":"https://pbs.twimg.com/media/CEje5exW0AEa8EV.jpg",
 				"source_status_id":596972127808544768,
+				"video_info": {
+					"aspect_ratio": [16, 9], 
+					"variants": [
+						{
+							"url": "https://pbs.twimg.com/tweet_video/CEiUI_jUsAEdCbH.mp4", 
+							"bitrate": 0, 
+							"content_type": "video/mp4"
+						}
+					]	
+				},
 				"id_str":"596972029720580097",
 				"sizes":{
 					"small":{
@@ -629,6 +679,16 @@
 				"url":"http://t.co/ILm5ou5d1A",
 				"media_url_https":"https://pbs.twimg.com/media/CEje5HCWIAAF3JZ.jpg",
 				"source_status_id":596972127808544768,
+				"video_info": {
+					"aspect_ratio": [16, 9], 
+					"variants": [
+						{
+							"url": "https://pbs.twimg.com/tweet_video/CEiUI_jUsAEdCbH.mp4", 
+							"bitrate": 0, 
+							"content_type": "video/mp4"
+						}
+					]	
+				},
 				"id_str":"596972023349387264",
 				"sizes":{
 					"small":{
@@ -668,6 +728,16 @@
 				"url":"http://t.co/ILm5ou5d1A",
 				"media_url_https":"https://pbs.twimg.com/media/CEje5e2XIAARAvY.jpg",
 				"source_status_id":596972127808544768,
+				"video_info": {
+					"aspect_ratio": [16, 9], 
+					"variants": [
+						{
+							"url": "https://pbs.twimg.com/tweet_video/CEiUI_jUsAEdCbH.mp4", 
+							"bitrate": 0, 
+							"content_type": "video/mp4"
+						}
+					]	
+				},
 				"id_str":"596972029741572096",
 				"sizes":{
 					"small":{
@@ -707,6 +777,16 @@
 				"url":"http://t.co/ILm5ou5d1A",
 				"media_url_https":"https://pbs.twimg.com/media/CEje5k9W0AAlPFH.jpg",
 				"source_status_id":596972127808544768,
+				"video_info": {
+					"aspect_ratio": [16, 9], 
+					"variants": [
+						{
+							"url": "https://pbs.twimg.com/tweet_video/CEiUI_jUsAEdCbH.mp4", 
+							"bitrate": 0, 
+							"content_type": "video/mp4"
+						}
+					]	
+				},
 				"id_str":"596972031381524480",
 				"sizes":{
 					"small":{
