@@ -1,3 +1,6 @@
+import sys
+sys.path.insert(0, 'libs')
+
 import os
 import re
 import httplib2
@@ -15,6 +18,9 @@ from apiclient import errors
 
 from oauth2client import appengine
 
+from gnippy import rules
+from gnippy.errors import RulesGetFailedException
+
 from config import *
 
 _SCOPE = 'https://www.googleapis.com/auth/bigquery'
@@ -31,16 +37,6 @@ REMOVE_HTML = re.compile(r'<.*?>')
 def get_service():
     
     return build('bigquery', 'v2', http=http)
-
-class ShowHome(webapp2.RequestHandler):
-    
-    def get(self):
-        template_data = {}
-        template_path = 'templates/index.html'
-        self.response.out.write(template.render(template_path, template_data))
-
-#         queryData = {'query':'SELECT SUM(word_count) as WCount,corpus_date,group_concat(corpus) as Work FROM '
-#                      '[publicdata:samples.shakespeare] WHERE word="' + inputData + '" and corpus_date>0 GROUP BY corpus_date ORDER BY WCount'}
 
 class Data(webapp2.RequestHandler):
     
@@ -90,6 +86,8 @@ class Data(webapp2.RequestHandler):
                 
                 tableData = get_service().jobs()
                 dataList = tableData.query(projectId=PROJECT_NUMBER, body={'query':query}).execute()
+                
+                # BUGBUG: this should return last 24 hours or last N days in order, not just random hours.
                 
                 # key: source, value: [source, d1, d2, d3...]
                 buckets = {}
@@ -344,11 +342,34 @@ class Chart(webapp2.RequestHandler):
     
     def get(self):
         template_data = {}
-        template_path = 'Templates/chart.html'
+        template_path = 'templates/chart.html'
+        self.response.out.write(template.render(template_path, template_data))
+
+class Admin(webapp2.RequestHandler):
+    
+    def get(self):
+        
+        rules_list = None
+        
+        try:
+            rules_list = rules.get_rules()
+            
+            print rules
+            # rules_list is in the format:
+            # [
+            #    { "value": "(Hello OR World) AND lang:en" },
+            #    { "value": "Hello", "tag": "mytag" }
+            # ]
+        except RulesGetFailedException:
+            pass # uh oh
+        
+        template_data = {rules_list}
+        template_path = 'templates/admin.html'
         self.response.out.write(template.render(template_path, template_data))
 
 application = webapp2.WSGIApplication([
     ('/data', Data),
     ('/chart', Chart),
+    ('/admin', Admin),
     ('/', Chart),
 ], debug=True)
