@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link rel="icon" href="/static/img/bird.ico">
+    <title>Twitter &hearts; BigQuery</title>
+    <link href="http://getbootstrap.com/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="http://getbootstrap.com/examples/justified-nav/justified-nav.css" rel="stylesheet">
+    <link href="/static/css/theme/styles.css" rel="stylesheet">
+    <link href="/static/css/c3.css" rel="stylesheet">
+    <link href="/static/css/style.css" rel="stylesheet">
+    
+</head>
+
+<body>
+
+    <div class="container page_header">
+
+
+		</h1>PowerTrack Admin</h1>
+
+	</div>
+	
+	<hr>
+
+	<div class="container page_body">
+				
+		<div id="canvas">
+
+			<center>
+				<h1 id="title">Twitter <span class="heart">&hearts;</span> BigQuery</h1>
+			</center>
+		
+	        <div id="chart">Please select a data source and click "Submit".</div>
+	        
+	        <div id="map" style="position: relative; width: 750px; height: 500px;"></div>
+        
+        </div>
+        
+    </div>
+    
+	<hr>
+
+    <div class="container page_footer">
+    
+        <div class="row">
+			<form class="form-horizontal">
+			  <div class="form-group">
+			    <label for="inputEmail3" class="col-sm-2 control-label">
+			    	Query
+			    	<br>
+			    	<small><a href='https://cloud.google.com/bigquery/docs/dataset-shakespeare'>Tweet Dataset</a></small>
+			    </label>
+			    <div class="col-sm-9">
+			    	<textarea id="query" class="form-control" rows="3"></textarea>
+			    </div>
+			  </div>
+			</form>
+        </div>
+
+    </div>
+    <!-- /container -->
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/topojson/1.6.9/topojson.min.js"></script>
+<script type="text/javascript" src="https://code.jquery.com/jquery-1.7.1.min.js"></script>
+<script type="text/javascript" src="/static/js/d3.js"></script>
+<script type="text/javascript" src="/static/js/c3.js"></script>
+<script type="text/javascript" src="/static/js/datamaps.usa.min.js"></script>
+<script type="text/javascript" src="/static/js/script.js"></script>
+
+</body>
+
+</html>
