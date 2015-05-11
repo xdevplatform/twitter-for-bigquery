@@ -102,7 +102,7 @@ class BigQueryGnipListener(object):
                 Utils.insert_record(self.client, self.dataset_id, self.table_id, record_scrubbed)
                 
                 if self.logger:
-                    self.logger.info('@%s: %s' % (record['user']['screen_name'], record['text'].encode('ascii', 'ignore')))
+                    self.logger.info('@%s: %s' % (record['actor']['preferredUsername'], record['body'].encode('ascii', 'ignore')))
                 
                 self.count = self.count + 1
                 

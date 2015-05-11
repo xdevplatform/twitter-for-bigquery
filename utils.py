@@ -18,6 +18,8 @@ class Utils:
             print "Record: %s" % (json.dumps(record))
             print "Error result: %s" % result
             
+#             exit()
+            
             return False
         
         return True

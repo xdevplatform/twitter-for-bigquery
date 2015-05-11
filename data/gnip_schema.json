@@ -183,6 +183,25 @@
                 "type": "boolean"
             },
             
+            {
+                "fields": [
+                    {
+                            "mode": "nullable",
+                            "name": "displayName",
+                            "type": "string"
+                    },
+                    
+                    {
+                          "mode": "nullable",
+                          "name": "place",
+                          "type": "string"
+                    }
+                    ],
+                    "mode": "repeated",
+                    "name": "location",
+                    "type": "record"
+            },
+            
             { 
                 "mode": "nullable",
                 "name": "statusesCount",
