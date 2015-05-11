@@ -21,7 +21,7 @@ args=(sys.stdout,)
 class=FileHandler
 level=DEBUG
 formatter=simpleFormatter
-args=('/PATH/TO/logs/output.txt',)
+args=('./output.txt',)
 
 [formatter_simpleFormatter]
 format=%(asctime)s - %(name)s - %(levelname)s - %(message)s
