@@ -27,3 +27,12 @@ SCHEMA_FILE = "data/schema.json"
 SAMPLE_TWEET_FILE = "data/sample_tweet.json"
 SAMPLE_TWEET_ERROR_FILE = "data/sample_tweet_error.json"
 SAMPLE_STREAM_FILE = "data/sample_stream.jsonr"
+
+GNIP_URL = 'https://stream.gnip.com:443/accounts/YOUR_ACCOUNT/publishers/twitter/streams/track/prod.json'
+GNIP_USERNAME = ''
+GNIP_PASSWORD = ''
+
+GNIP_SCHEMA_FILE = 'data/gnip_schema.json'
+GNIP_SAMPLE_TWEET_FILE = 'data/sample_powertrack.json'
+
+
