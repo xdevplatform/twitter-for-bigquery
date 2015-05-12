@@ -300,7 +300,6 @@ application = webapp2.WSGIApplication([
     ('/rules/list', RulesList),
     ('/rules/add', RulesAdd),
     ('/rules/delete', RulesDelete),
-    ('/rules/list', RulesList),
     
     ('/data', Data),
 
