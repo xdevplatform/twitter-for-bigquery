@@ -11,72 +11,8 @@ $(document).ready(function(){
 
 		});
 	
-	$("#source").change(function(){
-    	var val = $(this).val();
-    	var pivot = $("#pivot").val();
-    	if (val == "hashtags" && pivot != "popular"){
-    		$("#hashtags_holder").fadeIn();
-    	} else {
-    		$("#hashtags_holder").hide();
-    	}
-    	if (val == "mentions" && pivot != "popular"){
-    		$("#mentions_holder").fadeIn();
-    	} else {
-    		$("#mentions_holder").hide();
-    	}
-    });
-    $("#source").change();
-	
-	$("#pivot").change(function(){
-		var val = $(this).val();
-		var source = $("#source").val();
-    	if (val == "location"){
-    		$('#charttype option[value=map]').attr('selected','selected');
-    		$('#charttype').prop('disabled', true);
-		} else if (val == "hour"){
-    		$('#charttype option[value=timeseries]').attr('selected','selected');
-    		$('#charttype').prop('disabled', true);
-    		
-    		$("#mentions_holder").hide();
-    		$("#hashtags_holder").hide();
-    		
-    		if (source == 'mentions'){
-        		$("#mentions_holder").fadeIn();
-    		}
-    		if (source == 'hashtags'){
-        		$("#hashtags_holder").fadeIn();
-    		}
-    		
-		} else if (val == "popular"){
-    		$('#charttype option[value=donut]').attr('selected','selected');
-    		$('#charttype').prop('disabled', true);
-
-    		$("#mentions_holder").hide();
-    		$("#hashtags_holder").hide();
-    		
-		} else {
-			$('#charttype option[value=donut]').attr('selected','selected');
-    		$('#charttype').prop('disabled', false);
-		}
-    });
-	
-	$("#charttype").change(function(){
-		var val = $(this).val();
-    	if (val == "timeseries"){
-    		$('#pivot option[value=location]').attr('selected','selected');
-    		$('#pivot').prop('disabled', true);
-		} else if (val == "map"){
-    		$('#pivot option[value=hour]').attr('selected','selected');
-    		$('#pivot').prop('disabled', true);
-		} else {
-			$('#pivot option[value=""]').attr('selected','selected');
-    		$('#pivot').prop('disabled', false);
-		}
-    });
 	
 	$("#map").hide();
-	$("#hashtags_holder").hide();
-	$("#mentions_holder").hide();
 	
 })
 
@@ -111,16 +47,6 @@ function handleChange() {
 
 	if (!source){
 		$("#chart").html("<span class='alert alert-warning'>Please select a source.</span>").show();
-		return false;
-	}
-	
-	if (source == 'hashtags' && pivot != 'popular' && (!hashtags || hashtags.length == 0)){
-		$("#chart").html("<span class='alert alert-warning'>Please enter at least one #hashtag.</span>").fadeIn();
-		return false;
-	}
-
-	if (source == 'mentions' && pivot != 'popular' && (!mentions || mentions.length == 0)){
-		$("#chart").html("<span class='alert alert-warning'>Please enter at least one @mention.</span>").fadeIn();
 		return false;
 	}
 
