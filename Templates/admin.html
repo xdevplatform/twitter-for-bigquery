@@ -10,64 +10,105 @@
     <link href="/static/css/theme/styles.css" rel="stylesheet">
     <link href="/static/css/c3.css" rel="stylesheet">
     <link href="/static/css/style.css" rel="stylesheet">
-    
 </head>
 
 <body>
 
     <div class="container page_header">
-
-
 		</h1>PowerTrack Admin</h1>
-
 	</div>
 	
 	<hr>
 
-	<div class="container page_body">
-				
-		<div id="canvas">
-
-			<center>
-				<h1 id="title">Twitter <span class="heart">&hearts;</span> BigQuery</h1>
-			</center>
+	<div class="container">
+	
+		<button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#myModal">
+		  Add Rule
+		</button>
+	
+		<h1>PowerTrack Rules</h1>
 		
-	        <div id="chart">Please select a data source and click "Submit".</div>
-	        
-	        <div id="map" style="position: relative; width: 750px; height: 500px;"></div>
-        
+		<p>Use this page to dynamically update your rules and change data streamed to BigQuery.
+				
+		<div>
+		
+			<table class="table table-striped">
+			<thead>
+	        <tr>
+	          <th>Rule</th>
+	          <th>Tag</th>
+	          <th>Actions</th>
+	        </tr>
+      		</thead>
+      		<tbody id="rules">
+      		</tbody>
+			</table>
+			
         </div>
         
+		<h3>Gnip Configuration</h3>
+
     </div>
     
 	<hr>
 
     <div class="container page_footer">
     
-        <div class="row">
-			<form class="form-horizontal">
-			  <div class="form-group">
-			    <label for="inputEmail3" class="col-sm-2 control-label">
-			    	Query
-			    	<br>
-			    	<small><a href='https://cloud.google.com/bigquery/docs/dataset-shakespeare'>Tweet Dataset</a></small>
-			    </label>
-			    <div class="col-sm-9">
-			    	<textarea id="query" class="form-control" rows="3"></textarea>
-			    </div>
-			  </div>
-			</form>
-        </div>
-
     </div>
     <!-- /container -->
 
-<script src="//cdnjs.cloudflare.com/ajax/libs/topojson/1.6.9/topojson.min.js"></script>
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Add Rule</h4>
+      </div>
+      <div class="modal-body">
+
+		<form class="form-horizontal">
+		  <div class="form-group">
+		    <label for="" class="col-sm-2 control-label">Rule</label>
+		    <div class="col-sm-10">
+		      <input type="text" class="form-control" id="rule_text" placeholder="">
+		    </div>
+		  </div>
+		  <div class="form-group">
+		    <label for="" class="col-sm-2 control-label">Tag</label>
+		    <div class="col-sm-10">
+		      <input type="text" class="form-control" id="rule_tag" placeholder="">
+		    </div>
+		  </div>
+		</form>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary rule_add">Save Rule</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script type="text/javascript" src="https://code.jquery.com/jquery-1.7.1.min.js"></script>
-<script type="text/javascript" src="/static/js/d3.js"></script>
-<script type="text/javascript" src="/static/js/c3.js"></script>
-<script type="text/javascript" src="/static/js/datamaps.usa.min.js"></script>
-<script type="text/javascript" src="/static/js/script.js"></script>
+<script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="/static/js/mustache.js"></script>
+<script type="text/javascript" src="/static/js/admin.js"></script>
+
+<script id="ruleRow" type="text/template">
+<tr>
+	<td>
+		{{tag}}
+	</td>
+	<td>
+		{{value}}
+	</td>
+	<td>
+		<a class="rule_delete" data-ruleid="{{count}}">delete</a>
+	</td>
+</tr>
+</script>
 
 </body>
 
