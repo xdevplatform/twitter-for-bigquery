@@ -9,7 +9,9 @@ function init(){
 	$(document.body).on("click", ".rule_delete", function(){
 		if (confirm('Are you sure?')){
 			ruleid = $(this).data("ruleid");
-			alert(ruleid);
+			rules_delete(ruleid, function(response){
+				rules_list();
+			});
 		}
 	});
 
@@ -17,11 +19,9 @@ function init(){
 		var rule = $("#rule_text").val();
 		var tag = $("#rule_tag").val();
 		rules_add(rule, tag, function(response){
-			console.log(response);
 			$('#myModal').modal('hide');
 			$("#rules").html("");
 			rules_list();
-			
 		});
 	});
 
