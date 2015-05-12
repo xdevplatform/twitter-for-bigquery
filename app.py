@@ -345,31 +345,107 @@ class Chart(webapp2.RequestHandler):
         template_path = 'templates/chart.html'
         self.response.out.write(template.render(template_path, template_data))
 
-class Admin(webapp2.RequestHandler):
+class Rules(webapp2.RequestHandler):
     
     def get(self):
         
-        rules_list = None
+        template_data = {"tag": "{{tag}}", "value": "{{value}}", "count": "{{count}}"}
+        template_path = 'templates/rules.html'
+        self.response.out.write(template.render(template_path, template_data))
+        
+class RulesList(webapp2.RequestHandler):
+    
+    def get(self):
+        
+        response = None
         
         try:
-            rules_list = rules.get_rules()
-            
-            print rules
-            # rules_list is in the format:
-            # [
-            #    { "value": "(Hello OR World) AND lang:en" },
-            #    { "value": "Hello", "tag": "mytag" }
-            # ]
+            response = rules.get_rules(url=GNIP_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
         except RulesGetFailedException:
             pass # uh oh
         
-        template_data = {rules_list}
+        self.response.headers['Content-Type'] = 'application/json'   
+        self.response.out.write(json.dumps(response))
+        
+class RulesAdd(webapp2.RequestHandler):
+    
+    def get(self):
+        
+        rule = self.request.get("rule")
+        tag = self.request.get("tag")
+
+        if not rule or not tag:
+            raise Exception("missing parameter")
+
+        response = None
+        
+        try:
+            rules.add_rule(rule, tag=tag, url=GNIP_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
+        except RulesGetFailedException:
+            pass # uh oh
+        
+        self.response.headers['Content-Type'] = 'application/json'   
+        self.response.out.write(json.dumps(response))
+        
+class RulesDelete(webapp2.RequestHandler):
+    
+    def get(self):
+        
+        rule_index = int(self.request.get("index"))
+        
+        response = None
+        
+        try:
+            rules_list = rules.get_rules(url=GNIP_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
+            rule_delete = rules_list[rule_index]
+            
+            print rules_list
+            print rule_delete
+            
+            r = rule_delete
+            
+            if not isinstance(r, dict):
+                print "1"
+    
+            if "value" not in r:
+                print "2"
+    
+            if not isinstance(r['value'], basestring):
+                print "3"
+    
+            if "tag" in r and not isinstance(r['tag'], basestring):
+                print "4"
+    
+#             for k in r:
+#                 if k not in expected:
+#                     fail()
+            
+            response = rules.delete_rule(rule_delete, url=GNIP_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
+        except RulesGetFailedException:
+            pass # uh oh
+        
+        self.response.headers['Content-Type'] = 'application/json'   
+        self.response.out.write(json.dumps(response))
+
+class Admin(webapp2.RequestHandler):
+    
+    def get(self):
+        template_data = {}
         template_path = 'templates/admin.html'
         self.response.out.write(template.render(template_path, template_data))
 
 application = webapp2.WSGIApplication([
+    
+    ('/rules/list', RulesList),
+    ('/rules/add', RulesAdd),
+    ('/rules/delete', RulesDelete),
+    ('/rules/list', RulesList),
+    
     ('/data', Data),
-    ('/chart', Chart),
+
+    ('/rules', Rules),
     ('/admin', Admin),
+    ('/chart', Chart),
     ('/', Chart),
+    
 ], debug=True)

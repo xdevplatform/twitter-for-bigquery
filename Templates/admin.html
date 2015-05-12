@@ -24,7 +24,7 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="#">Twitter <span class="heart">&hearts;</span> BigQuery</a>
+      <a class="navbar-brand" href="/">Twitter <span class="heart">&hearts;</span> BigQuery</a>
     </div>
 
     <!-- Collect the nav links, forms, and other content for toggling -->
@@ -55,23 +55,29 @@
 		
 		<h1>Administration</h1>
 		
-		<p>Configure GNIP and Twitter settings.
-				
-		<div>
+		<p>Configure GNIP and Twitter settings.</p>
 		
-			<table class="table table-striped">
-			<thead>
-	        <tr>
-	          <th>Rule</th>
-	          <th>Tag</th>
-	          <th>Actions</th>
-	        </tr>
-      		</thead>
-      		<tbody id="rules">
-      		</tbody>
-			</table>
-			
-        </div>
+		<br>
+				
+<form class="form-horizontal">
+  <div class="form-group">
+    <label for="inputEmail3" class="col-sm-2 control-label">Email</label>
+    <div class="col-sm-10">
+      <input type="email" class="form-control" id="inputEmail3" placeholder="Email">
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="inputPassword3" class="col-sm-2 control-label">Password</label>
+    <div class="col-sm-10">
+      <input type="password" class="form-control" id="inputPassword3" placeholder="Password">
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+      <button type="submit" class="btn btn-primary">Save</button>
+    </div>
+  </div>
+</form>
         
     </div>
     
@@ -81,40 +87,6 @@
     
     </div>
     <!-- /container -->
-
-<!-- Modal -->
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">Add Rule</h4>
-      </div>
-      <div class="modal-body">
-
-		<form class="form-horizontal">
-		  <div class="form-group">
-		    <label for="" class="col-sm-2 control-label">Rule</label>
-		    <div class="col-sm-10">
-		      <input type="text" class="form-control" id="rule_text" placeholder="">
-		    </div>
-		  </div>
-		  <div class="form-group">
-		    <label for="" class="col-sm-2 control-label">Tag</label>
-		    <div class="col-sm-10">
-		      <input type="text" class="form-control" id="rule_tag" placeholder="">
-		    </div>
-		  </div>
-		</form>
-
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary rule_add">Save Rule</button>
-      </div>
-    </div>
-  </div>
-</div>
 
 <script type="text/javascript" src="https://code.jquery.com/jquery-1.7.1.min.js"></script>
 <script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
