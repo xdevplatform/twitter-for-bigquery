@@ -45,95 +45,9 @@ class Data(webapp2.RequestHandler):
         source = self.request.get("source")
         charttype = self.request.get("charttype")
         interval = int(self.request.get("interval")) if self.request.get("interval") else 7
-        terms = self.request.get("terms")
 
-        object = None
-        prefix = None
-        col = None
-        flatten_field = None
-
-        if source == 'hashtags':
-            object = 'Hashtags'
-            prefix = '#'
-            col = 'entities.hashtags.text'
-            flatten_field = 'entities.hashtags'
-        elif source == 'mentions':
-            object = 'User mentions'
-            prefix = '@'
-            col = 'entities.user_mentions.screen_name'
-            flatten_field = 'entities.user_mentions'            
-        elif source == 'sources':
-            object = 'Tweet sources'
-            prefix = '@'
-            col = 'source'           
-            
-        if terms:
-            terms = terms.lower().split(',')
-            for idx, val in enumerate(terms):
-                h = "'" + val + "'"
-                terms[idx] = h
-            terms = ','.join(terms) 
-        else:
-            terms = "java,python,ruby,javascript,haskell,swift"
-
-        dt = datetime.now()
-        time_limit = time.mktime(dt.timetuple())
-        if interval == 1:
-            time_limit = time_limit - (ONE_DAY)
-        elif interval == 31:
-            time_limit = time_limit - (ONE_DAY * 31)
-        else: # interval == 7
-            time_limit = time_limit - (ONE_DAY * 7)
-        
-        select = "%s as value,count(*) as count" % col 
-        fromclause = "flatten(%s, %s)" % (FROM_CLAUSE, flatten_field) if flatten_field else FROM_CLAUSE
-        filter = "%s is not null AND created_at > %s" % (col, time_limit)
-        groupby = "value"
-        orderby = "count DESC"
-        limit = 20
-        
-        # requires join AND tranlating all tables to scoped t1/t2
-        if charttype == "timeseries":
-            select = "t1.%s, CONCAT('2015-', STRING(MONTH(TIMESTAMP(t1.created_at))), '-', STRING(DAY(TIMESTAMP(t1.created_at)))) AS create_hour" % (select)
-            fromclause = "flatten(%s, %s)" % (FROM_CLAUSE, flatten_field) if flatten_field else FROM_CLAUSE
-            fromclause = """
-                %s t1
-                inner join each 
-                    (
-                        SELECT 
-                            %s, 
-                            count(*) AS occur 
-                        FROM %s
-                        WHERE
-                            %s is not null AND
-                            created_at > %s 
-                        GROUP BY %s 
-                        ORDER BY occur DESC 
-                        LIMIT 20
-                    ) t2 
-                ON t1.%s = t2.%s
-                """ % (fromclause, col, fromclause, col, time_limit, col, col, col)
-            filter = "t1.%s is not null AND t1.created_at > %s" % (col, time_limit)
-            groupby = "value, create_hour" 
-            orderby_extra = "value ASC, create_hour ASC" 
-            limit = 24 * limit
-
-        query = None
-        args = {}
-        
-        query = """
-            SELECT 
-                %s 
-            FROM 
-                %s 
-            WHERE 
-                %s 
-            GROUP BY
-                %s
-            ORDER BY 
-                %s 
-            LIMIT %s""" % (select, fromclause, filter, groupby, orderby, limit)
-            
+        builder = QueryBuilder(QueryBuilder.PUBLIC, source, charttype, interval) 
+        query = builder.query()
         print query
         
         tableData = get_service().jobs()
@@ -168,7 +82,7 @@ class Data(webapp2.RequestHandler):
                         'ratio': 0.5 
                     }
                 },
-                'query' : query,
+                'query' : query.strip() if query else query,
                 'title' : "Sources by type"
             }
             
@@ -177,6 +91,7 @@ class Data(webapp2.RequestHandler):
             # BUGBUG: this should return last 24 hours or last N days in order, not just random hours.
             
             # key: source, value: [source, d1, d2, d3...]
+            now = datetime.now()
             buckets = {}
             header = None
             header_lookup = None
@@ -187,7 +102,7 @@ class Data(webapp2.RequestHandler):
             else : # interval == 31 or interval == 7:
                 header = ['x']
                 header_lookup = ['x']
-                start = dt - timedelta(days=interval)
+                start = now - timedelta(days=interval)
                 while True:
                     index = start.strftime("%Y-%m-%d")
                     
@@ -197,7 +112,7 @@ class Data(webapp2.RequestHandler):
                     # matching index with bigquery results is not 0-padded dates
                     header_lookup.append(index.replace("-0", "-"))
                     start = start + timedelta(days=1)
-                    if start > dt:
+                    if start > now:
                         break
             
             columns = [header]
@@ -347,6 +262,105 @@ class Admin(webapp2.RequestHandler):
         template_data = {}
         template_path = 'templates/admin.html'
         self.response.out.write(template.render(template_path, template_data))
+        
+class QueryBuilder():
+    
+    PUBLIC = "public"
+    GNIP = "gnip"
+    
+    type = None
+    source = None
+    charttype = None
+    interval = None
+
+    def __init__(self, type, source, charttype, interval):
+        self.type = type
+        self.source = source
+        self.charttype = charttype
+        self.interval = interval
+        
+    def query(self):
+        
+        # these query fields can changed based on instance vars
+        object = None
+        prefix = None
+        col = None
+        flatten_field = None
+
+        if self.source == 'hashtags':
+            object = 'Hashtags'
+            prefix = '#'
+            col = 'entities.hashtags.text'
+            flatten_field = 'entities.hashtags'
+        elif self.source == 'mentions':
+            object = 'User mentions'
+            prefix = '@'
+            col = 'entities.user_mentions.screen_name'
+            flatten_field = 'entities.user_mentions'            
+        elif self.source == 'sources':
+            object = 'Tweet sources'
+            prefix = '@'
+            col = 'source' 
+            
+        dt = datetime.now()
+        time_limit = time.mktime(dt.timetuple())
+        if self.interval == 1:
+            time_limit = time_limit - (ONE_DAY)
+        elif self.interval == 31:
+            time_limit = time_limit - (ONE_DAY * 31)
+        else: # interval == 7
+            time_limit = time_limit - (ONE_DAY * 7)
+        
+        select = "%s as value,count(*) as count" % col 
+        fromclause = "flatten(%s, %s)" % (FROM_CLAUSE, flatten_field) if flatten_field else FROM_CLAUSE
+        filter = "%s is not null AND created_at > %s" % (col, time_limit)
+        groupby = "value"
+        orderby = "count DESC"
+        limit = 20
+        
+        # requires join AND tranlating all tables to scoped t1/t2
+        if self.charttype == "timeseries":
+            select = "t1.%s, CONCAT('2015-', STRING(MONTH(TIMESTAMP(t1.created_at))), '-', STRING(DAY(TIMESTAMP(t1.created_at)))) AS create_hour" % (select)
+            fromclause = "flatten(%s, %s)" % (FROM_CLAUSE, flatten_field) if flatten_field else FROM_CLAUSE
+            fromclause = """
+                %s t1
+                inner join each 
+                    (
+                        SELECT 
+                            %s, 
+                            count(*) AS occur 
+                        FROM %s
+                        WHERE
+                            %s is not null AND
+                            created_at > %s 
+                        GROUP BY %s 
+                        ORDER BY occur DESC 
+                        LIMIT 20
+                    ) t2 
+                ON t1.%s = t2.%s
+                """ % (fromclause, col, fromclause, col, time_limit, col, col, col)
+            filter = "t1.%s is not null AND t1.created_at > %s" % (col, time_limit)
+            groupby = "value, create_hour" 
+            orderby_extra = "value ASC, create_hour ASC" 
+            limit = 24 * limit
+
+        query = None
+        args = {}
+        
+        query = """
+            SELECT 
+                %s 
+            FROM 
+                %s 
+            WHERE 
+                %s 
+            GROUP BY
+                %s
+            ORDER BY 
+                %s 
+            LIMIT %s""" % (select, fromclause, filter, groupby, orderby, limit)
+            
+        return query
 
 application = webapp2.WSGIApplication([
     
