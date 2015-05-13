@@ -93,25 +93,28 @@ class Data(webapp2.RequestHandler):
         orderby = "count DESC"
         limit = 20
         
+        # requires join AND tranlating all tables to scoped t1/t2
         if charttype == "timeseries":
-            select = select + ",HOUR(TIMESTAMP(created_at)) AS create_hour"
-            # for timeseries, only show top N occurring by subselect
-            filter = filter + """
-                %s in (
-                    select top from (
+            select = "t1.%s,HOUR(TIMESTAMP(t1.created_at)) AS create_hour" % (select)
+            fromclause = "flatten(%s, %s)" % (FROM_CLAUSE, flattenby) if flattenby else FROM_CLAUSE
+            fromclause = """
+                %s t1
+                inner join each 
+                    (
                         SELECT 
-                            %s as top, 
+                            %s, 
                             count(*) AS occur 
-                        FROM %s 
+                        FROM %s
                         WHERE
                             %s is not null AND
-                            %s 
-                        GROUP BY top 
+                            created_at > 826691172.0 
+                        GROUP BY %s 
                         ORDER BY occur DESC 
-                        LIMIT %s
-                    )
-                ) 
-                AND """ % (col, col, FROM_CLAUSE, col, filter_time, limit)
+                        LIMIT 20
+                    ) t2 
+                ON t1.%s = t2.%s
+                """ % (fromclause, col, fromclause, col, col, col, col)
+            filter = "t1.%s is not null AND t1.created_at > 826691172.0" % col
             groupby = "value, create_hour" 
             orderby_extra = "value ASC, create_hour ASC" 
             limit = 24 * limit
