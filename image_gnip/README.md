@@ -4,7 +4,7 @@ https://docs.docker.com/userguide/dockerizing/
 
 https://cloud.google.com/compute/docs/containers/container_vms
 
-# start docker
+## start docker
 boot2docker start
 $(boot2docker shellinit)
 
