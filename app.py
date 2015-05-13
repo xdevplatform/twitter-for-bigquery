@@ -50,15 +50,18 @@ class Data(webapp2.RequestHandler):
         object = None
         prefix = None
         col = None
+        flattenby = None
 
         if source == 'hashtags':
             object = 'Hashtags'
             prefix = '#'
             col = 'entities.hashtags.text'
+            flattenby = 'entities.hashtags'
         elif source == 'mentions':
             object = 'User mentions'
             prefix = '@'
-            col = 'entities.user_mentions.screen_name'            
+            col = 'entities.user_mentions.screen_name'
+            flattenby = 'entities.user_mentions'            
         elif source == 'sources':
             object = 'Tweet sources'
             prefix = '@'
@@ -73,21 +76,6 @@ class Data(webapp2.RequestHandler):
         else:
             terms = "java,python,ruby,javascript,haskell,swift"
 
-        select_extra = ""
-        filter_extra = ""
-        groupby_extra = ""
-        orderby_extra = ""
-        limit = 20
-        
-        if charttype == "timeseries":
-            select_extra = ",HOUR(TIMESTAMP(created_at)) AS create_hour"
-            filter_extra = "%s contains 'Twitter for' AND" % col
-            groupby_extra = ",create_hour" 
-            orderby_extra = "%s ASC, create_hour ASC" % col
-            limit = 24 * 10
-        else:
-            orderby_extra = "count DESC"
-
         dt = datetime.now()
         time_limit = time.mktime(dt.timetuple())
         if interval == 1:
@@ -96,29 +84,55 @@ class Data(webapp2.RequestHandler):
             time_limit = time_limit - (ONE_DAY * 31)
         else: # interval == 7
             time_limit = time_limit - (ONE_DAY * 7)
-        filter_time = "AND created_at > %s" % time_limit    
+        filter_time = "created_at > %s" % time_limit
         
+        select = "%s as value,count(*) as count" % col 
+        fromclause = "flatten(%s, %s)" % (FROM_CLAUSE, flattenby) if flattenby else FROM_CLAUSE
+        filter = "%s is not null AND created_at > 826691172.0" % col
+        groupby = "value"
+        orderby = "count DESC"
+        limit = 20
+        
+        if charttype == "timeseries":
+            select = select + ",HOUR(TIMESTAMP(created_at)) AS create_hour"
+            # for timeseries, only show top N occurring by subselect
+            filter = filter + """
+                %s in (
+                    select top from (
+                        SELECT 
+                            %s as top, 
+                            count(*) AS occur 
+                        FROM %s 
+                        WHERE
+                            %s is not null AND
+                            %s 
+                        GROUP BY top 
+                        ORDER BY occur DESC 
+                        LIMIT %s
+                    )
+                ) 
+                AND """ % (col, col, FROM_CLAUSE, col, filter_time, limit)
+            groupby = "value, create_hour" 
+            orderby_extra = "value ASC, create_hour ASC" 
+            limit = 24 * limit
+
         query = None
         args = {}
         
         query = """
             SELECT 
-                %s as %s, 
-                count(*) as count 
-                %s
-            FROM %s 
+                %s 
+            FROM 
+                %s 
             WHERE 
                 %s 
-                text is not null
-                %s
-            GROUP by 
-                %s
+            GROUP BY
                 %s
             ORDER BY 
                 %s 
-            LIMIT %s""" % (col, col, select_extra, FROM_CLAUSE, filter_extra, filter_time, col, groupby_extra, orderby_extra, limit)
+            LIMIT %s""" % (select, fromclause, filter, groupby, orderby, limit)
             
-#         print query
+        print query
         
         tableData = get_service().jobs()
         results = tableData.query(projectId=PROJECT_NUMBER, body={'query':query}).execute()
@@ -168,20 +182,22 @@ class Data(webapp2.RequestHandler):
                 for row in results['rows']:
                     
                     for key, dict_list in row.iteritems():
-                        source = REMOVE_HTML.sub('', dict_list[0]['v'])
-                        count = int(dict_list[1]['v'])
-                        hour = int(dict_list[2]['v'])
-                        
-                        column = buckets.get(source, None)
-                        if not column:
-                            column = [0] * 25
-                            column[0] = source
-                            buckets[source] = column
+                        value = dict_list[0]['v']
+                        if value:
+                            value = REMOVE_HTML.sub('', value)
+                            count = int(dict_list[1]['v'])
+                            hour = int(dict_list[2]['v'])
 
-                        column[hour + 1] = count
+                            column = buckets.get(value, None)
+                            if not column:
+                                column = [0] * 25
+                                column[0] = value
+                                buckets[value] = column
+    
+                            column[hour + 1] = count
             else:
                 columns.append([])
-                
+
             for key, value in buckets.iteritems():
                 columns.append(value)
 
