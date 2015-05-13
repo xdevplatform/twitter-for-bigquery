@@ -1,46 +1,46 @@
-### Notes for Docker + Google Cloud
+#### Notes for Docker + Google Cloud
 
 https://docs.docker.com/userguide/dockerizing/
 
 https://cloud.google.com/compute/docs/containers/container_vms
 
-### start docker
+#### start docker
 boot2docker start
 $(boot2docker shellinit)
 
-###  build and run docker image locally
+#### build and run docker image locally
 docker build -t gcr.io/impressive-bay-93722/image_gnip ./image_gnip
 docker run -i -t gcr.io/impressive-bay-93722/image_gnip
 
-###  add a tag
+#### add a tag
 docker tag ./image_gnip  gcr.io/impressive-bay-93722/image_gnip
 
-###  push to container registry
+#### push to container registry
 gcloud preview docker push gcr.io/impressive-bay-93722/image_gnip
 
-# create instance
+####  create instance
 gcloud compute instances create example_gnip_instance --scopes https://www.googleapis.com/auth/devstorage.read_write --zone us-central1-b
 
-# load vm... something something?
+####  load vm... something something?
 gcloud compute instances create examplecontainervm01 \
     --image container-vm \
     --metadata-from-file google-container-manifest=./image_gnip/container.yaml \
     --zone us-central1-b \
     --machine-type n1-highcpu-2
     
-# zone    
+####  zone    
 us-central1-b
 
-# log into an instance
+####  log into an instance
 gcloud compute instances list
 gcloud compute --project "impressive-bay-93722" ssh --zone "us-central1-b" "examplecontainervm01" 
 
-# pull & run instance of image 
+####  pull & run instance of image 
 sudo docker pull gcr.io/impressive-bay-93722/image_gnip
 sudo docker run -d gcr.io/impressive-bay-93722/image_gnip
 
 
-# see logs
+####  see logs
 sudo -s
 sudo docker ps
 sudo docker logs --follow=true 5d
