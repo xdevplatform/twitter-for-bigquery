@@ -46,7 +46,7 @@ class Data(webapp2.RequestHandler):
         charttype = self.request.get("charttype")
         interval = int(self.request.get("interval")) if self.request.get("interval") else 7
 
-        builder = QueryBuilder(QueryBuilder.PUBLIC, source, charttype, interval) 
+        builder = QueryBuilder(QueryBuilder.GNIP, source, charttype, interval) 
         query = builder.query()
         print query
         
@@ -286,22 +286,41 @@ class QueryBuilder():
         prefix = None
         col = None
         flatten_field = None
+        created_field = None
 
-        if self.source == 'hashtags':
-            object = 'Hashtags'
-            prefix = '#'
-            col = 'entities.hashtags.text'
-            flatten_field = 'entities.hashtags'
-        elif self.source == 'mentions':
-            object = 'User mentions'
-            prefix = '@'
-            col = 'entities.user_mentions.screen_name'
-            flatten_field = 'entities.user_mentions'            
-        elif self.source == 'sources':
-            object = 'Tweet sources'
-            prefix = '@'
-            col = 'source' 
-            
+        if self.type == QueryBuilder.PUBLIC:
+            created_field = 'created_at'
+            if self.source == 'hashtags':
+                object = 'Hashtags'
+                prefix = '#'
+                col = 'entities.hashtags.text'
+                flatten_field = 'entities.hashtags'
+            elif self.source == 'mentions':
+                object = 'User mentions'
+                prefix = '@'
+                col = 'entities.user_mentions.screen_name'
+                flatten_field = 'entities.user_mentions'            
+            elif self.source == 'sources':
+                object = 'Tweet sources'
+                prefix = '@'
+                col = 'source' 
+        else:
+            created_field = 'postedTime'
+            if self.source == 'hashtags':
+                object = 'Hashtags'
+                prefix = '#'
+                col = 'twitter_entities.hashtags.text'
+                flatten_field = 'twitter_entities.hashtags'
+            elif self.source == 'mentions':
+                object = 'User mentions'
+                prefix = '@'
+                col = 'twitter_entities.user_mentions.screen_name'
+                flatten_field = 'twitter_entities.user_mentions'            
+            elif self.source == 'sources':
+                object = 'Tweet sources'
+                prefix = '@'
+                col = 'source'
+                            
         dt = datetime.now()
         time_limit = time.mktime(dt.timetuple())
         if self.interval == 1:
@@ -313,14 +332,14 @@ class QueryBuilder():
         
         select = "%s as value,count(*) as count" % col 
         fromclause = "flatten(%s, %s)" % (FROM_CLAUSE, flatten_field) if flatten_field else FROM_CLAUSE
-        filter = "%s is not null AND created_at > %s" % (col, time_limit)
+        filter = "%s is not null AND %s > %s" % (col, created_field, time_limit)
         groupby = "value"
         orderby = "count DESC"
         limit = 20
         
         # requires join AND tranlating all tables to scoped t1/t2
         if self.charttype == "timeseries":
-            select = "t1.%s, CONCAT('2015-', STRING(MONTH(TIMESTAMP(t1.created_at))), '-', STRING(DAY(TIMESTAMP(t1.created_at)))) AS create_hour" % (select)
+            select = "t1.%s, CONCAT('2015-', STRING(MONTH(TIMESTAMP(t1.%s))), '-', STRING(DAY(TIMESTAMP(t1.%s)))) AS create_hour" % (select, created_field, created_field)
             fromclause = "flatten(%s, %s)" % (FROM_CLAUSE, flatten_field) if flatten_field else FROM_CLAUSE
             fromclause = """
                 %s t1
@@ -332,14 +351,14 @@ class QueryBuilder():
                         FROM %s
                         WHERE
                             %s is not null AND
-                            created_at > %s 
+                            %s > %s 
                         GROUP BY %s 
                         ORDER BY occur DESC 
                         LIMIT 20
                     ) t2 
                 ON t1.%s = t2.%s
-                """ % (fromclause, col, fromclause, col, time_limit, col, col, col)
-            filter = "t1.%s is not null AND t1.created_at > %s" % (col, time_limit)
+                """ % (fromclause, col, fromclause, col, created_field, time_limit, col, col, col)
+            filter = "t1.%s is not null AND t1.%s > %s" % (col, created_field, time_limit)
             groupby = "value, create_hour" 
             orderby_extra = "value ASC, create_hour ASC" 
             limit = 24 * limit
