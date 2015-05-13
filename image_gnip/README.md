@@ -1,21 +1,21 @@
-Notes for Docker + Google Cloud
+### Notes for Docker + Google Cloud
 
 https://docs.docker.com/userguide/dockerizing/
 
 https://cloud.google.com/compute/docs/containers/container_vms
 
-## start docker
+### start docker
 boot2docker start
 $(boot2docker shellinit)
 
-# build and run docker image locally
+###  build and run docker image locally
 docker build -t gcr.io/impressive-bay-93722/image_gnip ./image_gnip
 docker run -i -t gcr.io/impressive-bay-93722/image_gnip
 
-add a tag
+###  add a tag
 docker tag ./image_gnip  gcr.io/impressive-bay-93722/image_gnip
 
-# push to container registry
+###  push to container registry
 gcloud preview docker push gcr.io/impressive-bay-93722/image_gnip
 
 # create instance
