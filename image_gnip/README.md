@@ -1,6 +1,7 @@
 Notes for Docker + Google Cloud
 
 https://docs.docker.com/userguide/dockerizing/
+
 https://cloud.google.com/compute/docs/containers/container_vms
 
 # start docker
