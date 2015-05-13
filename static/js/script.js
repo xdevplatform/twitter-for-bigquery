@@ -38,8 +38,8 @@ function getValuesByClass(sel){
 function handleChange() {
 
 	var source = $("#source").val();
-	var pivot = $("#pivot").val();
 	var charttype = $("#charttype").val();
+	var interval = $("#interval").val();
 	var hashtags = getHashtags();
 	var mentions = getMentions();
 
@@ -57,8 +57,8 @@ function handleChange() {
 
 		var args = {
 			source : source,
-			pivot : pivot,
 			charttype : charttype,
+			interval : interval,
 			terms : source == 'hashtags' ? hashtags : source == 'mentions' ? mentions : null  
 		};
 		queryData(charttype, args);
