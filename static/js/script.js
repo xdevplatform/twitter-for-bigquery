@@ -109,15 +109,15 @@ function queryData(charttype, args){
 function showChart(charttype, args){
 	
 	args['bindto'] = '#chart';
-	if (charttype == 'timeseries'){
-		args['axis'] = {
-	        x: {
-	            tick: {
-	            	format: function (x) { return x + ":00"; }
-	            }
-	        }
-	    };
-	}
+//	if (charttype == 'timeseries'){
+//		args['axis'] = {
+//	        x: {
+//	            tick: {
+//	            	format: function (x) { return x + ":00"; }
+//	            }
+//	        }
+//	    };
+//	}
 	c3.generate(args);
 
 }

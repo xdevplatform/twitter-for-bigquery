@@ -7,7 +7,7 @@ import httplib2
 import json
 import webapp2
 
-from datetime import datetime
+from datetime import datetime, timedelta
 import time
 
 from google.appengine.ext.webapp import template
@@ -44,24 +44,24 @@ class Data(webapp2.RequestHandler):
         
         source = self.request.get("source")
         charttype = self.request.get("charttype")
-        interval = self.request.get("interval")
+        interval = int(self.request.get("interval")) if self.request.get("interval") else 7
         terms = self.request.get("terms")
 
         object = None
         prefix = None
         col = None
-        flattenby = None
+        flatten_field = None
 
         if source == 'hashtags':
             object = 'Hashtags'
             prefix = '#'
             col = 'entities.hashtags.text'
-            flattenby = 'entities.hashtags'
+            flatten_field = 'entities.hashtags'
         elif source == 'mentions':
             object = 'User mentions'
             prefix = '@'
             col = 'entities.user_mentions.screen_name'
-            flattenby = 'entities.user_mentions'            
+            flatten_field = 'entities.user_mentions'            
         elif source == 'sources':
             object = 'Tweet sources'
             prefix = '@'
@@ -84,19 +84,18 @@ class Data(webapp2.RequestHandler):
             time_limit = time_limit - (ONE_DAY * 31)
         else: # interval == 7
             time_limit = time_limit - (ONE_DAY * 7)
-        filter_time = "created_at > %s" % time_limit
         
         select = "%s as value,count(*) as count" % col 
-        fromclause = "flatten(%s, %s)" % (FROM_CLAUSE, flattenby) if flattenby else FROM_CLAUSE
-        filter = "%s is not null AND created_at > 826691172.0" % col
+        fromclause = "flatten(%s, %s)" % (FROM_CLAUSE, flatten_field) if flatten_field else FROM_CLAUSE
+        filter = "%s is not null AND created_at > %s" % (col, time_limit)
         groupby = "value"
         orderby = "count DESC"
         limit = 20
         
         # requires join AND tranlating all tables to scoped t1/t2
         if charttype == "timeseries":
-            select = "t1.%s,HOUR(TIMESTAMP(t1.created_at)) AS create_hour" % (select)
-            fromclause = "flatten(%s, %s)" % (FROM_CLAUSE, flattenby) if flattenby else FROM_CLAUSE
+            select = "t1.%s, CONCAT('2015-', STRING(MONTH(TIMESTAMP(t1.created_at))), '-', STRING(DAY(TIMESTAMP(t1.created_at)))) AS create_hour" % (select)
+            fromclause = "flatten(%s, %s)" % (FROM_CLAUSE, flatten_field) if flatten_field else FROM_CLAUSE
             fromclause = """
                 %s t1
                 inner join each 
@@ -107,14 +106,14 @@ class Data(webapp2.RequestHandler):
                         FROM %s
                         WHERE
                             %s is not null AND
-                            created_at > 826691172.0 
+                            created_at > %s 
                         GROUP BY %s 
                         ORDER BY occur DESC 
                         LIMIT 20
                     ) t2 
                 ON t1.%s = t2.%s
-                """ % (fromclause, col, fromclause, col, col, col, col)
-            filter = "t1.%s is not null AND t1.created_at > 826691172.0" % col
+                """ % (fromclause, col, fromclause, col, time_limit, col, col, col)
+            filter = "t1.%s is not null AND t1.created_at > %s" % (col, time_limit)
             groupby = "value, create_hour" 
             orderby_extra = "value ASC, create_hour ASC" 
             limit = 24 * limit
@@ -179,7 +178,31 @@ class Data(webapp2.RequestHandler):
             
             # key: source, value: [source, d1, d2, d3...]
             buckets = {}
-            columns = [['x', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23' ]]
+            header = None
+            header_lookup = None
+
+            if interval == 1:
+                header = ['x', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23' ]
+                header_lookup = header
+            else : # interval == 31 or interval == 7:
+                header = ['x']
+                header_lookup = ['x']
+                start = dt - timedelta(days=interval)
+                while True:
+                    index = start.strftime("%Y-%m-%d")
+                    
+                    # header returned to c3 needs to be 0-padded dates
+                    header.append(index)
+                    
+                    # matching index with bigquery results is not 0-padded dates
+                    header_lookup.append(index.replace("-0", "-"))
+                    start = start + timedelta(days=1)
+                    if start > dt:
+                        break
+            
+            columns = [header]
+            
+            print columns
             
             if 'rows' in results:
                 for row in results['rows']:
@@ -189,20 +212,23 @@ class Data(webapp2.RequestHandler):
                         if value:
                             value = REMOVE_HTML.sub('', value)
                             count = int(dict_list[1]['v'])
-                            hour = int(dict_list[2]['v'])
+                            time_interval = str(dict_list[2]['v'])
 
                             column = buckets.get(value, None)
                             if not column:
-                                column = [0] * 25
+                                column = [0] * len(header)
                                 column[0] = value
                                 buckets[value] = column
     
-                            column[hour + 1] = count
+                            column[header_lookup.index(time_interval)] = count
+                            
             else:
                 columns.append([])
 
             for key, value in buckets.iteritems():
                 columns.append(value)
+                
+            print columns
 
             # http://c3js.org/samples/simple_multiple.html
             # query and title are returned for display in UI
@@ -210,6 +236,14 @@ class Data(webapp2.RequestHandler):
                 'data' : {
                     'x' : 'x',
                     'columns' : columns 
+                },
+                'axis': {
+                    'x': {
+                        'type': 'timeseries',
+                        'tick': {
+                            'format': '%Y-%m-%d'
+                        }
+                    }
                 },
                 'query' : query,
                 'title' : "Sources by hour" 
