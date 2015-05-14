@@ -19,15 +19,18 @@ from bigquery import schema_from_record
 from config import *
 from utils import Utils
 
-main_config_file = open("./config.py", 'r')
+try:
+	main_config_file = open("./config.py", 'r')
+except:
+	print "Unable to open config file. Check if the file exists" 
 # Twitter app keys and tokens
 CONSUMER_KEY = ""
 CONSUMER_SECRET = ""
 ACCESS_TOKEN = ""
 ACCESS_TOKEN_SECRET = ""
-GNIP_URL = 'https://stream.gnip.com:443/accounts/piyush-kumar/publishers/twitter/streams/track/prod.json'
-GNIP_USERNAME = 'ilyanshee@gmail.com'
-GNIP_PASSWORD = 'R6FHNGgC2E'
+GNIP_URL = 'https://stream.gnip.com:443/accounts/xxxxxx/publishers/twitter/streams/track/prod.json'
+GNIP_USERNAME = 'xxxx@gmail.com'
+GNIP_PASSWORD = 'xxxx'
 
 GNIP_SCHEMA_FILE = "./schema_powertrack.json"
 GNIP_SAMPLE_TWEET_FILE = "./sample_tweet_powertrack.json"
@@ -69,8 +72,8 @@ for line in container_template:
 
 #Create relevant Twitter/GNIP config files
 main_config_template =  open("./config.py", 'r')
-twitter_config_template =  open("./image_twitter/config.py", 'w')
-gnip_config_template =  open("./image_gnip/config.py", 'w')
+twitter_config_template =  open("./image_twitter/config_twitter.py", 'w')
+gnip_config_template =  open("./image_gnip/config_gnip.py", 'w')
 
 for line in main_config_template:
 	if "GNIP" in line:
