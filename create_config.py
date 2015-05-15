@@ -23,14 +23,7 @@ try:
 	main_config_file = open("./config.py", 'r')
 except:
 	print "Unable to open config file. Check if the file exists" 
-# Twitter app keys and tokens
-CONSUMER_KEY = ""
-CONSUMER_SECRET = ""
-ACCESS_TOKEN = ""
-ACCESS_TOKEN_SECRET = ""
-GNIP_URL = 'https://stream.gnip.com:443/accounts/xxxxxx/publishers/twitter/streams/track/prod.json'
-GNIP_USERNAME = 'xxxx@gmail.com'
-GNIP_PASSWORD = 'xxxx'
+
 
 GNIP_SCHEMA_FILE = "./schema_powertrack.json"
 GNIP_SAMPLE_TWEET_FILE = "./sample_tweet_powertrack.json"
@@ -56,7 +49,6 @@ container_twitter = open("./image_gnip/container.yaml", 'w')
 #Create appropriate yaml files here
 for line in container_template:
 	line_array = line.split(":")
-	print line_array
 	if line_array[0].strip() == "image":
 		cur_line = line_array[0]+': gcr.io/'+project_id+'/image_gnip'+'\n'
 		container_gnip.write(cur_line)
