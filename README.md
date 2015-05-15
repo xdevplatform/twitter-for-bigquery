@@ -48,9 +48,10 @@ The enclosed sample includes a simple `load.py` file to stream Tweets directly i
 - Click on the down arrow by the project, select "Create new dataset" and enter "tweets"
 - Click on the down arrow by the dataset, select "Create new table" and enter "2015_01_17" (or whatever is configured in config.py)
 - Run `python load.py` 
+- Run `create_config.py` to generate appropriate yaml and config files in the image_gnip and image_twitter
 
 When developing on top of the Twitter platform, you must abide by the [Developer Agreement & Policy](https://dev.twitter.com/overview/terms/agreement-and-policy).
-Most notably, you must respect the section entitled "Maintain the Integrity of Twitter’s Products", including removing all relevant
+Most notably, you must respect the section entitled "Maintain the Integrity of Twitter√ïs Products", including removing all relevant
 Content with regard to unfavorites, deletes and other user actions. 
 
 Loading Twitter data into BigQuery from Google Compute Engine
@@ -77,7 +78,7 @@ Lastly, you'll want to copy `logging.conf.dist` to `logging.conf` and customize 
 You may need the following instructions on how to install Git:
 
 - [Stack Overflow: How to Install git in google compute engine?](http://stackoverflow.com/questions/27460923/how-to-install-git-in-google-compute-engine)
-- [Stack Overflow: What is the official “preferred” way to install pip and virtualenv systemwide?](http://stackoverflow.com/questions/5585875/what-is-the-official-preferred-way-to-install-pip-and-virtualenv-systemwide)
+- [Stack Overflow: What is the official √ípreferred√ì way to install pip and virtualenv systemwide?](http://stackoverflow.com/questions/5585875/what-is-the-official-preferred-way-to-install-pip-and-virtualenv-systemwide)
 - [Working around GCC issues with 'sudo apt-get install python-dev'](http://stackoverflow.com/questions/21530577/fatal-error-python-h-no-such-file-or-directory)
 - [Installing libffi-dev](http://askubuntu.com/questions/499714/error-installing-scrapy-in-virtualenv-using-pip)
 
