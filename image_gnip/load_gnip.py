@@ -17,6 +17,7 @@ from bigquery import schema_from_record
 from config import *
 from utils import Utils
 
+SLEEP_TIME = 10
 CHUNKSIZE = 4*1024
 GNIPKEEPALIVE = 30  # seconds
 NEWLINE = '\r\n'
@@ -29,7 +30,8 @@ HEADERS = { 'Accept': 'application/json',
 print_lock = Lock()
 err_lock = Lock()
 
-class procEntry(threading.Thread):
+class proc_entry(threading.Thread):
+    
     def __init__(self, buf):
         self.buf = buf
         threading.Thread.__init__(self)
@@ -46,9 +48,8 @@ class procEntry(threading.Thread):
                 with err_lock:
                     sys.stderr.write("Error processing JSON: %s (%s)\n"%(str(e), rec))
 
-
 #Passing a BigQueryGnipListener object by reference
-def getStream(BigQueryGnipListener):
+def get_stream(BigQueryGnipListener):
     req = urllib2.Request(GNIP_URL, headers=HEADERS)
     response = urllib2.urlopen(req, timeout=(1+GNIPKEEPALIVE))
     # header -  print response.info()
@@ -59,138 +60,92 @@ def getStream(BigQueryGnipListener):
         if tmp == '':
             return
         [records, remainder] = ''.join([remainder, tmp]).rsplit(NEWLINE,1)
-        #Method to 
         BigQueryGnipListener.on_data(records)
-        print 
-        procEntry(records).start()
+        proc_entry(records).start()
+        
 # Write records to BigQuery
 
 class BigQueryGnipListener(object):
+    
     """docstring for ClassName"""
-    def __init__(self, client, dataset_id, table_id, logger=None):
+    def __init__(self, client, schema, table_mapping, logger=None):
 
       self.client = client
-      self.dataset_id = dataset_id
-      self.table_id = table_id
+      self.schema = schema
+      self.table_mapping = table_mapping
+      self.default_table = table_mapping.values()[0]
       self.count = 0
       self.logger = logger
       
     def on_data(self, data):
 
-#         print "Data type: %s" % type(data)
-#         print "Data: " + data
-        
+        # get bulk records, but process individually based on tag-based routing 
         records_str = data.strip().split(NEWLINE)
-
-#         print "Records: %s" % len(records_str) 
-        
         for r in records_str:
         
-            # Twitter returns data in JSON format - we need to decode it first
-#             temp_str = json.dumps(data)
-#             print "********************"
-#             print "Record type: %s" % type(r)
-#             print "Record: " + r 
-
             record = json.loads(r)
-    
             if not record.get('delete', None):
+                
+                table = None
+                tag = self.get_table_tag(record)
+                print tag
+                if tag:
+                    table = self.table_mapping.get(tag, None)
+                    if not table:
+                        table = tag.split(".")
+                        created = self.client.create_table(table[0], table[1], self.schema)
+                        if created:
+                            self.table_mapping[tag] = table
+                            self.logger.info('Created BQ table: %s' % tag)
+
+                if not table:
+                    table = self.default_table
     
                 record_scrubbed = Utils.scrub(record)
-#                 print "Scrubbed Record"
-#                 print record_scrubbed
-                Utils.insert_record(self.client, self.dataset_id, self.table_id, record_scrubbed)
+                Utils.insert_record(self.client, table[0], table[1], record_scrubbed)
                 
                 if self.logger:
-                    self.logger.info('@%s: %s' % (record['actor']['preferredUsername'], record['body'].encode('ascii', 'ignore')))
+                    self.logger.info('@%s: %s (%s.%s)' % (record['actor']['preferredUsername'], record['body'].encode('ascii', 'ignore'), table[0], table[1]))
                 
                 self.count = self.count + 1
                 
         return True
-
-    #handle errors without closing stream:
-    def on_error(self, status_code):
-
-        if status_code == 420:
-
-            time.sleep(60)
-
-            if self.logger:
-                self.logger.info('420, sleeping for 60 seconds')
-
-            return True
-        
-        if self.logger:
-            self.logger.info('Error with status code: %s' % status_code)
-
-        return False 
-
-    def on_timeout(self):
-        
-        time.sleep(60)
-
-        if self.logger:
-            self.logger.info('Timeout, sleeping for 60 seconds')
-
-        return False 
-
-    def on_exception(self, exception):
-        
-        if self.logger:
-            self.logger.exception('Exception')
-
-        return False 
-
-class BigQueryListener(tweepy.StreamListener):
     
-    def __init__(self, client, dataset_id, table_id, logger=None):
-
-      self.client = client
-      self.dataset_id = dataset_id
-      self.table_id = table_id
-      self.count = 0
-      self.logger = logger
-      
-    def on_data(self, data):
-        
-        # Twitter returns data in JSON format - we need to decode it first
-        record = json.loads(data)
-        
-        if not record.get('delete', None):
-
-            record_scrubbed = Utils.scrub(record)
-            Utils.insert_record(self.client, self.dataset_id, self.table_id, record_scrubbed)
+    def get_table_tag(self, record):
+        gnip = record.get('gnip', None)
+        if gnip:
+            matching_rules = gnip.get('matching_rules', None)
+            if matching_rules:
+                for rule in matching_rules:
+                    tag = rule.get("tag", None)
+                    if tag and "." in tag:
+                        return tag
             
-            if self.logger:
-                self.logger.info('@%s: %s' % (record['user']['screen_name'], record['text'].encode('ascii', 'ignore')))
-            
-            self.count = self.count + 1
-            
-            return True
+        return None
 
     #handle errors without closing stream:
     def on_error(self, status_code):
 
         if status_code == 420:
 
-            time.sleep(60)
+            time.sleep(SLEEP_TIME)
 
             if self.logger:
-                self.logger.info('420, sleeping for 60 seconds')
+                self.logger.info("420, sleeping for %s seconds" % SLEEP_TIME)
 
             return True
         
         if self.logger:
-            self.logger.info('Error with status code: %s' % status_code)
+            self.logger.info("Error with status code: %s" % status_code)
 
         return False 
 
     def on_timeout(self):
         
-        time.sleep(60)
+        time.sleep(SLEEP_TIME)
 
         if self.logger:
-            self.logger.info('Timeout, sleeping for 60 seconds')
+            self.logger.info("Timeout, sleeping for %s seconds" % SLEEP_TIME)
 
         return False 
 
@@ -213,29 +168,19 @@ def main():
     schema_str = Utils.read_file(GNIP_SCHEMA_FILE)
     schema = json.loads(schema_str)
     
-    # create table BigQuery table
-    created = client.create_table(DATASET_ID, TABLE_ID, schema)
-    logger.info("created result: %s" % created)
-#     if (len(created) == 0):
-#         print "failed to create table"
-#         return
+    # initialize table mapping for default table
+    table_mapping = {
+         DATASET_ID + "." + TABLE_ID : [DATASET_ID, TABLE_ID]
+     }
     
-    l = BigQueryGnipListener(client, DATASET_ID, TABLE_ID, logger=logger)
-    auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
-    auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
+    l = BigQueryGnipListener(client, schema, table_mapping, logger=logger)
  
     while True:
 
         stream = None
 
         try:
-            getStream(l)
-            # stream = tweepy.Stream(auth, l, headers = {"Accept-Encoding": "deflate, gzip"})
-            #stream = tweepy.Stream(auth, l)
-
-            # Choose stream: filtered or sample
-            # stream.sample()
-            #stream.filter(track=TRACK_ITEMS) # async=True
+            get_stream(l)
             
         except:
 
@@ -244,7 +189,7 @@ def main():
             if stream:
                 stream.disconnect()
 
-            time.sleep(60)
+            time.sleep(SLEEP_TIME)
 
     # Can also test loading data from a local file
     # Utils.import_from_file(client, DATASET_ID, TABLE_ID, 'data/sample_stream.jsonr', single_tweet=False)

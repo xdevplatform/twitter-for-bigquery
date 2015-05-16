@@ -1,9 +1,9 @@
 version: v1beta2
 containers:
-  - name: image_twitter
-    image: gcr.io/impressive-bay-93722/image_twitter
+  - name: image_gnip
+    image: gcr.io/twitter-for-bigquery/image_gnip
     command: ['python' 'load.py']
     ports:
-      - name: image_twitter
+      - name: image_gnip
         hostPort: 8080
         containerPort: 8080

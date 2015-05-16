@@ -179,3 +179,15 @@ def delete_rules(rules_list, **kwargs):
     """ Synchronously delete multiple rules from GNIP PowerTrack. """
     conf = config.resolve(kwargs)
     _delete(conf, rules_list)
+
+def main():
+    
+    conf = {
+        'url': 'https://stream.gnip.com:443/XXX.json',
+        'auth': ('USER', 'PASS')
+    }
+    built_rules = [{"value": "test rule OR foobar"}]
+    _delete(conf, built_rules)
+    
+if __name__ == "__main__":
+    main()
