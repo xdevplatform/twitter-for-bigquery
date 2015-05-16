@@ -42,7 +42,7 @@ for line in main_config_file:
 	elif (line_array[0].strip()  == "ACCESS_TOKEN_SECRET"):
 		ACCESS_TOKEN_SECRET = line_array[1].strip()
 
-container_template = open("./container.yaml", 'r')
+container_template = open("./container_template.yaml", 'r')
 container_gnip = open("./image_gnip/container.yaml", 'w')
 container_twitter = open("./image_gnip/container.yaml", 'w')
 
