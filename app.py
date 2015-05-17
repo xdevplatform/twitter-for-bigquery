@@ -178,7 +178,7 @@ class Datasets(webapp2.RequestHandler):
     
     def get(self):
         
-        template_data = {"id": "{{id}}"}
+        template_data = {"id": "{{id}}", "datasetReferenceProjectId": "{{datasetReference.projectId}}","datasetReferenceDatasetId": "{{datasetReference.datasetId}}" }
         template_path = 'templates/datasets.html'
         self.response.out.write(template.render(template_path, template_data))
         
