@@ -178,7 +178,7 @@ class Datasets(webapp2.RequestHandler):
     
     def get(self):
         
-        template_data = {"id": "{{id}}", "datasetReferenceProjectId": "{{datasetReference.projectId}}","datasetReferenceDatasetId": "{{datasetReference.datasetId}}" }
+        template_data = {"id": "{{id}}", "projectId": "{{projectId}}","datasetId": "{{datasetId}}","tableId": "{{tableId}}" }
         template_path = 'templates/datasets.html'
         self.response.out.write(template.render(template_path, template_data))
         
@@ -186,16 +186,31 @@ class DatasetsList(webapp2.RequestHandler):
     
     def get(self):
         
-        datasets = None
+        tables = []
+        service = get_service()
         
         try:
-            response = get_service().datasets().list(projectId=PROJECT_ID).execute()
+            response = service.datasets().list(projectId=PROJECT_ID).execute()
             datasets = response.get("datasets", None)
+            
+            for d in datasets:
+                ref = d.get("datasetReference", None)
+                response = service.tables().list(projectId=ref.get("projectId"), datasetId=ref.get("datasetId")).execute()
+                for t in response.get("tables", None):
+                    id = t.get("id")
+                    ref = t.get("tableReference", None)
+                    tables.append({
+                        "id": id, 
+                        "projectId": ref.get("projectId", None), 
+                        "datasetId": ref.get("datasetId", None), 
+                        "tableId": ref.get("tableId", None) 
+                    })
+            
         except RulesGetFailedException:
             pass # uh oh
         
         self.response.headers['Content-Type'] = 'application/json'   
-        self.response.out.write(json.dumps(datasets))        
+        self.response.out.write(json.dumps(tables))        
 
 class Rules(webapp2.RequestHandler):
     
