@@ -174,6 +174,29 @@ class Chart(webapp2.RequestHandler):
         template_path = 'templates/chart.html'
         self.response.out.write(template.render(template_path, template_data))
 
+class Datasets(webapp2.RequestHandler):
+    
+    def get(self):
+        
+        template_data = {"id": "{{id}}"}
+        template_path = 'templates/datasets.html'
+        self.response.out.write(template.render(template_path, template_data))
+        
+class DatasetsList(webapp2.RequestHandler):
+    
+    def get(self):
+        
+        datasets = None
+        
+        try:
+            response = get_service().datasets().list(projectId=PROJECT_ID).execute()
+            datasets = response.get("datasets", None)
+        except RulesGetFailedException:
+            pass # uh oh
+        
+        self.response.headers['Content-Type'] = 'application/json'   
+        self.response.out.write(json.dumps(datasets))        
+
 class Rules(webapp2.RequestHandler):
     
     def get(self):
@@ -181,7 +204,7 @@ class Rules(webapp2.RequestHandler):
         template_data = {"tag": "{{tag}}", "value": "{{value}}", "count": "{{count}}"}
         template_path = 'templates/rules.html'
         self.response.out.write(template.render(template_path, template_data))
-        
+
 class RulesList(webapp2.RequestHandler):
     
     def get(self):
@@ -383,15 +406,19 @@ class QueryBuilder():
 
 application = webapp2.WSGIApplication([
     
+    # JSON 
     ('/rules/list', RulesList),
     ('/rules/add', RulesAdd),
     ('/rules/delete', RulesDelete),
+    ('/datasets/list', DatasetsList),
     
-    ('/data', Data),
-
+    # HTML
+    ('/datasets', Datasets),
     ('/rules', Rules),
     ('/admin', Admin),
+    ('/chart/data', Data),
     ('/chart', Chart),
+
     ('/', Chart),
     
 ], debug=True)

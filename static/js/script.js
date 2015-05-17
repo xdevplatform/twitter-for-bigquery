@@ -79,7 +79,7 @@ function queryData(charttype, args){
 	
 	 $.ajax({
 		type : "GET",
-		url : "/data",
+		url : "/chart/data",
 		data : args,
 		dataType : "json",
 		success : function(response) {
