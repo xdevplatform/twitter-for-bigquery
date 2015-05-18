@@ -102,3 +102,178 @@ var ChartPage = {
 	}
 
 }
+
+var RulesPage = {
+
+	init : function(){
+	
+		$(document.body).on("click", ".rule_delete", function(){
+			if (confirm('Are you sure?')){
+				ruleid = $(this).data("ruleid");
+				RulesPage.rules_delete(ruleid, function(response){
+					RulesPage.rules_list();
+				});
+			}
+		});
+	
+		$(document.body).on("click", ".rule_add", function(){
+			var rule = $("#rule_text").val();
+			var tag = $("#rule_tag").val();
+			RulesPage.rules_add(rule, tag, function(response){
+				$('#myModal').modal('hide');
+				RulesPage.rules_list();
+			});
+		});
+	
+		RulesPage.rules_list();
+	},
+	
+	rules_list : function(callback){
+		$("#rules").html("");
+		 $.ajax({
+				type : "GET",
+				url : "/rules/list",
+				dataType : "json",
+				success : function(response) {
+					
+					template = $("#ruleRow").html();
+					Mustache.parse(template);
+					
+					for (var i = 0; i < response.length; i++){
+						
+						var rule = response[i];
+						rule['count'] = i;
+						
+						var output = Mustache.render(template, rule);
+						$("#rules").append(output);
+						
+					}				
+				},
+				error : function(xhr, errorType, exception) {
+					console.log('Error occured');
+				}
+			});	
+	},
+	
+	rules_add : function(rule, tag, callback){
+		 var params = {
+			'rule': rule,
+			'tag': tag
+		 }
+		 $.ajax({
+				type : "GET",
+				url : "/rules/add",
+				data : params,
+				dataType : "json",
+				success : callback,
+				error : function(xhr, errorType, exception) {
+					console.log('Error occured');
+				}
+			});	
+	},
+	
+	rules_delete : function(index, callback){
+		 var params = {
+			'index': index
+		 }
+		 $.ajax({
+				type : "GET",
+				url : "/rules/delete",
+				data : params,
+				dataType : "json",
+				success : callback,
+				error : function(xhr, errorType, exception) {
+					console.log('Error occured');
+				}
+			});	
+	}
+
+}
+
+var DatasetsPage = {
+
+	init : function(){
+	
+		$(document.body).on("click", ".dataset_delete", function(){
+			if (confirm('Are you sure?')){
+				datasetid = $(this).data("datasetid");
+				datasets_delete(datasetid, function(response){
+					DatasetsPage.datasets_list();
+				});
+			}
+		});
+	
+		$(document.body).on("click", ".dataset_add", function(){
+			var dataset = $("#dataset_text").val();
+			var tag = $("#dataset_tag").val();
+			DatasetsPage.datasets_add(dataset, tag, function(response){
+				$('#myModal').modal('hide');
+				$("#datasets").html("");
+				DatasetsPage.datasets_list();
+			});
+		});
+	
+		DatasetsPage.datasets_list();
+	},
+	
+	datasets_list : function(callback){
+		 $.ajax({
+				type : "GET",
+				url : "/datasets/list",
+				dataType : "json",
+				success : function(response) {
+					
+					template = $("#datasetRow").html();
+					Mustache.parse(template);
+					
+					for (var i = 0; i < response.length; i++){
+						
+						var dataset = response[i];
+						dataset['count'] = i;
+						
+						var output = Mustache.render(template, dataset);
+						
+						$("#datasets").append(output);
+						
+					}				
+				},
+				error : function(xhr, errorType, exception) {
+					console.log('Error occured');
+				}
+			});	
+	},
+	
+	datasets_add : function(dataset, tag, callback){
+		 var params = {
+			'dataset': dataset,
+			'tag': tag
+		 }
+		 $.ajax({
+				type : "GET",
+				url : "/datasets/add",
+				data : params,
+				dataType : "json",
+				success : callback,
+				error : function(xhr, errorType, exception) {
+					console.log('Error occured');
+				}
+			});	
+	},
+	
+	datasets_delete : function(index, callback){
+		 var params = {
+			'index': index
+		 }
+		 $.ajax({
+				type : "GET",
+				url : "/datasets/delete",
+				data : params,
+				dataType : "json",
+				success : callback,
+				error : function(xhr, errorType, exception) {
+					console.log('Error occured');
+				}
+			});	
+	}
+	
+}
