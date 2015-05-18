@@ -223,9 +223,11 @@ var DatasetPage = {
 		});
 	
 		$(document.body).on("click", ".dataset_add", function(){
-			var dataset = $("#dataset_text").val();
-			var tag = $("#dataset_tag").val();
-			DatasetPage.add(dataset, tag, function(response){
+			var name = $("#dataset_name").val();
+			var type = $("#dataset_type").val();
+			var rules = $("#dataset_rules").val();
+			var imprt = $("#dataset_imprt").val();
+			DatasetPage.add(name, type, rules, imprt, function(response){
 				$('#myModal').modal('hide');
 				$("#datasets").html("");
 				DatasetPage.list();
@@ -241,12 +243,14 @@ var DatasetPage = {
 		Page.list("/api/dataset/list", callback)
 	},
 	
-	add : function(dataset, tag, callback){
+	add : function(name, type, rules, imprt, callback){
 		 var params = {
-			'dataset': dataset,
-			'tag': tag
+			'name': name,
+			'type': type,
+			'rules': rules,
+			'import': imprt
 		 }
-			Page.add("/api/dataset/add", params, callback)
+		Page.add("/api/dataset/add", params, callback)
 	},
 	
 	delete : function(index, callback){

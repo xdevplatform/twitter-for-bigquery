@@ -1,7 +1,8 @@
-import sys
-sys.path.insert(0, 'libs')
+import os, sys
 
-import os
+BASE_DIR = os.path.dirname(os.path.realpath(__file__))
+sys.path.insert(0, "%s/libs" % BASE_DIR)
+
 import re
 import httplib2
 import json
@@ -207,11 +208,26 @@ class ApiDatasetAdd(webapp2.RequestHandler):
         name = self.request.get("name")
         type = self.request.get("type")
         rules = self.request.get("rules")
+        imprt = self.request.get("import")
         
-        # BUGBUG
-        client.create_table(table[0], table[1], self.schema)
+        (dataset, table) = name.split(".")
+        schema_str = Utils.read_file(GNIP_SCHEMA_FILE)
+        schema = json.loads(schema_str)
         
-        response = {}
+        body = {
+            "tableReference" : {
+                "projectId" : PROJECT_ID,
+                "tableId" : table,
+                "datasetId" : dataset
+            },
+            "schema" : {
+                "fields" : schema
+            }
+        }
+        
+        service = get_service()
+        response = service.tables().insert(projectId=PROJECT_ID, datasetId=dataset, body=body).execute()
+
         self.response.headers['Content-Type'] = 'application/json'   
         self.response.out.write(json.dumps(response))                
 
