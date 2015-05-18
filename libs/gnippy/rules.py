@@ -94,9 +94,10 @@ def _delete(conf, built_rules):
             built_rules: A single or list of built rules.
     """
     _check_rules_list(built_rules)
-    rules_url = _generate_rules_url(conf['url'])
+    rules_url = _generate_rules_url(conf['url']) + "?_method=delete"
     delete_data = json.dumps(_generate_post_object(built_rules))
-    r = requests.delete(rules_url, auth=conf['auth'], data=delete_data)
+    
+    r = requests.post(rules_url, auth=conf['auth'], data=delete_data)
     if not r.status_code in range(200,300):
         error_text = "HTTP Response Code: %s, Text: '%s'" % (str(r.status_code), r.text)
         raise RuleDeleteFailedException(error_text)
