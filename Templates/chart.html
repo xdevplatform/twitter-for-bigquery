@@ -160,6 +160,24 @@
 <script type="text/javascript" src="/static/js/datamaps.usa.min.js"></script>
 <script type="text/javascript" src="/static/js/script.js"></script>
 
+<script language="JavaScript1.2">
+
+$(document).ready(function(){
+
+	$('#form').submit(function(event){
+
+		  ChartPage.init();
+		  return false;
+
+		});
+	
+	
+	$("#map").hide();
+	
+})
+
+</script>
+
 </body>
 
 </html>
