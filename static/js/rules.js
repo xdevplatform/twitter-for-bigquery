@@ -20,7 +20,6 @@ function init(){
 		var tag = $("#rule_tag").val();
 		rules_add(rule, tag, function(response){
 			$('#myModal').modal('hide');
-			$("#rules").html("");
 			rules_list();
 		});
 	});
@@ -29,6 +28,7 @@ function init(){
 }
 
 function rules_list(callback){
+	$("#rules").html("");
 	 $.ajax({
 			type : "GET",
 			url : "/rules/list",
