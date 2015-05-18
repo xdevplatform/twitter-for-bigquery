@@ -200,7 +200,7 @@ class ApiDatasetList(webapp2.RequestHandler):
         self.response.headers['Content-Type'] = 'application/json'   
         self.response.out.write(json.dumps(tables))   
         
-class ApiDatasetCreate(webapp2.RequestHandler):
+class ApiDatasetAdd(webapp2.RequestHandler):
     
     def get(self):
         
@@ -209,6 +209,7 @@ class ApiDatasetCreate(webapp2.RequestHandler):
         rules = self.request.get("rules")
         
         # BUGBUG
+        client.create_table(table[0], table[1], self.schema)
         
         response = {}
         self.response.headers['Content-Type'] = 'application/json'   
@@ -420,6 +421,7 @@ application = webapp2.WSGIApplication([
     ('/api/rule/list', ApiRuleList),
     ('/api/rule/add', ApiRuleAdd),
     ('/api/rule/delete', ApiRuleDelete),
+    ('/api/dataset/add', ApiDatasetAdd),
     ('/api/dataset/list', ApiDatasetList),
     
     # HTML
