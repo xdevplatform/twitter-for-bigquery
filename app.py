@@ -170,7 +170,10 @@ class Data(webapp2.RequestHandler):
 class Chart(webapp2.RequestHandler):
     
     def get(self):
-        template_data = {}
+        
+        tables = get_datasets()
+
+        template_data = {"tables": tables}
         template_path = 'templates/chart.html'
         self.response.out.write(template.render(template_path, template_data))
 
@@ -186,29 +189,7 @@ class DatasetsList(webapp2.RequestHandler):
     
     def get(self):
         
-        tables = []
-        service = get_service()
-        
-        try:
-            response = service.datasets().list(projectId=PROJECT_ID).execute()
-            datasets = response.get("datasets", None)
-            
-            for d in datasets:
-                ref = d.get("datasetReference", None)
-                response = service.tables().list(projectId=ref.get("projectId"), datasetId=ref.get("datasetId")).execute()
-                for t in response.get("tables", None):
-                    id = t.get("id")
-                    ref = t.get("tableReference", None)
-                    tables.append({
-                        "id": id, 
-                        "projectId": ref.get("projectId", None), 
-                        "datasetId": ref.get("datasetId", None), 
-                        "tableId": ref.get("tableId", None) 
-                    })
-            
-        except RulesGetFailedException:
-            pass # uh oh
-        
+        tables = get_datasets()
         self.response.headers['Content-Type'] = 'application/json'   
         self.response.out.write(json.dumps(tables))        
 
@@ -265,28 +246,6 @@ class RulesDelete(webapp2.RequestHandler):
         try:
             rules_list = rules.get_rules(url=GNIP_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
             rule_delete = rules_list[rule_index]
-            
-            print rules_list
-            print rule_delete
-            
-            r = rule_delete
-            
-            if not isinstance(r, dict):
-                print "1"
-    
-            if "value" not in r:
-                print "2"
-    
-            if not isinstance(r['value'], basestring):
-                print "3"
-    
-            if "tag" in r and not isinstance(r['tag'], basestring):
-                print "4"
-    
-#             for k in r:
-#                 if k not in expected:
-#                     fail()
-            
             response = rules.delete_rule(rule_delete, url=GNIP_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
         except RulesGetFailedException:
             pass # uh oh
@@ -301,6 +260,29 @@ class Admin(webapp2.RequestHandler):
         template_path = 'templates/admin.html'
         self.response.out.write(template.render(template_path, template_data))
         
+def get_datasets():
+    
+    tables = []
+    
+    service = get_service()
+    response = service.datasets().list(projectId=PROJECT_ID).execute()
+    datasets = response.get("datasets", None)
+    
+    for d in datasets:
+        ref = d.get("datasetReference", None)
+        response = service.tables().list(projectId=ref.get("projectId"), datasetId=ref.get("datasetId")).execute()
+        for t in response.get("tables", None):
+            id = t.get("id")
+            ref = t.get("tableReference", None)
+            tables.append({
+                "id": id, 
+                "projectId": ref.get("projectId", None), 
+                "datasetId": ref.get("datasetId", None), 
+                "tableId": ref.get("tableId", None) 
+            })
+            
+    return tables
+
 class QueryBuilder():
     
     PUBLIC = "public"

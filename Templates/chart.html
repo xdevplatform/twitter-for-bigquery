@@ -66,9 +66,20 @@
 	    		
 	    			<div class="row">
 		    	
-			    		<div class="col-md-4">
+			    		<div class="col-md-3">
 			
-				    		<h4>Data Source</h4>
+				    		<h4>Table</h4>
+							<select id="table" name="table" class="form-control">
+						      {% for t in tables %}
+							  <option value="{{t.id}}">{{t.datasetId}}:{{t.tableId}}</option>
+						      {% endfor %}
+							</select>
+							
+			    		</div>
+
+			    		<div class="col-md-3">
+			
+				    		<h4>Field</h4>
 							<select id="source" name="source" class="form-control">
 							  <option value="hashtags">Hashtags</option>
 							  <option value="mentions">User mentions</option>
@@ -77,21 +88,18 @@
 							
 			    		</div>
 			
-			    		<div class="col-md-4">
+			    		<div class="col-md-3">
 			
 							<h4>Chart</h4>
 							<select id="charttype" name="charttype" class="form-control">
 							  <option value="donut">Donut</option>
 							  <option value="bar">Bar</option>
 							  <option value="timeseries">Timeseries</option>
-			<!--
-							  <option value="map">Map</option>
-			-->
 							</select>
 			
 			    		</div>
 
-			    		<div class="col-md-4">
+			    		<div class="col-md-3">
 			
 							<h4>Time</h4>
 							<select id="interval" name="interval" class="form-control">
