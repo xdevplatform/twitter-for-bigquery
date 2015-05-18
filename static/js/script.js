@@ -254,7 +254,7 @@ var DatasetPage = {
 	
 	load_select : function(select_id, disable_id) {
 		
-		$(disable_id).prop("disabled",true);
+		$(disable_id).prop("disabled", true);
 		
 		DatasetPage.list(function(response){
 
@@ -264,14 +264,14 @@ var DatasetPage = {
 				
 				var dataset = response[i]['datasetId'];
 				var table = response[i]['tableId'];
-				var pair = dataset + ":" + table;
+				var pair = dataset + "." + table;
 				var value = pair;
 				var label = pair;
 				$(select_id).append(new Option(label, value));
 				
 			}
 			
-			$(disable_id).prop("disabled",false);
+			$(disable_id).prop("disabled", false);
 		});
 		
 	}

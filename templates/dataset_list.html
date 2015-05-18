@@ -16,9 +16,9 @@
 			<table class="table table-striped">
 			<thead>
 	        <tr>
-	          <th>Id</th>
 	          <th>Dataset</th>
-	          <th>Table</th>
+	          <th>Type</th>
+	          <th>Rules</th>
 	          <th>Actions</th>
 	        </tr>
       		</thead>
@@ -43,21 +43,31 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">Add Rule</h4>
+        <h4 class="modal-title" id="myModalLabel">Add Dataset</h4>
       </div>
       <div class="modal-body">
 
 		<form class="form-horizontal">
 		  <div class="form-group">
-		    <label for="" class="col-sm-2 control-label">Tag</label>
+		    <label for="" class="col-sm-2 control-label">Name</label>
 		    <div class="col-sm-10">
-		      <input type="text" class="form-control" id="rule_tag" placeholder="">
+		      <input type="text" class="form-control" id="dataset_name" placeholder="">
 		    </div>
 		  </div>
 		  <div class="form-group">
-		    <label for="" class="col-sm-2 control-label">Rule</label>
+		    <label for="" class="col-sm-2 control-label">Type</label>
 		    <div class="col-sm-10">
-		      <input type="text" class="form-control" id="rule_text" placeholder="">
+		      <select name="dataset_type" id="dataset_type" class="form-control">
+		      	<option value="gnip">Gnip</option>
+		      	<option value="twitter">Twitter Stream</option>
+		      </select>
+		    </div>
+		  </div>
+		  <div class="form-group">
+		    <label for="" class="col-sm-2 control-label">Rules</label>
+		    <div class="col-sm-10">
+		      <textarea class="form-control" id="dataset_rules" placeholder="" rows="4"></textarea>
+		      <span class="help-block">Newline delimited</span>
 		    </div>
 		  </div>
 		</form>
@@ -65,7 +75,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary rule_add">Save Rule</button>
+        <button type="button" class="btn btn-primary dataset_add">Save Dataset</button>
       </div>
     </div>
   </div>
@@ -74,16 +84,18 @@
 <script id="table_row" type="text/template">
 <tr>
 	<td>
-		{{id}}
+		{{datasetId}}:{{tableId}}
 	</td>
 	<td>
-		{{datasetId}}
+		Gnip
 	</td>
 	<td>
-		{{tableId}}
+		{{rulesStart}}{{rulesValue}}<br>{{rulesEnd}}
 	</td>
 	<td>
-		<a class="rule_delete" href="https://bigquery.cloud.google.com/table/{{id}}" target="_target">open</a>
+		<a class="dataset_delete" href="https://bigquery.cloud.google.com/table/{{id}}" target="_target">open</a>
+		|
+		<a class="dataset_delete" href="#" target="_target">delete</a>
 	</td>
 </tr>
 </script>

@@ -6,21 +6,19 @@ import re
 import httplib2
 import json
 import webapp2
-
-from datetime import datetime, timedelta
 import time
+from datetime import datetime, timedelta
 
 from google.appengine.ext.webapp import template
 from google.appengine.api import memcache
-
 from apiclient.discovery import build
 from apiclient import errors
-
 from oauth2client import appengine
-
 from gnippy import rules
 
 from config import *
+
+# template.register_template_library('tags.verbatim') 
 
 _SCOPE = 'https://www.googleapis.com/auth/bigquery'
 
@@ -150,8 +148,6 @@ class ChartData(webapp2.RequestHandler):
             for key, value in buckets.iteritems():
                 columns.append(value)
                 
-            print columns
-
             # http://c3js.org/samples/simple_multiple.html
             # query and title are returned for display in UI
             args = {
@@ -178,7 +174,15 @@ class DatasetList(webapp2.RequestHandler):
     
     def get(self):
         
-        template_data = {"id": "{{id}}", "projectId": "{{projectId}}","datasetId": "{{datasetId}}","tableId": "{{tableId}}" }
+        template_data = {
+             "id": "{{id}}", 
+             "projectId": "{{projectId}}",
+             "datasetId": "{{datasetId}}",
+             "tableId": "{{tableId}}",
+             "rulesStart" : "{{#rules}}",
+             "rulesValue" : "{{.}}",
+             "rulesEnd" : "{{/rules}}"
+        }
         template_path = 'templates/dataset_list.html'
         self.response.out.write(template.render(template_path, template_data))
         
@@ -186,13 +190,33 @@ class ApiDatasetList(webapp2.RequestHandler):
     
     def get(self):
         
+        response = rules.get_rules(url=GNIP_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
         tables = get_datasets()
+        for t in tables:
+            tag = "%s.%s" % (t['datasetId'], t['tableId'])
+            rs = [r['value'] for r in response if r['tag'] == tag]
+            t['rules'] = rs
+        
         self.response.headers['Content-Type'] = 'application/json'   
-        self.response.out.write(json.dumps(tables))        
+        self.response.out.write(json.dumps(tables))   
+        
+class ApiDatasetCreate(webapp2.RequestHandler):
+    
+    def get(self):
+        
+        name = self.request.get("name")
+        type = self.request.get("type")
+        rules = self.request.get("rules")
+        
+        # BUGBUG
+        
+        response = {}
+        self.response.headers['Content-Type'] = 'application/json'   
+        self.response.out.write(json.dumps(response))                
 
 class DatasetDetail(webapp2.RequestHandler):
     
-    def get(self):
+    def get(self, id):
         
         template_data = {"id": "{{id}}", "projectId": "{{projectId}}","datasetId": "{{datasetId}}","tableId": "{{tableId}}" }
         template_path = 'templates/dataset_detail.html'
@@ -224,7 +248,7 @@ class ApiRuleAdd(webapp2.RequestHandler):
         if not rule or not tag:
             raise Exception("missing parameter")
 
-        rules.add_rule(rule, tag=tag, url=GNIP_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
+        response = rules.add_rule(rule, tag=tag, url=GNIP_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
         
         self.response.headers['Content-Type'] = 'application/json'   
         self.response.out.write(json.dumps(response))
@@ -400,7 +424,7 @@ application = webapp2.WSGIApplication([
     
     # HTML
     ('/dataset/list', DatasetList),
-    ('/dataset/([A-Za-z0-9\-\_]+)', DatasetDetail),
+    ('/dataset/([A-Za-z0-9\-\_\:\.]+)', DatasetDetail),
     ('/rule/list', RuleList),
     ('/chart/data', ChartData),
     ('/chart', Chart),
