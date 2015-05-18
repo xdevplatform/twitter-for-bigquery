@@ -18,6 +18,7 @@ from oauth2client import appengine
 from gnippy import rules
 
 from config import *
+from utils import Utils
 
 # template.register_template_library('tags.verbatim') 
 
@@ -207,7 +208,7 @@ class ApiDatasetAdd(webapp2.RequestHandler):
         
         name = self.request.get("name")
         type = self.request.get("type")
-        rules = self.request.get("rules")
+        rule_list = self.request.get("rules")
         imprt = self.request.get("import")
         
         (dataset, table) = name.split(".")
@@ -227,6 +228,13 @@ class ApiDatasetAdd(webapp2.RequestHandler):
         
         service = get_service()
         response = service.tables().insert(projectId=PROJECT_ID, datasetId=dataset, body=body).execute()
+        
+        rule_list = [s.strip() for s in rule_list.splitlines()]
+        
+        print rule_list
+        
+        for r in rule_list:
+            rules.add_rule(r, tag=name, url=GNIP_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
 
         self.response.headers['Content-Type'] = 'application/json'   
         self.response.out.write(json.dumps(response))                
