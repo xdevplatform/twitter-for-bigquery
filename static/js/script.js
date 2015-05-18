@@ -1,3 +1,69 @@
+var Page = {
+		
+	list : function(list_url){
+
+		var cols = $("#table_data").parent().find("tr:first th").length;
+		
+		$("#table_data").html("");
+		$("#table_data").append("<tr><td colspan="+cols+"><center><img src='/static/img/loading.gif'></td></tr>");
+		
+		 $.ajax({
+				type : "GET",
+				url : list_url,
+				dataType : "json",
+				success : function(response) {
+					
+					$("#table_data").html("");
+					
+					template = $("#table_row").html();
+					Mustache.parse(template);
+					
+					for (var i = 0; i < response.length; i++){
+						
+						var rule = response[i];
+						rule['count'] = i;
+						
+						var output = Mustache.render(template, rule);
+						$("#table_data").append(output);
+						
+					}				
+				},
+				error : function(xhr, errorType, exception) {
+					console.log('Error occured');
+				}
+			});	
+	 },
+	 
+	 add : function(add_url, params, callback) {
+		 $.ajax({
+				type : "GET",
+				url : add_url,
+				data : params,
+				dataType : "json",
+				success : callback,
+				error : function(xhr, errorType, exception) {
+					console.log('Error occured');
+				}
+			});	
+	 },
+	 
+	 delete : function(delete_url, params, callback){
+		 $.ajax({
+				type : "GET",
+				url : delete_url,
+				data : params,
+				dataType : "json",
+				success : callback,
+				error : function(xhr, errorType, exception) {
+					console.log('Error occured');
+				}
+			});	
+	 }
+	 
+	 
+
+}
+
 var ChartPage = {
 		
 	init : function() {
@@ -110,30 +176,7 @@ var RulesPage = {
 	},
 	
 	list : function(callback){
-		$("#rules").html("");
-		 $.ajax({
-				type : "GET",
-				url : "/rules/list",
-				dataType : "json",
-				success : function(response) {
-					
-					template = $("#ruleRow").html();
-					Mustache.parse(template);
-					
-					for (var i = 0; i < response.length; i++){
-						
-						var rule = response[i];
-						rule['count'] = i;
-						
-						var output = Mustache.render(template, rule);
-						$("#rules").append(output);
-						
-					}				
-				},
-				error : function(xhr, errorType, exception) {
-					console.log('Error occured');
-				}
-			});	
+		Page.list("/rules/list")
 	},
 	
 	add : function(rule, tag, callback){
@@ -141,32 +184,14 @@ var RulesPage = {
 			'rule': rule,
 			'tag': tag
 		 }
-		 $.ajax({
-				type : "GET",
-				url : "/rules/add",
-				data : params,
-				dataType : "json",
-				success : callback,
-				error : function(xhr, errorType, exception) {
-					console.log('Error occured');
-				}
-			});	
+		 Page.add("/rules/add", params,callback);
 	},
 	
 	delete : function(index, callback){
 		 var params = {
 			'index': index
 		 }
-		 $.ajax({
-				type : "GET",
-				url : "/rules/delete",
-				data : params,
-				dataType : "json",
-				success : callback,
-				error : function(xhr, errorType, exception) {
-					console.log('Error occured');
-				}
-			});	
+		 Page.delete("/rules/delete", params, callback)
 	}
 
 }
@@ -178,7 +203,7 @@ var DatasetsPage = {
 		$(document.body).on("click", ".dataset_delete", function(){
 			if (confirm('Are you sure?')){
 				datasetid = $(this).data("datasetid");
-				delete(datasetid, function(response){
+				DatasetsPage.delete(datasetid, function(response){
 					DatasetsPage.list();
 				});
 			}
@@ -198,30 +223,7 @@ var DatasetsPage = {
 	},
 	
 	list : function(callback){
-		 $.ajax({
-				type : "GET",
-				url : "/datasets/list",
-				dataType : "json",
-				success : function(response) {
-					
-					template = $("#datasetRow").html();
-					Mustache.parse(template);
-					
-					for (var i = 0; i < response.length; i++){
-						
-						var dataset = response[i];
-						dataset['count'] = i;
-						
-						var output = Mustache.render(template, dataset);
-						
-						$("#datasets").append(output);
-						
-					}				
-				},
-				error : function(xhr, errorType, exception) {
-					console.log('Error occured');
-				}
-			});	
+		Page.list("/datasets/list")
 	},
 	
 	add : function(dataset, tag, callback){
@@ -229,32 +231,14 @@ var DatasetsPage = {
 			'dataset': dataset,
 			'tag': tag
 		 }
-		 $.ajax({
-				type : "GET",
-				url : "/datasets/add",
-				data : params,
-				dataType : "json",
-				success : callback,
-				error : function(xhr, errorType, exception) {
-					console.log('Error occured');
-				}
-			});	
+			Page.add("/datasets/add", params, callback)
 	},
 	
 	delete : function(index, callback){
 		 var params = {
 			'index': index
 		 }
-		 $.ajax({
-				type : "GET",
-				url : "/datasets/delete",
-				data : params,
-				dataType : "json",
-				success : callback,
-				error : function(xhr, errorType, exception) {
-					console.log('Error occured');
-				}
-			});	
+		 Page.delete("/datasets/delete", params, callback)
 	}
 	
 }
