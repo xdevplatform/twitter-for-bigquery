@@ -50,18 +50,27 @@
 
 		<form class="form-horizontal">
 		  <div class="form-group">
-		    <label for="" class="col-sm-2 control-label">Name</label>
-		    <div class="col-sm-10">
-		      <input type="text" class="form-control" id="dataset_name" placeholder="gnip.YOUR_TABLE_NAME">
-		    </div>
-		  </div>
-		  <div class="form-group">
 		    <label for="" class="col-sm-2 control-label">Type</label>
 		    <div class="col-sm-10">
 		      <select name="dataset_type" id="dataset_type" class="form-control">
 		      	<option value="gnip">Gnip</option>
 		      	<option value="twitter">Twitter Stream</option>
 		      </select>
+		    </div>
+		  </div>
+		  <div class="form-group">
+		    <label for="" class="col-sm-2 control-label">Project</label>
+		    <div class="col-sm-10">
+		      <input class="form-control align-right" id="dataset_project" type="text" value="{{projectIdName}}" readonly>
+		    </div>
+		  </div>
+		  <div class="form-group">
+		    <label for="" class="col-sm-2 control-label">Name</label>
+		    <div class="col-sm-3">
+		      <input class="form-control align-right" id="dataset_name" type="text" value="gnip." readonly>
+		    </div>
+		    <div class="col-sm-7">
+		      <input type="text" class="form-control" id="dataset_table" placeholder="YOUR_TABLE_NAME">
 		    </div>
 		  </div>
 		  <div class="form-group">
@@ -73,8 +82,10 @@
 		  </div>
 		  <div class="form-group">
 		    <label for="" class="col-sm-2 control-label"></label>
-		    <div class="col-sm-10">
-		      <input type="checkbox" id="dataset_import"> <label for="dataset_import">Import last 7 days of data</label>
+		    <div class="col-sm-10 checkbox">
+		    	<label for="dataset_import">
+		      		<input type="checkbox" id="dataset_import"> Import last 7 days of data
+	      		</label>
 		    </div>
 		  </div>
 		  <div class="form-group" id="dataset_import_count">
@@ -118,7 +129,7 @@
 		</ul>
 	</td>
 	<td>
-		<a class="dataset_delete" href="#" target="_target">delete</a>
+		<a class="dataset_delete" data-id="{{id}}" target="_target">delete</a>
 	</td>
 </tr>
 </script>

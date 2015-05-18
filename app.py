@@ -183,7 +183,8 @@ class DatasetList(webapp2.RequestHandler):
              "tableId": "{{tableId}}",
              "rulesStart" : "{{#rules}}",
              "rulesValue" : "{{.}}",
-             "rulesEnd" : "{{/rules}}"
+             "rulesEnd" : "{{/rules}}",
+             "projectIdName" : PROJECT_ID
         }
         template_path = 'templates/dataset_list.html'
         self.response.out.write(template.render(template_path, template_data))
@@ -206,13 +207,20 @@ class ApiDatasetAdd(webapp2.RequestHandler):
     
     def get(self):
         
-        name = self.request.get("name")
         type = self.request.get("type")
+
+        dataset = self.request.get("name")
+        if "gnip" in dataset:
+            dataset = "gnip"
+        else:
+            dataset = "twitter"
+        
+        table = self.request.get("table")
         rule_list = self.request.get("rules")
         imprt = self.request.get("import")
-        
-        (dataset, table) = name.split(".")
-        schema_str = Utils.read_file(GNIP_SCHEMA_FILE)
+
+        schema_file = GNIP_SCHEMA_FILE if type == "gnip" else SCHEMA_FILE
+        schema_str = Utils.read_file(schema_file)
         schema = json.loads(schema_str)
         
         body = {
@@ -228,16 +236,30 @@ class ApiDatasetAdd(webapp2.RequestHandler):
         
         service = get_service()
         response = service.tables().insert(projectId=PROJECT_ID, datasetId=dataset, body=body).execute()
+        name = "%s.%s" % (dataset, table)
         
         rule_list = [s.strip() for s in rule_list.splitlines()]
-        
-        print rule_list
-        
         for r in rule_list:
             rules.add_rule(r, tag=name, url=GNIP_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
 
         self.response.headers['Content-Type'] = 'application/json'   
-        self.response.out.write(json.dumps(response))                
+        self.response.out.write(json.dumps(response)) 
+        
+class ApiDatasetDelete(webapp2.RequestHandler):
+    
+    def get(self):
+        
+        import re
+
+        id = self.request.get("id")
+        (project, dataset, table) = re.split('\:|\.', id)
+        
+        service = get_service()
+        response = service.tables().delete(projectId=project, datasetId=dataset, tableId=table).execute()
+        
+        self.response.headers['Content-Type'] = 'application/json'   
+        self.response.out.write(json.dumps(response))
+                       
 
 class DatasetDetail(webapp2.RequestHandler):
     
@@ -445,8 +467,9 @@ application = webapp2.WSGIApplication([
     ('/api/rule/list', ApiRuleList),
     ('/api/rule/add', ApiRuleAdd),
     ('/api/rule/delete', ApiRuleDelete),
-    ('/api/dataset/add', ApiDatasetAdd),
     ('/api/dataset/list', ApiDatasetList),
+    ('/api/dataset/add', ApiDatasetAdd),
+    ('/api/dataset/delete', ApiDatasetDelete),
     
     # HTML
     ('/dataset/list', DatasetList),

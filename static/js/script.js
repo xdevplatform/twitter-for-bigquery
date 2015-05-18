@@ -215,7 +215,7 @@ var DatasetPage = {
 	
 		$(document.body).on("click", ".dataset_delete", function(){
 			if (confirm('Are you sure?')){
-				datasetid = $(this).data("datasetid");
+				datasetid = $(this).data("id");
 				DatasetPage.delete(datasetid, function(response){
 					DatasetPage.list();
 				});
@@ -224,14 +224,25 @@ var DatasetPage = {
 	
 		$(document.body).on("click", ".dataset_add", function(){
 			var name = $("#dataset_name").val();
+			var table = $("#dataset_table").val();
 			var type = $("#dataset_type").val();
 			var rules = $("#dataset_rules").val();
 			var imprt = $("#dataset_imprt").val();
-			DatasetPage.add(name, type, rules, imprt, function(response){
+			
+			DatasetPage.add(name, table, type, rules, imprt, function(response){
 				$('#myModal').modal('hide');
 				$("#datasets").html("");
 				DatasetPage.list();
 			});
+		});
+		
+		$(document.body).on("change", "#dataset_type", function(){
+			var dataset = "gnip."
+			if ($(this).val() == "twitter"){
+				dataset = "twitter."
+			}
+			$("#dataset_name").val(dataset);
+			
 		});
 		
 		DatasetPage.import_count("#dataset_rules");
@@ -243,9 +254,10 @@ var DatasetPage = {
 		Page.list("/api/dataset/list", callback)
 	},
 	
-	add : function(name, type, rules, imprt, callback){
+	add : function(name, table, type, rules, imprt, callback){
 		 var params = {
 			'name': name,
+			'table': table,
 			'type': type,
 			'rules': rules,
 			'import': imprt
@@ -253,9 +265,9 @@ var DatasetPage = {
 		Page.add("/api/dataset/add", params, callback)
 	},
 	
-	delete : function(index, callback){
+	delete : function(id, callback){
 		 var params = {
-			'index': index
+			'id': id
 		 }
 		 Page.delete("/api/dataset/delete", params, callback)
 	},
