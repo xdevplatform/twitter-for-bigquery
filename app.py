@@ -41,8 +41,7 @@ class Chart(webapp2.RequestHandler):
     
     def get(self):
         
-        tables = get_datasets()
-        template_data = {"tables": tables}
+        template_data = {}
         template_path = 'templates/chart.html'
         self.response.out.write(template.render(template_path, template_data))
 
@@ -203,8 +202,7 @@ class RuleList(webapp2.RequestHandler):
     
     def get(self):
         
-        tables = get_datasets()
-        template_data = {"tables": tables, "tag": "{{tag}}", "value": "{{value}}", "count": "{{count}}"}
+        template_data = {"tag": "{{tag}}", "value": "{{value}}", "count": "{{count}}"}
         template_path = 'templates/rule_list.html'
         self.response.out.write(template.render(template_path, template_data))
 

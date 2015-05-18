@@ -35,18 +35,6 @@
         <li><a href="/dataset/list">Datasets</a></li>
         <li><a href="/rule/list">Rules</a></li>
         <li><a href="/admin">Admin</a></li>
-<!--        
-        <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Dropdown <span class="caret"></span></a>
-          <ul class="dropdown-menu" role="menu">
-            <li><a href="#">Action</a></li>
-            <li><a href="#">Another action</a></li>
-            <li><a href="#">Something else here</a></li>
-            <li class="divider"></li>
-            <li><a href="#">Separated link</a></li>
-          </ul>
-        </li>
--->
       </ul>
     </div><!-- /.navbar-collapse -->
   </div><!-- /.container-fluid -->
@@ -68,11 +56,9 @@
 		    	
 			    		<div class="col-md-3">
 			
-				    		<h4>Table</h4>
-							<select id="table" name="table" class="form-control">
-						      {% for t in tables %}
-							  <option value="{{t.id}}">{{t.datasetId}}:{{t.tableId}}</option>
-						      {% endfor %}
+				    		<h4>Dataset</h4>
+							<select id="select_table" name="select_table" class="form-control">
+							  <option value="">Loading...</option>
 							</select>
 							
 			    		</div>

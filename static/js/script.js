@@ -1,37 +1,50 @@
 var Page = {
 		
-	list : function(list_url){
+	list : function(list_url, callback){
 
-		var cols = $("#table_data").parent().find("tr:first th").length;
-		
-		$("#table_data").html("");
-		$("#table_data").append("<tr><td colspan="+cols+"><center><img src='/static/img/loading.gif'></td></tr>");
+		// if no callback, do default list detail
+		if (!callback){
+			
+			var cols = $("#table_data").parent().find("tr:first th").length;
+			
+			$("#table_data").html("");
+			$("#table_data").append("<tr><td colspan="+cols+"><center><img src='/static/img/loading.gif'></td></tr>");
+			
+			callback = Page.list_table_default
+			
+		}
 		
 		 $.ajax({
 				type : "GET",
 				url : list_url,
 				dataType : "json",
-				success : function(response) {
-					
-					$("#table_data").html("");
-					
-					template = $("#table_row").html();
-					Mustache.parse(template);
-					
-					for (var i = 0; i < response.length; i++){
-						
-						var rule = response[i];
-						rule['count'] = i;
-						
-						var output = Mustache.render(template, rule);
-						$("#table_data").append(output);
-						
-					}				
-				},
-				error : function(xhr, errorType, exception) {
-					console.log('Error occured');
-				}
+				success : callback,
+				error : Page.handle_error, 
 			});	
+		
+	 },
+	 
+	 handle_error :	function(xhr, errorType, exception) {
+		console.log('Error occured');
+	 },
+
+	 
+	 list_table_default : function(response) {
+				
+		$("#table_data").html("");
+		
+		template = $("#table_row").html();
+		Mustache.parse(template);
+		
+		for (var i = 0; i < response.length; i++){
+			
+			var rule = response[i];
+			rule['count'] = i;
+			
+			var output = Mustache.render(template, rule);
+			$("#table_data").append(output);
+			
+		}				
 	 },
 	 
 	 add : function(add_url, params, callback) {
@@ -41,9 +54,7 @@ var Page = {
 				data : params,
 				dataType : "json",
 				success : callback,
-				error : function(xhr, errorType, exception) {
-					console.log('Error occured');
-				}
+				error : Page.handle_error 
 			});	
 	 },
 	 
@@ -54,9 +65,7 @@ var Page = {
 				data : params,
 				dataType : "json",
 				success : callback,
-				error : function(xhr, errorType, exception) {
-					console.log('Error occured');
-				}
+				error : Page.handle_error 
 			});	
 	 }
 	 
@@ -71,11 +80,13 @@ var ChartPage = {
 		// prevent default browser behaviour
 		event.preventDefault();
 
+		DatasetPage.load_select('#select_table', "#query_submit");
+		
 		$('#form').submit(function(event){
 			ChartPage.handleChange();
 			return false;
 		});
-		
+
 	},
 
 	handleChange : function() {
@@ -134,9 +145,7 @@ var ChartPage = {
 				} 
 				
 			},
-			error : function(xhr, errorType, exception) {
-				console.log('Error occured');
-			}
+			error : Page.handle_error 
 		});
 	
 	},
@@ -150,15 +159,17 @@ var ChartPage = {
 
 }
 
-var RulesPage = {
+var RulePage = {
 
 	init : function(){
 	
+		DatasetPage.load_select('#rule_tag', '#rule_add');
+
 		$(document.body).on("click", ".rule_delete", function(){
 			if (confirm('Are you sure?')){
 				ruleid = $(this).data("ruleid");
-				RulesPage.delete(ruleid, function(response){
-					RulesPage.list();
+				RulePage.delete(ruleid, function(response){
+					RulePage.list();
 				});
 			}
 		});
@@ -166,17 +177,17 @@ var RulesPage = {
 		$(document.body).on("click", ".rule_add", function(){
 			var rule = $("#rule_text").val();
 			var tag = $("#rule_tag").val();
-			RulesPage.add(rule, tag, function(response){
+			RulePage.add(rule, tag, function(response){
 				$('#myModal').modal('hide');
-				RulesPage.list();
+				RulePage.list();
 			});
 		});
 	
-		RulesPage.list();
+		RulePage.list();
 	},
 	
 	list : function(callback){
-		Page.list("/api/rule/list")
+		Page.list("/api/rule/list", callback)
 	},
 	
 	add : function(rule, tag, callback){
@@ -184,7 +195,7 @@ var RulesPage = {
 			'rule': rule,
 			'tag': tag
 		 }
-		 Page.add("/api/rule/add", params,callback);
+		 Page.add("/api/rule/add", params, callback);
 	},
 	
 	delete : function(index, callback){
@@ -196,15 +207,15 @@ var RulesPage = {
 
 }
 
-var DatasetsPage = {
+var DatasetPage = {
 
 	init : function(){
 	
 		$(document.body).on("click", ".dataset_delete", function(){
 			if (confirm('Are you sure?')){
 				datasetid = $(this).data("datasetid");
-				DatasetsPage.delete(datasetid, function(response){
-					DatasetsPage.list();
+				DatasetPage.delete(datasetid, function(response){
+					DatasetPage.list();
 				});
 			}
 		});
@@ -212,18 +223,18 @@ var DatasetsPage = {
 		$(document.body).on("click", ".dataset_add", function(){
 			var dataset = $("#dataset_text").val();
 			var tag = $("#dataset_tag").val();
-			DatasetsPage.add(dataset, tag, function(response){
+			DatasetPage.add(dataset, tag, function(response){
 				$('#myModal').modal('hide');
 				$("#datasets").html("");
-				DatasetsPage.list();
+				DatasetPage.list();
 			});
 		});
 	
-		DatasetsPage.list();
+		DatasetPage.list();
 	},
 	
 	list : function(callback){
-		Page.list("/api/dataset/list")
+		Page.list("/api/dataset/list", callback)
 	},
 	
 	add : function(dataset, tag, callback){
@@ -239,6 +250,30 @@ var DatasetsPage = {
 			'index': index
 		 }
 		 Page.delete("/api/dataset/delete", params, callback)
+	},
+	
+	load_select : function(select_id, disable_id) {
+		
+		$(disable_id).prop("disabled",true);
+		
+		DatasetPage.list(function(response){
+
+			$(select_id).html("");
+			
+			for (var i = 0; i < response.length; i++){
+				
+				var dataset = response[i]['datasetId'];
+				var table = response[i]['tableId'];
+				var pair = dataset + ":" + table;
+				var value = pair;
+				var label = pair;
+				$(select_id).append(new Option(label, value));
+				
+			}
+			
+			$(disable_id).prop("disabled",false);
+		});
+		
 	}
 	
 }
