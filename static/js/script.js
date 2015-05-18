@@ -182,7 +182,9 @@ var RulePage = {
 				RulePage.list();
 			});
 		});
-	
+
+		DatasetPage.import_count("#rule_text");
+		
 		RulePage.list();
 	},
 	
@@ -229,7 +231,9 @@ var DatasetPage = {
 				DatasetPage.list();
 			});
 		});
-	
+		
+		DatasetPage.import_count("#dataset_rules");
+	    
 		DatasetPage.list();
 	},
 	
@@ -274,7 +278,30 @@ var DatasetPage = {
 			$(disable_id).prop("disabled", false);
 		});
 		
+	},
+	
+	import_count : function(rule_input_field){
+		
+		$("#dataset_import_count").hide();
+	    $('#dataset_import').change(function() {
+	    	
+	    	var rule = $(rule_input_field).val();
+	    	
+	    	if (!rule){
+	    		alert("Please enter a rule to calculate volume of tweets.");
+	    		$(this).attr("checked", false);
+	    		return false;
+	    	}
+	    	
+	        if($(this).is(":checked")) {
+	        	$("#dataset_import_count").fadeIn();
+	        } else {
+	        	$("#dataset_import_count").hide();
+	        }
+	    });
+	    
 	}
+
 	
 }
 
