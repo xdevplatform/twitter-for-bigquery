@@ -19,7 +19,6 @@ from apiclient import errors
 from oauth2client import appengine
 
 from gnippy import rules
-from gnippy.errors import RulesGetFailedException
 
 from config import *
 
@@ -172,20 +171,19 @@ class Chart(webapp2.RequestHandler):
     def get(self):
         
         tables = get_datasets()
-
         template_data = {"tables": tables}
         template_path = 'templates/chart.html'
         self.response.out.write(template.render(template_path, template_data))
 
-class Datasets(webapp2.RequestHandler):
+class Dataset(webapp2.RequestHandler):
     
     def get(self):
         
         template_data = {"id": "{{id}}", "projectId": "{{projectId}}","datasetId": "{{datasetId}}","tableId": "{{tableId}}" }
-        template_path = 'templates/datasets.html'
+        template_path = 'templates/dataset_list.html'
         self.response.out.write(template.render(template_path, template_data))
         
-class DatasetsList(webapp2.RequestHandler):
+class DatasetList(webapp2.RequestHandler):
     
     def get(self):
         
@@ -193,29 +191,32 @@ class DatasetsList(webapp2.RequestHandler):
         self.response.headers['Content-Type'] = 'application/json'   
         self.response.out.write(json.dumps(tables))        
 
-class Rules(webapp2.RequestHandler):
+class DatasetDetail(webapp2.RequestHandler):
     
     def get(self):
         
-        template_data = {"tag": "{{tag}}", "value": "{{value}}", "count": "{{count}}"}
-        template_path = 'templates/rules.html'
+        template_data = {"id": "{{id}}", "projectId": "{{projectId}}","datasetId": "{{datasetId}}","tableId": "{{tableId}}" }
+        template_path = 'templates/dataset_detail.html'
         self.response.out.write(template.render(template_path, template_data))
 
-class RulesList(webapp2.RequestHandler):
+class Rule(webapp2.RequestHandler):
     
     def get(self):
         
-        response = None
+        tables = get_datasets()
+        template_data = {"tables": tables, "tag": "{{tag}}", "value": "{{value}}", "count": "{{count}}"}
+        template_path = 'templates/rule_list.html'
+        self.response.out.write(template.render(template_path, template_data))
+
+class RuleList(webapp2.RequestHandler):
+    
+    def get(self):
         
-        try:
-            response = rules.get_rules(url=GNIP_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
-        except RulesGetFailedException:
-            pass # uh oh
-        
+        response = rules.get_rules(url=GNIP_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
         self.response.headers['Content-Type'] = 'application/json'   
         self.response.out.write(json.dumps(response))
         
-class RulesAdd(webapp2.RequestHandler):
+class RuleAdd(webapp2.RequestHandler):
     
     def get(self):
         
@@ -225,30 +226,20 @@ class RulesAdd(webapp2.RequestHandler):
         if not rule or not tag:
             raise Exception("missing parameter")
 
-        response = None
-        
-        try:
-            rules.add_rule(rule, tag=tag, url=GNIP_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
-        except RulesGetFailedException:
-            pass # uh oh
+        rules.add_rule(rule, tag=tag, url=GNIP_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
         
         self.response.headers['Content-Type'] = 'application/json'   
         self.response.out.write(json.dumps(response))
         
-class RulesDelete(webapp2.RequestHandler):
+class RuleDelete(webapp2.RequestHandler):
     
     def get(self):
         
         rule_index = int(self.request.get("index"))
         
-        response = None
-        
-        try:
-            rules_list = rules.get_rules(url=GNIP_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
-            rule_delete = rules_list[rule_index]
-            response = rules.delete_rule(rule_delete, url=GNIP_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
-        except RulesGetFailedException:
-            pass # uh oh
+        rules_list = rules.get_rules(url=GNIP_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
+        rule_delete = rules_list[rule_index]
+        response = rules.delete_rule(rule_delete, url=GNIP_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
         
         self.response.headers['Content-Type'] = 'application/json'   
         self.response.out.write(json.dumps(response))
@@ -404,14 +395,15 @@ class QueryBuilder():
 application = webapp2.WSGIApplication([
     
     # JSON 
-    ('/rules/list', RulesList),
-    ('/rules/add', RulesAdd),
-    ('/rules/delete', RulesDelete),
-    ('/datasets/list', DatasetsList),
+    ('/rule/list', RuleList),
+    ('/rule/add', RuleAdd),
+    ('/rule/delete', RuleDelete),
+    ('/dataset/list', DatasetList),
     
     # HTML
-    ('/datasets', Datasets),
-    ('/rules', Rules),
+    ('/dataset/([A-Za-z0-9\-\_]+)', DatasetDetail),
+    ('/dataset', Dataset),
+    ('/rule', Rule),
     ('/admin', Admin),
     ('/chart/data', Data),
     ('/chart', Chart),
