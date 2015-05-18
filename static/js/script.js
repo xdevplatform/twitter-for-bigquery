@@ -5,36 +5,18 @@ var ChartPage = {
 		// prevent default browser behaviour
 		event.preventDefault();
 
-		ChartPage.handleChange();
+		$('#form').submit(function(event){
+			ChartPage.handleChange();
+			return false;
+		});
 		
 	},
 
-	getMentions : function(){
-		return ChartPage.getValuesByClass('.mention');
-	},
-	
-	getHashtags : function(){
-		return ChartPage.getValuesByClass('.hashtag');
-	},
-	
-	getValuesByClass : function(sel){
-		var arr = [];
-		$(sel).each( function(i,e) {
-			val = $(e).val();
-			if (val){
-				arr.push(val);
-			}
-		});
-		return arr.join();
-	},
-	
 	handleChange : function() {
 	
 		var source = $("#source").val();
 		var charttype = $("#charttype").val();
 		var interval = $("#interval").val();
-		var hashtags = ChartPage.getHashtags();
-		var mentions = ChartPage.getMentions();
 	
 		var args = null;
 	
@@ -51,8 +33,7 @@ var ChartPage = {
 			var args = {
 				source : source,
 				charttype : charttype,
-				interval : interval,
-				terms : source == 'hashtags' ? hashtags : source == 'mentions' ? mentions : null  
+				interval : interval
 			};
 			ChartPage.queryData(charttype, args);
 	
@@ -110,8 +91,8 @@ var RulesPage = {
 		$(document.body).on("click", ".rule_delete", function(){
 			if (confirm('Are you sure?')){
 				ruleid = $(this).data("ruleid");
-				RulesPage.rules_delete(ruleid, function(response){
-					RulesPage.rules_list();
+				RulesPage.delete(ruleid, function(response){
+					RulesPage.list();
 				});
 			}
 		});
@@ -119,16 +100,16 @@ var RulesPage = {
 		$(document.body).on("click", ".rule_add", function(){
 			var rule = $("#rule_text").val();
 			var tag = $("#rule_tag").val();
-			RulesPage.rules_add(rule, tag, function(response){
+			RulesPage.add(rule, tag, function(response){
 				$('#myModal').modal('hide');
-				RulesPage.rules_list();
+				RulesPage.list();
 			});
 		});
 	
-		RulesPage.rules_list();
+		RulesPage.list();
 	},
 	
-	rules_list : function(callback){
+	list : function(callback){
 		$("#rules").html("");
 		 $.ajax({
 				type : "GET",
@@ -155,7 +136,7 @@ var RulesPage = {
 			});	
 	},
 	
-	rules_add : function(rule, tag, callback){
+	add : function(rule, tag, callback){
 		 var params = {
 			'rule': rule,
 			'tag': tag
@@ -172,7 +153,7 @@ var RulesPage = {
 			});	
 	},
 	
-	rules_delete : function(index, callback){
+	delete : function(index, callback){
 		 var params = {
 			'index': index
 		 }
@@ -197,8 +178,8 @@ var DatasetsPage = {
 		$(document.body).on("click", ".dataset_delete", function(){
 			if (confirm('Are you sure?')){
 				datasetid = $(this).data("datasetid");
-				datasets_delete(datasetid, function(response){
-					DatasetsPage.datasets_list();
+				delete(datasetid, function(response){
+					DatasetsPage.list();
 				});
 			}
 		});
@@ -206,17 +187,17 @@ var DatasetsPage = {
 		$(document.body).on("click", ".dataset_add", function(){
 			var dataset = $("#dataset_text").val();
 			var tag = $("#dataset_tag").val();
-			DatasetsPage.datasets_add(dataset, tag, function(response){
+			DatasetsPage.add(dataset, tag, function(response){
 				$('#myModal').modal('hide');
 				$("#datasets").html("");
-				DatasetsPage.datasets_list();
+				DatasetsPage.list();
 			});
 		});
 	
-		DatasetsPage.datasets_list();
+		DatasetsPage.list();
 	},
 	
-	datasets_list : function(callback){
+	list : function(callback){
 		 $.ajax({
 				type : "GET",
 				url : "/datasets/list",
@@ -243,7 +224,7 @@ var DatasetsPage = {
 			});	
 	},
 	
-	datasets_add : function(dataset, tag, callback){
+	add : function(dataset, tag, callback){
 		 var params = {
 			'dataset': dataset,
 			'tag': tag
@@ -260,7 +241,7 @@ var DatasetsPage = {
 			});	
 	},
 	
-	datasets_delete : function(index, callback){
+	delete : function(index, callback){
 		 var params = {
 			'index': index
 		 }
@@ -276,4 +257,12 @@ var DatasetsPage = {
 			});	
 	}
 	
+}
+
+var AdminPage = {
+		
+	init : function(){
+		
+	}
+		
 }
