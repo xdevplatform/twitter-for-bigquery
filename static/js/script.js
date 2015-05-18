@@ -176,7 +176,7 @@ var RulesPage = {
 	},
 	
 	list : function(callback){
-		Page.list("/rule/list")
+		Page.list("/api/rule/list")
 	},
 	
 	add : function(rule, tag, callback){
@@ -184,14 +184,14 @@ var RulesPage = {
 			'rule': rule,
 			'tag': tag
 		 }
-		 Page.add("/rule/add", params,callback);
+		 Page.add("/api/rule/add", params,callback);
 	},
 	
 	delete : function(index, callback){
 		 var params = {
 			'index': index
 		 }
-		 Page.delete("/rule/delete", params, callback)
+		 Page.delete("/api/rule/delete", params, callback)
 	}
 
 }
@@ -223,7 +223,7 @@ var DatasetsPage = {
 	},
 	
 	list : function(callback){
-		Page.list("/dataset/list")
+		Page.list("/api/dataset/list")
 	},
 	
 	add : function(dataset, tag, callback){
@@ -231,14 +231,14 @@ var DatasetsPage = {
 			'dataset': dataset,
 			'tag': tag
 		 }
-			Page.add("/dataset/add", params, callback)
+			Page.add("/api/dataset/add", params, callback)
 	},
 	
 	delete : function(index, callback){
 		 var params = {
 			'index': index
 		 }
-		 Page.delete("/dataset/delete", params, callback)
+		 Page.delete("/api/dataset/delete", params, callback)
 	}
 	
 }

@@ -37,7 +37,16 @@ def get_service():
     
     return build('bigquery', 'v2', http=http)
 
-class Data(webapp2.RequestHandler):
+class Chart(webapp2.RequestHandler):
+    
+    def get(self):
+        
+        tables = get_datasets()
+        template_data = {"tables": tables}
+        template_path = 'templates/chart.html'
+        self.response.out.write(template.render(template_path, template_data))
+
+class ChartData(webapp2.RequestHandler):
     
     def get(self):
         
@@ -166,16 +175,7 @@ class Data(webapp2.RequestHandler):
         self.response.headers['Content-Type'] = 'application/json'
         self.response.out.write(json.dumps(args))
 
-class Chart(webapp2.RequestHandler):
-    
-    def get(self):
-        
-        tables = get_datasets()
-        template_data = {"tables": tables}
-        template_path = 'templates/chart.html'
-        self.response.out.write(template.render(template_path, template_data))
-
-class Dataset(webapp2.RequestHandler):
+class DatasetList(webapp2.RequestHandler):
     
     def get(self):
         
@@ -183,7 +183,7 @@ class Dataset(webapp2.RequestHandler):
         template_path = 'templates/dataset_list.html'
         self.response.out.write(template.render(template_path, template_data))
         
-class DatasetList(webapp2.RequestHandler):
+class ApiDatasetList(webapp2.RequestHandler):
     
     def get(self):
         
@@ -199,7 +199,7 @@ class DatasetDetail(webapp2.RequestHandler):
         template_path = 'templates/dataset_detail.html'
         self.response.out.write(template.render(template_path, template_data))
 
-class Rule(webapp2.RequestHandler):
+class RuleList(webapp2.RequestHandler):
     
     def get(self):
         
@@ -208,7 +208,7 @@ class Rule(webapp2.RequestHandler):
         template_path = 'templates/rule_list.html'
         self.response.out.write(template.render(template_path, template_data))
 
-class RuleList(webapp2.RequestHandler):
+class ApiRuleList(webapp2.RequestHandler):
     
     def get(self):
         
@@ -216,7 +216,7 @@ class RuleList(webapp2.RequestHandler):
         self.response.headers['Content-Type'] = 'application/json'   
         self.response.out.write(json.dumps(response))
         
-class RuleAdd(webapp2.RequestHandler):
+class ApiRuleAdd(webapp2.RequestHandler):
     
     def get(self):
         
@@ -231,7 +231,7 @@ class RuleAdd(webapp2.RequestHandler):
         self.response.headers['Content-Type'] = 'application/json'   
         self.response.out.write(json.dumps(response))
         
-class RuleDelete(webapp2.RequestHandler):
+class ApiRuleDelete(webapp2.RequestHandler):
     
     def get(self):
         
@@ -394,19 +394,19 @@ class QueryBuilder():
 
 application = webapp2.WSGIApplication([
     
-    # JSON 
-    ('/rule/list', RuleList),
-    ('/rule/add', RuleAdd),
-    ('/rule/delete', RuleDelete),
-    ('/dataset/list', DatasetList),
+    # API calls supporting JSON
+    ('/api/rule/list', ApiRuleList),
+    ('/api/rule/add', ApiRuleAdd),
+    ('/api/rule/delete', ApiRuleDelete),
+    ('/api/dataset/list', ApiDatasetList),
     
     # HTML
+    ('/dataset/list', DatasetList),
     ('/dataset/([A-Za-z0-9\-\_]+)', DatasetDetail),
-    ('/dataset', Dataset),
-    ('/rule', Rule),
-    ('/admin', Admin),
-    ('/chart/data', Data),
+    ('/rule/list', RuleList),
+    ('/chart/data', ChartData),
     ('/chart', Chart),
+    ('/admin', Admin),
 
     ('/', Chart),
     
