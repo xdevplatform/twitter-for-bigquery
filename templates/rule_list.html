@@ -1,46 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <link rel="icon" href="/static/img/bird.ico">
-    <title>Twitter &hearts; BigQuery</title>
-    <link href="http://getbootstrap.com/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="http://getbootstrap.com/examples/justified-nav/justified-nav.css" rel="stylesheet">
-    <link href="/static/css/theme/styles.css" rel="stylesheet">
-    <link href="/static/css/c3.css" rel="stylesheet">
-    <link href="/static/css/style.css" rel="stylesheet">
-</head>
-
-<body>
-
-<nav class="navbar navbar-default">
-  <div class="container-fluid">
-    <!-- Brand and toggle get grouped for better mobile display -->
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <a class="navbar-brand" href="/">Twitter <span class="heart">&hearts;</span> BigQuery</a>
-    </div>
-
-    <!-- Collect the nav links, forms, and other content for toggling -->
-    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-
-      <ul class="nav navbar-nav navbar-right">
-        <li><a href="/">Home</a></li>
-        <li><a href="/dataset/list">Datasets</a></li>
-        <li><a href="/rule/list">Rules</a></li>
-        <li><a href="/admin">Admin</a></li>
-      </ul>
-    </div><!-- /.navbar-collapse -->
-  </div><!-- /.container-fluid -->
-</nav>
-
-	<div class="container">
+{% extends "base.html" %}
+{% block bodycontent %}
 	
 		<button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#myModal">
 		  Add Rule
@@ -72,10 +31,7 @@
     
 	<hr>
 
-    <div class="container page_footer">
-    
-    </div>
-    <!-- /container -->
+<!-- /container -->
 
 <!-- Modal -->
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -113,21 +69,6 @@
   </div>
 </div>
 
-<script type="text/javascript" src="https://code.jquery.com/jquery-1.7.1.min.js"></script>
-<script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
-<script type="text/javascript" src="/static/js/mustache.js"></script>
-<script type="text/javascript" src="/static/js/script.js"></script>
-
-<script language="JavaScript1.2">
-
-$(document).ready(function(){
-
-	  RulePage.init();
-	
-})
-
-</script>
-
 <script id="table_row" type="text/template">
 <tr>
 	<td>
@@ -142,6 +83,14 @@ $(document).ready(function(){
 </tr>
 </script>
 
-</body>
+<script language="JavaScript1.2">
 
-</html>
+$(document).ready(function(){
+
+	  RulePage.init();
+	
+})
+
+</script>
+
+{% endblock %}

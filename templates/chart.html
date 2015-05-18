@@ -1,168 +1,109 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
+{% block bodycontent %}
 
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <link rel="icon" href="/static/img/bird.ico">
-    <title>Twitter &hearts; BigQuery</title>
-    <link href="http://getbootstrap.com/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="http://getbootstrap.com/examples/justified-nav/justified-nav.css" rel="stylesheet">
-    <link href="/static/css/theme/styles.css" rel="stylesheet">
-    <link href="/static/css/c3.css" rel="stylesheet">
-    <link href="/static/css/style.css" rel="stylesheet">
-</head>
+<div class="container">
 
-<body>
+	<form name="form" id="form">
+	    
+    	<div class="row">
+    	
+    		<div class="col-md-1 hidden-sm hidden-xs">
+    			<img src="/static/img/bird_large.png" width="100%" class="logo">
+    		</div>
 
-<nav class="navbar navbar-default">
-  <div class="container-fluid">
-    <!-- Brand and toggle get grouped for better mobile display -->
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <a class="navbar-brand" href="/">Twitter <span class="heart">&hearts;</span> BigQuery</a>
+    		<div class="col-md-9">
+    		
+    			<div class="row">
+	    	
+		    		<div class="col-md-3">
+		
+			    		<h4>Dataset</h4>
+						<select id="select_table" name="select_table" class="form-control">
+						  <option value="">Loading...</option>
+						</select>
+						
+		    		</div>
+
+		    		<div class="col-md-3">
+		
+			    		<h4>Field</h4>
+						<select id="source" name="source" class="form-control">
+						  <option value="hashtags">Hashtags</option>
+						  <option value="mentions">User mentions</option>
+						  <option value="sources">Tweet sources</option>
+						</select>
+						
+		    		</div>
+		
+		    		<div class="col-md-3">
+		
+						<h4>Chart</h4>
+						<select id="charttype" name="charttype" class="form-control">
+						  <option value="donut">Donut</option>
+						  <option value="bar">Bar</option>
+						  <option value="timeseries">Timeseries</option>
+						</select>
+		
+		    		</div>
+
+		    		<div class="col-md-3">
+		
+						<h4>Time</h4>
+						<select id="interval" name="interval" class="form-control">
+						  <option value="1">Day</option>
+						  <option value="7" SELECTED>Week</option>
+						  <option value="31">Month</option>
+						</select>
+		
+		    		</div>
+	    		
+    			</div>
+    			
+    	  </div>
+    		
+		  <div class="col-md-2">
+    		  	<h4>&nbsp;</h4>
+  	    		<input id="query_submit" class="btn btn-primary" type="submit" value="Submit">
+		  </div>
+
+    	
+    	</div>
+    	
+	</form>
+</div>
+
+<hr>
+
+<div class="container page_body">
+			
+	<div id="canvas">
+
+        <div id="chart">Please select a data source and click "Submit".</div>
+        
+        <div id="map" style="position: relative; width: 750px; height: 500px;"></div>
+    
     </div>
+    
+</div>
 
-    <!-- Collect the nav links, forms, and other content for toggling -->
-    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+<div class="container page_footer">
 
-      <ul class="nav navbar-nav navbar-right">
-        <li><a href="/">Home</a></li>
-        <li><a href="/dataset/list">Datasets</a></li>
-        <li><a href="/rule/list">Rules</a></li>
-        <li><a href="/admin">Admin</a></li>
-      </ul>
-    </div><!-- /.navbar-collapse -->
-  </div><!-- /.container-fluid -->
-</nav>
-
-	<div class="container">
-	
-		<form name="form" id="form">
-		    
-	    	<div class="row">
-	    	
-	    		<div class="col-md-1 hidden-sm hidden-xs">
-	    			<img src="/static/img/bird_large.png" width="100%" class="logo">
-	    		</div>
-
-	    		<div class="col-md-9">
-	    		
-	    			<div class="row">
-		    	
-			    		<div class="col-md-3">
-			
-				    		<h4>Dataset</h4>
-							<select id="select_table" name="select_table" class="form-control">
-							  <option value="">Loading...</option>
-							</select>
-							
-			    		</div>
-
-			    		<div class="col-md-3">
-			
-				    		<h4>Field</h4>
-							<select id="source" name="source" class="form-control">
-							  <option value="hashtags">Hashtags</option>
-							  <option value="mentions">User mentions</option>
-							  <option value="sources">Tweet sources</option>
-							</select>
-							
-			    		</div>
-			
-			    		<div class="col-md-3">
-			
-							<h4>Chart</h4>
-							<select id="charttype" name="charttype" class="form-control">
-							  <option value="donut">Donut</option>
-							  <option value="bar">Bar</option>
-							  <option value="timeseries">Timeseries</option>
-							</select>
-			
-			    		</div>
-
-			    		<div class="col-md-3">
-			
-							<h4>Time</h4>
-							<select id="interval" name="interval" class="form-control">
-							  <option value="1">Day</option>
-							  <option value="7" SELECTED>Week</option>
-							  <option value="31">Month</option>
-							</select>
-			
-			    		</div>
-		    		
-	    			</div>
-	    			
-	    	  </div>
-	    		
-			  <div class="col-md-2">
-	    		  	<h4>&nbsp;</h4>
-	  	    		<input id="query_submit" class="btn btn-primary" type="submit" value="Submit">
-			  </div>
-	
-	    	
-	    	</div>
-	    	
+    <div class="row">
+		<form class="form-horizontal">
+		  <div class="form-group">
+		    <label for="inputEmail3" class="col-sm-2 control-label">
+		    	Query
+		    	<br>
+		    	<small><a href='https://cloud.google.com/bigquery/docs/dataset-shakespeare'>Tweet Dataset</a></small>
+		    </label>
+		    <div class="col-sm-9">
+		    	<textarea id="query" class="form-control" rows="3"></textarea>
+		    </div>
+		  </div>
 		</form>
-	</div>
-	
-	<hr>
-
-	<div class="container page_body">
-				
-		<div id="canvas">
-
-	        <div id="chart">Please select a data source and click "Submit".</div>
-	        
-	        <div id="map" style="position: relative; width: 750px; height: 500px;"></div>
-        
-        </div>
-        
     </div>
+
+</div>
     
-	<hr>
-
-    <div class="container page_footer">
+{% endblock %}
     
-        <div class="row">
-			<form class="form-horizontal">
-			  <div class="form-group">
-			    <label for="inputEmail3" class="col-sm-2 control-label">
-			    	Query
-			    	<br>
-			    	<small><a href='https://cloud.google.com/bigquery/docs/dataset-shakespeare'>Tweet Dataset</a></small>
-			    </label>
-			    <div class="col-sm-9">
-			    	<textarea id="query" class="form-control" rows="3"></textarea>
-			    </div>
-			  </div>
-			</form>
-        </div>
-
-    </div>
-    <!-- /container -->
-
-<script src="//cdnjs.cloudflare.com/ajax/libs/topojson/1.6.9/topojson.min.js"></script>
-<script type="text/javascript" src="https://code.jquery.com/jquery-1.7.1.min.js"></script>
-<script type="text/javascript" src="/static/js/d3.js"></script>
-<script type="text/javascript" src="/static/js/c3.js"></script>
-<script type="text/javascript" src="/static/js/script.js"></script>
-
-<script language="JavaScript1.2">
-
-$(document).ready(function(){
-
-  ChartPage.init();
-	
-})
-
-</script>
-
-</body>
-
-</html>
