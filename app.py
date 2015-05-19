@@ -182,7 +182,7 @@ class ChartData(webapp2.RequestHandler):
         self.response.headers['Content-Type'] = 'application/json'
         self.response.out.write(json.dumps(args))
 
-class DatasetList(webapp2.RequestHandler):
+class TableList(webapp2.RequestHandler):
     
     def get(self):
         
@@ -196,10 +196,10 @@ class DatasetList(webapp2.RequestHandler):
              "rulesEnd" : "{{/rules}}",
              "projectIdName" : PROJECT_ID
         }
-        template_path = 'templates/dataset_list.html'
+        template_path = 'templates/table_list.html'
         self.response.out.write(template.render(template_path, template_data))
         
-class ApiDatasetList(webapp2.RequestHandler):
+class ApiTableList(webapp2.RequestHandler):
     
     def get(self):
         
@@ -213,19 +213,19 @@ class ApiDatasetList(webapp2.RequestHandler):
         self.response.headers['Content-Type'] = 'application/json'   
         self.response.out.write(json.dumps(tables))   
         
-class ApiDatasetAdd(webapp2.RequestHandler):
+class ApiTableAdd(webapp2.RequestHandler):
     
     def get(self):
         
         type = self.request.get("type")
 
-        dataset = self.request.get("name")
+        dataset = self.request.get("dataset")
         if "gnip" in dataset:
             dataset = "gnip"
         else:
             dataset = "twitter"
         
-        table = self.request.get("table")
+        table = self.request.get("name")
         rule_list = self.request.get("rules")
         imprt = self.request.get("import")
 
@@ -255,7 +255,7 @@ class ApiDatasetAdd(webapp2.RequestHandler):
         self.response.headers['Content-Type'] = 'application/json'   
         self.response.out.write(json.dumps(response)) 
         
-class ApiDatasetDelete(webapp2.RequestHandler):
+class ApiTableDelete(webapp2.RequestHandler):
     
     def get(self):
         
@@ -270,7 +270,7 @@ class ApiDatasetDelete(webapp2.RequestHandler):
         self.response.headers['Content-Type'] = 'application/json'   
         self.response.out.write(json.dumps(response))
                        
-class DatasetDetail(webapp2.RequestHandler):
+class TableDetail(webapp2.RequestHandler):
     
     def get(self, id):
         
@@ -280,7 +280,7 @@ class DatasetDetail(webapp2.RequestHandler):
         response = service.tables().get(projectId=project, datasetId=dataset, tableId=table).execute()
         print response
         
-        template_path = 'templates/dataset_detail.html'
+        template_path = 'templates/table_detail.html'
         self.response.out.write(template.render(template_path, response))
 
 class RuleList(webapp2.RequestHandler):
@@ -481,13 +481,13 @@ application = webapp2.WSGIApplication([
     ('/api/rule/list', ApiRuleList),
     ('/api/rule/add', ApiRuleAdd),
     ('/api/rule/delete', ApiRuleDelete),
-    ('/api/dataset/list', ApiDatasetList),
-    ('/api/dataset/add', ApiDatasetAdd),
-    ('/api/dataset/delete', ApiDatasetDelete),
+    ('/api/table/list', ApiTableList),
+    ('/api/table/add', ApiTableAdd),
+    ('/api/table/delete', ApiTableDelete),
     
     # HTML
-    ('/dataset/list', DatasetList),
-    ('/dataset/([A-Za-z0-9\-\_\:\.]+)', DatasetDetail),
+    ('/table/list', TableList),
+    ('/table/([A-Za-z0-9\-\_\:\.]+)', TableDetail),
     ('/rule/list', RuleList),
     ('/chart/data', ChartData),
     ('/chart', Chart),

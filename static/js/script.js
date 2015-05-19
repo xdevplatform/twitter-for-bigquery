@@ -104,7 +104,7 @@ var ChartPage = {
 		// prevent default browser behaviour
 		event.preventDefault();
 
-		DatasetPage.load_select('#select_table', "#query_submit");
+		TablePage.load_select('#select_table', "#query_submit");
 		
 		$('#form').submit(function(event){
 			ChartPage.handleChange();
@@ -187,7 +187,7 @@ var RulePage = {
 
 	init : function(){
 	
-		DatasetPage.load_select('#rule_tag', '#rule_add');
+		TablePage.load_select('#rule_tag', '#rule_add');
 
 		$(document.body).on("click", ".rule_delete", function(){
 			if (confirm('Are you sure?')){
@@ -207,7 +207,7 @@ var RulePage = {
 			});
 		});
 
-		DatasetPage.import_count("#rule_text");
+		TablePage.import_count("#rule_text");
 		
 		RulePage.list();
 	},
@@ -233,78 +233,78 @@ var RulePage = {
 
 }
 
-var DatasetPage = {
+var TablePage = {
 
 	init : function(){
 	
-		$(document.body).on("click", ".dataset_delete", function(){
+		$(document.body).on("click", ".table_delete", function(){
 			if (confirm('Are you sure?')){
 				datasetid = $(this).data("id");
-				DatasetPage.delete(datasetid, function(response){
-					DatasetPage.list();
+				TablePage.delete(datasetid, function(response){
+					TablePage.list();
 				});
 			}
 		});
 	
-		$(document.body).on("click", ".dataset_add", function(){
-			var name = $("#dataset_name").val();
-			var table = $("#dataset_table").val();
-			var type = $("#dataset_type").val();
-			var rules = $("#dataset_rules").val();
-			var imprt = $("#dataset_imprt").val();
+		$(document.body).on("click", ".table_add", function(){
+			var dataset = $("#table_dataset").val();
+			var table = $("#table_name").val();
+			var type = $("#table_type").val();
+			var rules = $("#table_rules").val();
+			var imprt = $("#table_imprt").val();
 			
-			DatasetPage.add(name, table, type, rules, imprt, function(response){
+			TablePage.add(dataset, table, type, rules, imprt, function(response){
 				$('#myModal').modal('hide');
 				$("#datasets").html("");
-				DatasetPage.list();
+				TablePage.list();
 			});
 		});
 		
-		$(document.body).on("change", "#dataset_type", function(){
+		$(document.body).on("change", "#table_type", function(){
 			var dataset = "gnip."
 			if ($(this).val() == "twitter"){
 				dataset = "twitter."
 			}
-			$("#dataset_name").val(dataset);
+			$("#table_name").val(dataset);
 			
 		});
 		
-		DatasetPage.import_count("#dataset_rules");
+		TablePage.import_count("#table_rules");
 	    
-		DatasetPage.list();
+		TablePage.list();
 	},
 	
 	list : function(callback){
-		Page.list("/api/dataset/list", callback)
+		Page.list("/api/table/list", callback)
 	},
 	
 	detail : function(id, callback){
-		Page.detail("/api/dataset/" + id, callback)
+		Page.detail("/api/table/" + id, callback)
 	},
 	
-	add : function(name, table, type, rules, imprt, callback){
+	add : function(dataset, table, type, rules, imprt, callback){
 		 var params = {
-			'name': name,
-			'table': table,
+			'dataset': dataset,
+			'name': table,
 			'type': type,
 			'rules': rules,
 			'import': imprt
 		 }
-		Page.add("/api/dataset/add", params, callback)
+		Page.add("/api/table/add", params, callback)
 	},
 	
 	delete : function(id, callback){
 		 var params = {
 			'id': id
 		 }
-		 Page.delete("/api/dataset/delete", params, callback)
+		 Page.delete("/api/table/delete", params, callback)
 	},
 	
 	load_select : function(select_id, disable_id) {
 		
 		$(disable_id).prop("disabled", true);
 		
-		DatasetPage.list(function(response){
+		TablePage.list(function(response){
 
 			$(select_id).html("");
 			
@@ -326,8 +326,8 @@ var DatasetPage = {
 	
 	import_count : function(rule_input_field){
 		
-		$("#dataset_import_count").hide();
-	    $('#dataset_import').change(function() {
+		$("#table_import_count").hide();
+	    $('#table_import').change(function() {
 	    	
 	    	var rule = $(rule_input_field).val();
 	    	
@@ -338,9 +338,9 @@ var DatasetPage = {
 	    	}
 	    	
 	        if($(this).is(":checked")) {
-	        	$("#dataset_import_count").fadeIn();
+	        	$("#table_import_count").fadeIn();
 	        } else {
-	        	$("#dataset_import_count").hide();
+	        	$("#table_import_count").hide();
 	        }
 	    });
 	    

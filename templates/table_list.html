@@ -2,12 +2,12 @@
 {% block bodycontent %}
 	
 		<button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#myModal">
-		  Add dataset
+		  Add table
 		</button>
 
-		<h1>Datasets</h1>
+		<h1>Tables</h1>
 		
-		<p>View BigQuery datasets and tables in your project.</p>
+		<p>View BigQuery tables in your project.</p>
 		
 		<br>
 				
@@ -16,7 +16,7 @@
 			<table class="table table-striped">
 			<thead>
 	        <tr>
-	          <th>Dataset</th>
+	          <th>Table</th>
 	          <th>Project</th>
 	          <th>Type</th>
 	          <th>Rules</th>
@@ -52,7 +52,7 @@
 		  <div class="form-group">
 		    <label for="" class="col-sm-2 control-label">Type</label>
 		    <div class="col-sm-10">
-		      <select name="dataset_type" id="dataset_type" class="form-control">
+		      <select name="table_type" id="table_type" class="form-control">
 		      	<option value="gnip">Gnip</option>
 		      	<option value="twitter">Twitter Stream</option>
 		      </select>
@@ -61,34 +61,34 @@
 		  <div class="form-group">
 		    <label for="" class="col-sm-2 control-label">Project</label>
 		    <div class="col-sm-10">
-		      <input class="form-control align-right" id="dataset_project" type="text" value="{{projectIdName}}" readonly>
+		      <input class="form-control align-right" id="table_project" type="text" value="{{projectIdName}}" readonly>
 		    </div>
 		  </div>
 		  <div class="form-group">
 		    <label for="" class="col-sm-2 control-label">Name</label>
 		    <div class="col-sm-3">
-		      <input class="form-control align-right" id="dataset_name" type="text" value="gnip." readonly>
+		      <input class="form-control align-right" id="table_dataset" type="text" value="gnip." readonly>
 		    </div>
 		    <div class="col-sm-7">
-		      <input type="text" class="form-control" id="dataset_table" placeholder="YOUR_TABLE_NAME">
+		      <input type="text" class="form-control" id="table_name" placeholder="YOUR_TABLE_NAME">
 		    </div>
 		  </div>
 		  <div class="form-group">
 		    <label for="" class="col-sm-2 control-label">Rules</label>
 		    <div class="col-sm-10">
-		      <textarea class="form-control" id="dataset_rules" placeholder="" rows="4"></textarea>
+		      <textarea class="form-control" id="table_rules" placeholder="" rows="4"></textarea>
 		      <p class="help-block">Newline delimited</p>
 		    </div>
 		  </div>
 		  <div class="form-group">
 		    <label for="" class="col-sm-2 control-label"></label>
 		    <div class="col-sm-10 checkbox">
-		    	<label for="dataset_import">
-		      		<input type="checkbox" id="dataset_import"> Import last 7 days of data
+		    	<label for="table_import">
+		      		<input type="checkbox" id="table_import"> Import last 7 days of data
 	      		</label>
 		    </div>
 		  </div>
-		  <div class="form-group" id="dataset_import_count">
+		  <div class="form-group" id="table_import_count">
 		    <label for="" class="col-sm-2 control-label"></label>
 		    <div class="col-sm-10">
 			    <hr>
@@ -105,7 +105,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary dataset_add">Save dataset</button>
+        <button type="button" class="btn btn-primary table_add">Save table</button>
       </div>
     </div>
   </div>
@@ -114,7 +114,7 @@
 <script id="table_row" type="text/template">
 <tr>
 	<td>
-		<a href="/dataset/{{id}}">{{datasetId}}.{{tableId}}</a>
+		<a href="/table/{{id}}">{{datasetId}}.{{tableId}}</a>
 		<a href="https://bigquery.cloud.google.com/table/{{id}}" class="btn-sm" target="_target"><span class="glyphicon glyphicon-new-window" aria-hidden="true"></span></a>
 	</td>
 	<td>
@@ -129,7 +129,7 @@
 		</ul>
 	</td>
 	<td>
-		<a class="dataset_delete" data-id="{{id}}" target="_target">delete</a>
+		<a class="table_delete" data-id="{{id}}" target="_target">delete</a>
 	</td>
 </tr>
 </script>
@@ -138,7 +138,7 @@
 
 $(document).ready(function(){
 
-	  DatasetPage.init();
+	  TablePage.init();
 	
 })
 
