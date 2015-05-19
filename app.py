@@ -264,8 +264,16 @@ class ApiTableDelete(webapp2.RequestHandler):
         id = self.request.get("id")
         (project, dataset, table) = re.split('\:|\.', id)
         
-        service = get_service()
-        response = service.tables().delete(projectId=project, datasetId=dataset, tableId=table).execute()
+        try:
+            service = get_service()
+            response = service.tables().delete(projectId=project, datasetId=dataset, tableId=table).execute()
+        except:
+            pass
+        
+        tag = dataset + "." + table
+        rules_list = rules.get_rules(url=GNIP_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
+        rules_list = [r for r in rules_list if r['tag'] == tag]
+        response = rules.delete_rules(rules_list, url=GNIP_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
         
         self.response.headers['Content-Type'] = 'application/json'   
         self.response.out.write(json.dumps(response))

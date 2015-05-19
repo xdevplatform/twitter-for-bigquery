@@ -1,0 +1,55 @@
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Add rule</h4>
+      </div>
+      <div class="modal-body">
+
+		<form class="form-horizontal">
+		  <div class="form-group">
+		    <label for="" class="col-sm-2 control-label">Rule</label>
+		    <div class="col-sm-10">
+		      <input type="text" class="form-control" id="rule_text" placeholder="">
+		    </div>
+		  </div>
+		  <div class="form-group">
+		    <label for="" class="col-sm-2 control-label">Dataset</label>
+		    <div class="col-sm-10">
+				<select id="rule_tag" name="rule_tag" class="form-control">
+				  <option value="">Loading...</option>
+				</select>
+		    </div>
+		  </div>
+		  <div class="form-group">
+		    <label for="" class="col-sm-2 control-label"></label>
+		    <div class="col-sm-10 checkbox">
+		    	<label for="table_import">
+		      		<input type="checkbox" id="table_import"> Import last 7 days of data
+	      		</label>
+		    </div>
+		  </div>
+		  <div class="form-group" id="table_import_count">
+		    <label for="" class="col-sm-2 control-label"></label>
+		    <div class="col-sm-10">
+			    <hr>
+		      	<center>
+		      		<img src="/static/img/loading.gif">
+		      		<br>
+		      		<br>
+		      		<p>Calculating volume of tweets...</p>
+		      	</center>
+		    </div>
+	      </div>
+		</form>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary rule_add" id="rule_add">Save Rule</button>
+      </div>
+    </div>
+  </div>
+</div>

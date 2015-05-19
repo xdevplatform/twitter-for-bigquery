@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block bodycontent %}
 	
-<a class="btn btn-primary pull-right table_delete" data-id="{{id}}" target="_target">Delete</a>
+<a class="btn btn-default pull-right table_delete" data-id="{{id}}" target="_target">Delete</a>
 
 <h1>Dataset: {{tableReference.datasetId}}.{{tableReference.tableId}}</h1>
 
@@ -10,20 +10,20 @@
 <div class="row">
   <div class="col-md-2"><label>Project</label></div>
   <div class="col-md-4">{{tableReference.projectId}}</div>
-  <div class="col-md-2"><label>Type</label></div>
-  <div class="col-md-4">Gnip</div>
+  <div class="col-md-2"><label>Created</label></div>
+  <div class="col-md-4">{{creationTime}}</div>
 </div>
 
 <div class="row">
-  <div class="col-md-2"><label>Created</label></div>
-  <div class="col-md-4">{{creationTime}}</div>
+  <div class="col-md-2"><label>Type</label></div>
+  <div class="col-md-4">Gnip</div>
   <div class="col-md-2"><label>Updated</label></div>
   <div class="col-md-4">{{lastModifiedTime}}</div>
 </div>
 		
 <br><br>
 
-<button type="button" class="btn btn-sm pull-right" data-toggle="modal" data-target="#myModal">
+<button type="button" class="btn btn-sm btn-primary pull-right" data-toggle="modal" data-target="#myModal">
   Add rule
 </button>
 
@@ -42,6 +42,8 @@
 <tbody id="table_data">
 </tbody>
 </table>
+
+{% include "rule_add_partial.html" %}
 
 <script id="table_row" type="text/template">
 <tr>
