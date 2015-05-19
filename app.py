@@ -167,122 +167,13 @@ class ApiTableData(webapp2.RequestHandler):
 
         builder = QueryBuilder(QueryBuilder.GNIP if "gnip" in table else QueryBuilder.PUBLIC, table, field, charttype, interval) 
         query = builder.query()
-        print query
         
         results = get_bq().jobs().query(projectId=PROJECT_NUMBER, body={'query':query}).execute()
+        args = builder.c3_args(query, results) 
 
-        if charttype == 'donut' or charttype == 'bar':
-                 
-            columns = []
-            if 'rows' in results:
-                for row in results['rows']:
-                    for key, dict_list in row.iteritems():
-                        value = dict_list[0]['v']
-                        if value:
-                            source = REMOVE_HTML.sub('', value)
-                            count = int(dict_list[1]['v'])
-                            columns.append([source, count])
-            else:
-                columns.append([])
-
-            # http://c3js.org/samples/chart_donut.html
-            # query and title are returned for display in UI
-            args = {
-                'data' : {
-                    'columns' : columns,
-                    'type' : charttype
-                },
-                'donut' : {
-                    'title' : "Tweet sources"
-                },
-                'bar': {
-                    'width': {
-                        'ratio': 0.5 
-                    }
-                },
-                'query' : query.strip() if query else query,
-                'title' : "Sources by type"
-            }
-            
-        elif charttype == 'timeseries':
-
-            # BUGBUG: this should return last 24 hours or last N days in order, not just random hours.
-            
-            # key: source, value: [source, d1, d2, d3...]
-            now = datetime.now()
-            buckets = {}
-
-            delta = timedelta(days=1)
-            timeformat = "%Y-%m-%d 00:00"
-             
-            if interval == 1:
-                delta = timedelta(hours=1)
-                timeformat = "%Y-%m-%d %H:00"
-                
-            header = ['x']
-            header_lookup = ['x']
-            start = now - timedelta(days=interval)
-            while True:
-                index = start.strftime(timeformat)
-                
-                # header returned to c3 needs to be 0-padded dates
-                header.append(index)
-                
-                # matching index with bigquery results is not 0-padded dates
-                header_lookup.append(index.replace("-0", "-"))
-                start = start + delta
-                if start > now:
-                    break
-            
-            columns = [header]
-            
-#             print columns
-#             print results
-            
-            if 'rows' in results:
-                for row in results['rows']:
-                    
-                    for key, dict_list in row.iteritems():
-                        value = dict_list[0]['v']
-                        if value:
-                            value = REMOVE_HTML.sub('', value)
-                            count = int(dict_list[1]['v'])
-                            time_interval = str(dict_list[2]['v'])
-
-                            column = buckets.get(value, None)
-                            if not column:
-                                column = [0] * len(header)
-                                column[0] = value
-                                buckets[value] = column
-                                
-                            column[header_lookup.index(time_interval)] = count
-                            
-            else:
-                columns.append([])
-
-            for key, value in buckets.iteritems():
-                columns.append(value)
-                
-            # http://c3js.org/samples/simple_multiple.html
-            # query and title are returned for display in UI
-            args = {
-                'data' : {
-                    'x' : 'x',
-                    'xFormat' : '%Y-%m-%d %H:%M',
-                    'columns' : columns 
-                },
-                'axis': {
-                    'x': {
-                        'type': 'timeseries',
-                        'tick': {
-                            'format': '%Y-%m-%d %H:%M'
-                        }
-                    }
-                },
-                'query' : query,
-                'title' : "Sources by hour" 
-            }
-
+#         print query
+#         print args
+        
         self.response.headers['Content-Type'] = 'application/json'
         self.response.out.write(json.dumps(args))
                                
@@ -401,6 +292,7 @@ class QueryBuilder():
     charttype = None
     interval = None
     from_clause = None
+    prefix = ""
 
     def __init__(self, type, table, field, charttype, interval):
         self.type = type
@@ -423,33 +315,33 @@ class QueryBuilder():
             created_field = 'created_at'
             if self.field == 'hashtags':
                 object = 'Hashtags'
-                prefix = '#'
+                self.prefix = '#'
                 col = 'entities.hashtags.text'
                 flatten_field = 'entities.hashtags'
             elif self.field == 'mentions':
                 object = 'User mentions'
-                prefix = '@'
+                self.prefix = '@'
                 col = 'entities.user_mentions.screen_name'
                 flatten_field = 'entities.user_mentions'            
             elif self.field == 'sources':
                 object = 'Tweet sources'
-                prefix = ''
+                self.prefix = ''
                 col = 'source' 
         else:
             created_field = 'postedTime'
             if self.field == 'hashtags':
                 object = 'Hashtags'
-                prefix = '#'
+                self.prefix = '#'
                 col = 'twitter_entities.hashtags.text'
                 flatten_field = 'twitter_entities.hashtags'
             elif self.field == 'mentions':
                 object = 'User mentions'
-                prefix = '@'
+                self.prefix = '@'
                 col = 'twitter_entities.user_mentions.screen_name'
                 flatten_field = 'twitter_entities.user_mentions'            
             elif self.field == 'sources':
                 object = 'Tweet sources'
-                prefix = ''
+                self.prefix = ''
                 col = 'generator.displayName'
                             
         select = "%s as value,count(*) as count" % col 
@@ -511,6 +403,123 @@ class QueryBuilder():
             LIMIT %s""" % (select, fromclause, filter, groupby, orderby, limit)
             
         return query
+    
+    def c3_args(self, query, results):
+        
+        args = {}
+        
+        if self.charttype == 'donut' or self.charttype == 'bar':
+                 
+            columns = []
+            if 'rows' in results:
+                for row in results['rows']:
+                    for key, dict_list in row.iteritems():
+                        value = dict_list[0]['v']
+                        if value:
+                            source = REMOVE_HTML.sub('', value)
+                            count = int(dict_list[1]['v'])
+                            columns.append([source, count])
+            else:
+                columns.append([])
+
+            # http://c3js.org/samples/chart_donut.html
+            # query and title are returned for display in UI
+            args = {
+                'data' : {
+                    'columns' : columns,
+                    'type' : charttype
+                },
+                'donut' : {
+                    'title' : "Tweet sources"
+                },
+                'bar': {
+                    'width': {
+                        'ratio': 0.5 
+                    }
+                },
+                'query' : query.strip() if query else query,
+                'title' : "Sources by type"
+            }
+            
+        elif self.charttype == 'timeseries':
+
+            # key: source, value: [source, d1, d2, d3...]
+            now = datetime.now()
+            buckets = {}
+
+            delta = timedelta(days=1)
+            timeformat = "%Y-%m-%d 00:00"
+             
+            if self.interval == 1:
+                delta = timedelta(hours=1)
+                timeformat = "%Y-%m-%d %H:00"
+                
+            header = ['x']
+            header_lookup = ['x']
+            start = now - timedelta(days=self.interval)
+            while True:
+                index = start.strftime(timeformat)
+                
+                # header returned to c3 needs to be 0-padded dates
+                header.append(index)
+                
+                # matching index with bigquery results is not 0-padded dates
+                header_lookup.append(index.replace("-0", "-"))
+                start = start + delta
+                if start > now:
+                    break
+            
+            columns = [header]
+            
+#             print columns
+#             print results
+            
+            if 'rows' in results:
+                for row in results['rows']:
+                    
+                    for key, dict_list in row.iteritems():
+                        value = dict_list[0]['v']
+                        if value:
+                            value = self.prefix + REMOVE_HTML.sub('', value)
+                            count = int(dict_list[1]['v'])
+                            time_interval = str(dict_list[2]['v'])
+
+                            column = buckets.get(value, None)
+                            if not column:
+                                column = [0] * len(header)
+                                column[0] = value
+                                buckets[value] = column
+                                
+                            column[header_lookup.index(time_interval)] = count
+                            
+            else:
+                columns.append([])
+
+            for key, value in buckets.iteritems():
+                columns.append(value)
+                
+            # http://c3js.org/samples/simple_multiple.html
+            # query and title are returned for display in UI
+            args = {
+                'data' : {
+                    'x' : 'x',
+                    'xFormat' : '%Y-%m-%d %H:%M',
+                    'columns' : columns 
+                },
+                'axis': {
+                    'x': {
+                        'type': 'timeseries',
+                        'tick': {
+                            'format': '%Y-%m-%d %H:%M'
+                        }
+                    }
+                },
+                'query' : query.strip() if query else query,
+                'title' : "Sources by hour" 
+            }
+            
+        return args
+            
     
 BQ_CREDENTIALS = appengine.AppAssertionCredentials(scope='https://www.googleapis.com/auth/bigquery')
 BQ_HTTP = BQ_CREDENTIALS.authorize(httplib2.Http())
