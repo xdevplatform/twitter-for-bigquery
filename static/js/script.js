@@ -199,8 +199,8 @@ var RulePage = {
 
 		$(document.body).on("click", ".rule_delete", function(){
 			if (confirm('Are you sure?')){
-				ruleid = $(this).data("ruleid");
-				RulePage.delete(ruleid, function(response){
+				value = $(this).data("value");
+				RulePage.delete(value, function(response){
 					RulePage.list();
 				});
 			}
@@ -237,9 +237,9 @@ var RulePage = {
 		 Page.add("/api/rule/add", params, callback);
 	},
 	
-	delete : function(index, callback){
+	delete : function(value, callback){
 		 var params = {
-			'index': index
+			'value': value
 		 }
 		 Page.delete("/api/rule/delete", params, callback)
 	}
@@ -308,8 +308,8 @@ var TablePage = {
 
 		$(document.body).on("click", ".rule_delete", function(){
 			if (confirm('Are you sure?')){
-				ruleid = $(this).data("ruleid");
-				RulePage.delete(ruleid, function(response){
+				value = $(this).data("value");
+				RulePage.delete(value, function(response){
 					RulePage.list(id);
 				});
 			}

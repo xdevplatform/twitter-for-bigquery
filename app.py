@@ -336,12 +336,11 @@ class ApiRuleDelete(webapp2.RequestHandler):
     
     def get(self):
         
-        rule_index = int(self.request.get("index"))
-        response = None
-        
-        # BUGBUG: fix this
-        rules_list = rules.get_rules(url=GNIP_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
-        rule_delete = rules_list[rule_index]
+        value = self.request.get("value")
+        rule_delete = {
+            "value" : value
+        }
+
         response = rules.delete_rule(rule_delete, url=GNIP_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
         
         self.response.headers['Content-Type'] = 'application/json'   
@@ -529,15 +528,18 @@ def handle_500(request, response, exception):
     message = "Unknown error occurred"
     try:
         raise exception
-    except HttpError, e:
-        status = e.resp.status
-        message = e._get_reason()
     except RulesGetFailedException, e:
         status = 500
         message = e.message
     except RuleDeleteFailedException, e:
         status = 500
         message = e.message
+    except requests.exceptions.ConnectionError, e:
+        status = 500
+        message = str(e)
+    except HttpError, e:
+        status = e.resp.status
+        message = e._get_reason()
     except:
         logging.exception(exception)
 
