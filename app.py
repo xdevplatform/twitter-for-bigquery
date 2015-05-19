@@ -47,16 +47,7 @@ class TableList(webapp2.RequestHandler):
     
     def get(self):
         
-        template_data = {
-             "id": "{{id}}", 
-             "projectId": "{{projectId}}",
-             "datasetId": "{{datasetId}}",
-             "tableId": "{{tableId}}",
-             "rulesStart" : "{{#rules}}",
-             "rulesValue" : "{{.}}",
-             "rulesEnd" : "{{/rules}}",
-             "projectIdName" : PROJECT_ID
-        }
+        template_data = {}
         self.response.out.write(JINJA.get_template('table_list.html').render(template_data))
         
 class ApiTableList(webapp2.RequestHandler):
@@ -174,6 +165,7 @@ class ApiTableData(webapp2.RequestHandler):
 
         builder = QueryBuilder(QueryBuilder.GNIP if "gnip" in table else QueryBuilder.PUBLIC, table, field, charttype, interval) 
         query = builder.query()
+        print query
         
         results = get_service().jobs().query(projectId=PROJECT_NUMBER, body={'query':query}).execute()
 
@@ -410,7 +402,7 @@ class QueryBuilder():
                 flatten_field = 'entities.user_mentions'            
             elif self.field == 'sources':
                 object = 'Tweet sources'
-                prefix = '@'
+                prefix = ''
                 col = 'source' 
         else:
             created_field = 'postedTime'
@@ -426,8 +418,8 @@ class QueryBuilder():
                 flatten_field = 'twitter_entities.user_mentions'            
             elif self.field == 'sources':
                 object = 'Tweet sources'
-                prefix = '@'
-                col = 'source'
+                prefix = ''
+                col = 'generator.displayName'
                             
         select = "%s as value,count(*) as count" % col 
         fromclause = "flatten(%s, %s)" % (self.from_clause, flatten_field) if flatten_field else self.from_clause
