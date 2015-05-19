@@ -33,15 +33,8 @@ JINJA = jinja2.Environment(
     extensions=['jinja2.ext.autoescape'],
     autoescape=True)
 
-ONE_DAY = 1000 * 60 * 60 * 24
 REMOVE_HTML = re.compile(r'<.*?>')
 TABLE_CACHE = {}
-
-credentials = appengine.AppAssertionCredentials(scope='https://www.googleapis.com/auth/bigquery')
-http = credentials.authorize(httplib2.Http())
-
-def get_service():
-    return build('bigquery', 'v2', http=http)
 
 class Home(webapp2.RequestHandler):
     
@@ -72,8 +65,6 @@ class ApiTableList(webapp2.RequestHandler):
 
         tables = []
     
-        print "table_cache %s" % TABLE_CACHE
-        
         if TABLE_CACHE.get("cache", None) == None:
     
             datasets = get_service().datasets().list(projectId=PROJECT_ID).execute()
@@ -183,7 +174,6 @@ class ApiTableData(webapp2.RequestHandler):
 
         builder = QueryBuilder(QueryBuilder.GNIP if "gnip" in table else QueryBuilder.PUBLIC, table, field, charttype, interval) 
         query = builder.query()
-        print query
         
         results = get_service().jobs().query(projectId=PROJECT_NUMBER, body={'query':query}).execute()
 
@@ -227,31 +217,33 @@ class ApiTableData(webapp2.RequestHandler):
             # key: source, value: [source, d1, d2, d3...]
             now = datetime.now()
             buckets = {}
-            header = None
-            header_lookup = None
 
+            delta = timedelta(days=1)
+            timeformat = "%Y-%m-%d 00:00"
+             
             if interval == 1:
-                header = ['x', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23' ]
-                header_lookup = header
-            else : # interval == 31 or interval == 7:
-                header = ['x']
-                header_lookup = ['x']
-                start = now - timedelta(days=interval)
-                while True:
-                    index = start.strftime("%Y-%m-%d")
-                    
-                    # header returned to c3 needs to be 0-padded dates
-                    header.append(index)
-                    
-                    # matching index with bigquery results is not 0-padded dates
-                    header_lookup.append(index.replace("-0", "-"))
-                    start = start + timedelta(days=1)
-                    if start > now:
-                        break
+                delta = timedelta(hours=1)
+                timeformat = "%Y-%m-%d %H:00"
+                
+            header = ['x']
+            header_lookup = ['x']
+            start = now - timedelta(days=interval)
+            while True:
+                index = start.strftime(timeformat)
+                
+                # header returned to c3 needs to be 0-padded dates
+                header.append(index)
+                
+                # matching index with bigquery results is not 0-padded dates
+                header_lookup.append(index.replace("-0", "-"))
+                start = start + delta
+                if start > now:
+                    break
             
             columns = [header]
             
-            print columns
+#             print columns
+#             print results
             
             if 'rows' in results:
                 for row in results['rows']:
@@ -268,7 +260,7 @@ class ApiTableData(webapp2.RequestHandler):
                                 column = [0] * len(header)
                                 column[0] = value
                                 buckets[value] = column
-    
+                                
                             column[header_lookup.index(time_interval)] = count
                             
             else:
@@ -282,13 +274,14 @@ class ApiTableData(webapp2.RequestHandler):
             args = {
                 'data' : {
                     'x' : 'x',
+                    'xFormat' : '%Y-%m-%d %H:%M',
                     'columns' : columns 
                 },
                 'axis': {
                     'x': {
                         'type': 'timeseries',
                         'tick': {
-                            'format': '%Y-%m-%d'
+                            'format': '%Y-%m-%d %H:%M'
                         }
                     }
                 },
@@ -305,6 +298,13 @@ class TableDetail(webapp2.RequestHandler):
         
         (project, dataset, table) = parse_bqid(id)
         response = get_service().tables().get(projectId=project, datasetId=dataset, tableId=table).execute()
+        
+        created = float(response['creationTime'])
+        response['creationTime'] = millis_to_date(created)
+        
+        updated = float(response['lastModifiedTime'])
+        response['lastModifiedTime'] = millis_to_date(updated)
+        
         self.response.out.write(JINJA.get_template('table_detail.html').render(response))
 
 class RuleList(webapp2.RequestHandler):
@@ -327,8 +327,6 @@ class ApiRuleList(webapp2.RequestHandler):
             tag = make_tag(dataset, table)
             response = [r for r in response if r['tag'] == tag]
             
-        print response
-        
         self.response.headers['Content-Type'] = 'application/json'   
         self.response.out.write(json.dumps(response))
         
@@ -388,7 +386,6 @@ class QueryBuilder():
         self.charttype = charttype
         self.interval = interval
         self.from_clause = "[%s]" % self.table
-        print self.from_clause
         
     def query(self):
         
@@ -432,25 +429,25 @@ class QueryBuilder():
                 prefix = '@'
                 col = 'source'
                             
-        dt = datetime.now()
-        time_limit = time.mktime(dt.timetuple())
-        if self.interval == 1:
-            time_limit = time_limit - (ONE_DAY)
-        elif self.interval == 31:
-            time_limit = time_limit - (ONE_DAY * 31)
-        else: # interval == 7
-            time_limit = time_limit - (ONE_DAY * 7)
-        
         select = "%s as value,count(*) as count" % col 
         fromclause = "flatten(%s, %s)" % (self.from_clause, flatten_field) if flatten_field else self.from_clause
-        filter = "%s is not null AND %s > %s" % (col, created_field, time_limit)
+        time_filter = "DATE_ADD(CURRENT_TIMESTAMP(), -%s, 'DAY')" % (self.interval)
+        filter = "%s is not null AND %s > %s" % (col, created_field, time_filter)
         groupby = "value"
         orderby = "count DESC"
         limit = 20
         
         # requires join AND tranlating all tables to scoped t1/t2
         if self.charttype == "timeseries":
-            select = "t1.%s, CONCAT('2015-', STRING(MONTH(TIMESTAMP(t1.%s))), '-', STRING(DAY(TIMESTAMP(t1.%s)))) AS create_hour" % (select, created_field, created_field)
+            
+            # default create hour: daily
+            create_hour = "CONCAT('2015-', STRING(MONTH(TIMESTAMP(t1.%s))), '-', STRING(DAY(TIMESTAMP(t1.%s))), ' 00:00')" % (created_field, created_field)
+            
+            # create hour: hourly
+            if self.interval == 1:
+                create_hour = "CONCAT('2015-', STRING(MONTH(TIMESTAMP(t1.%s))), '-', STRING(DAY(TIMESTAMP(t1.%s))), ' ', LPAD(STRING(HOUR(TIMESTAMP(t1.%s))), 2, '0'), ':00')" % (created_field, created_field, created_field)
+                
+            select = "t1.%s, %s AS create_hour" % (select, create_hour)
             fromclause = "flatten(%s, %s)" % (self.from_clause, flatten_field) if flatten_field else self.from_clause
             fromclause = """
                 %s t1
@@ -462,14 +459,14 @@ class QueryBuilder():
                         FROM %s
                         WHERE
                             %s is not null AND
-                            %s > %s 
+                            %s > %s
                         GROUP BY %s 
                         ORDER BY occur DESC 
                         LIMIT 20
                     ) t2 
                 ON t1.%s = t2.%s
-                """ % (fromclause, col, fromclause, col, created_field, time_limit, col, col, col)
-            filter = "t1.%s is not null AND t1.%s > %s" % (col, created_field, time_limit)
+                """ % (fromclause, col, fromclause, col, created_field, time_filter, col, col, col)
+            filter = "t1.%s is not null AND t1.%s > %s" % (col, created_field, time_filter)
             groupby = "value, create_hour" 
             orderby_extra = "value ASC, create_hour ASC" 
             limit = 24 * limit
@@ -491,6 +488,15 @@ class QueryBuilder():
             LIMIT %s""" % (select, fromclause, filter, groupby, orderby, limit)
             
         return query
+    
+BQ_CREDENTIALS = appengine.AppAssertionCredentials(scope='https://www.googleapis.com/auth/bigquery')
+BQ_HTTP = BQ_CREDENTIALS.authorize(httplib2.Http())
+
+def get_service():
+    return build('bigquery', 'v2', http=BQ_HTTP)
+
+def millis_to_date(ts):
+    return datetime.fromtimestamp(ts/1000).strftime('%Y-%m-%d %H:%M')
     
 def parse_bqid(id):
     import re
@@ -536,7 +542,7 @@ def handle_500(request, response, exception):
         message = e._get_reason()
     except:
         status = 500
-        message = str(e)
+        message = str(exception)
         logging.exception(exception)
 
     response.set_status(status)
