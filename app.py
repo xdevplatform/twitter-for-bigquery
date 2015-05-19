@@ -33,6 +33,16 @@ FROM_CLAUSE = "[%s.%s]" % (DATASET_ID, TABLE_ID)
 ONE_DAY = 1000 * 60 * 60 * 24
 REMOVE_HTML = re.compile(r'<.*?>')
 
+TEMPLATE_BASE = {
+     "id": "{{id}}", 
+     "projectId": "{{projectId}}",
+     "datasetId": "{{datasetId}}",
+     "tableId": "{{tableId}}", 
+     "tag": "{{tag}}", 
+     "value": "{{value}}", 
+     "count": "{{count}}"
+}
+
 def get_service():
     
     return build('bigquery', 'v2', http=http)
@@ -260,20 +270,24 @@ class ApiDatasetDelete(webapp2.RequestHandler):
         self.response.headers['Content-Type'] = 'application/json'   
         self.response.out.write(json.dumps(response))
                        
-
 class DatasetDetail(webapp2.RequestHandler):
     
     def get(self, id):
         
-        template_data = {"id": "{{id}}", "projectId": "{{projectId}}","datasetId": "{{datasetId}}","tableId": "{{tableId}}" }
+        (project, dataset, table) = re.split('\:|\.', id)
+
+        service = get_service()
+        response = service.tables().get(projectId=project, datasetId=dataset, tableId=table).execute()
+        print response
+        
         template_path = 'templates/dataset_detail.html'
-        self.response.out.write(template.render(template_path, template_data))
+        self.response.out.write(template.render(template_path, response))
 
 class RuleList(webapp2.RequestHandler):
     
     def get(self):
         
-        template_data = {"tag": "{{tag}}", "value": "{{value}}", "count": "{{count}}"}
+        template_data = TEMPLATE_BASE
         template_path = 'templates/rule_list.html'
         self.response.out.write(template.render(template_path, template_data))
 

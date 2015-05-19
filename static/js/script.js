@@ -10,10 +10,10 @@ var Page = {
 			$("#table_data").html("");
 			$("#table_data").append("<tr><td colspan="+cols+"><center><img src='/static/img/loading.gif'></td></tr>");
 			
-			callback = Page.list_table_default
+			callback = Page.list_default
 			
 		}
-		
+
 		 $.ajax({
 				type : "GET",
 				url : list_url,
@@ -24,12 +24,7 @@ var Page = {
 		
 	 },
 	 
-	 handle_error :	function(xhr, errorType, exception) {
-		console.log('Error occured');
-	 },
-
-	 
-	 list_table_default : function(response) {
+	 list_default : function(response) {
 				
 		$("#table_data").html("");
 		
@@ -45,6 +40,33 @@ var Page = {
 			$("#table_data").append(output);
 			
 		}				
+	 },
+	 
+	 detail : function(detail_url, callback) {
+		 
+		// if no callback, do default list detail
+		if (!callback){
+			
+//			var cols = $("#table_data").parent().find("tr:first th").length;
+//			
+//			$("#table_data").html("");
+//			$("#table_data").append("<tr><td colspan="+cols+"><center><img src='/static/img/loading.gif'></td></tr>");
+			
+			callback = Page.detail_default
+			
+		}
+		
+		 $.ajax({
+				type : "GET",
+				url : detail_url,
+				dataType : "json",
+				success : callback,
+				error : Page.handle_error 
+			});	
+	 },
+	 
+	 detail_default : function(response){
+		 alert(1);
 	 },
 	 
 	 add : function(add_url, params, callback) {
@@ -67,9 +89,11 @@ var Page = {
 				success : callback,
 				error : Page.handle_error 
 			});	
+	 },
+	 
+	 handle_error :	function(xhr, errorType, exception) {
+		console.log('Error occured');
 	 }
-	 
-	 
 
 }
 
@@ -252,6 +276,10 @@ var DatasetPage = {
 	
 	list : function(callback){
 		Page.list("/api/dataset/list", callback)
+	},
+	
+	detail : function(id, callback){
+		Page.detail("/api/dataset/" + id, callback)
 	},
 	
 	add : function(name, table, type, rules, imprt, callback){

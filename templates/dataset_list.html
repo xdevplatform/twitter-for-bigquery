@@ -16,8 +16,8 @@
 			<table class="table table-striped">
 			<thead>
 	        <tr>
-	          <th>Project</th>
 	          <th>Dataset</th>
+	          <th>Project</th>
 	          <th>Type</th>
 	          <th>Rules</th>
 	          <th>Actions</th>
@@ -114,11 +114,11 @@
 <script id="table_row" type="text/template">
 <tr>
 	<td>
-		{{projectId}}
+		<a href="/dataset/{{id}}">{{datasetId}}.{{tableId}}</a>
+		<a href="https://bigquery.cloud.google.com/table/{{id}}" class="btn-sm" target="_target"><span class="glyphicon glyphicon-new-window" aria-hidden="true"></span></a>
 	</td>
 	<td>
-		{{datasetId}}.{{tableId}}
-		<a href="https://bigquery.cloud.google.com/table/{{id}}" class="btn-sm" target="_target"><span class="glyphicon glyphicon-new-window" aria-hidden="true"></span></a>
+		{{projectId}}
 	</td>
 	<td>
 		Gnip
