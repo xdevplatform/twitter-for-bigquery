@@ -8,6 +8,8 @@ import httplib2
 import json
 import webapp2
 import time
+import logging
+
 from datetime import datetime, timedelta
 
 from google.appengine.ext.webapp import template
@@ -203,11 +205,9 @@ class ApiTableList(webapp2.RequestHandler):
 
         response = None
         
-        try:
-            response = rules.get_rules(url=GNIP_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
-        except RulesGetFailedException, e:
-            handle_error(self.response, 404, e.message)
-            return
+        response = rules.get_rules(url=GNIP_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
+        
+        print response
 
         tables = get_datasets()
         for t in tables:
@@ -249,12 +249,7 @@ class ApiTableAdd(webapp2.RequestHandler):
             }
         }
 
-        response = None
-        try:        
-            response = get_service().tables().insert(projectId=PROJECT_ID, datasetId=dataset, body=body).execute()
-        except HttpError, e:
-            handle_error(self.response, e.resp.status, e._get_reason())
-            return
+        response = get_service().tables().insert(projectId=PROJECT_ID, datasetId=dataset, body=body).execute()
             
         name = "%s.%s" % (dataset, table)
         rule_list = [s.strip() for s in rule_list.splitlines()]
@@ -279,17 +274,9 @@ class ApiTableDelete(webapp2.RequestHandler):
         
         tag = dataset + "." + table
 
-        response = None        
-        try:
-            rules_list = rules.get_rules(url=GNIP_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
-            rules_list = [r for r in rules_list if r['tag'] == tag]
-            response = rules.delete_rules(rules_list, url=GNIP_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
-        except RulesGetFailedException, e:
-            handle_error(self.response, 404, e.message)
-            return
-        except RuleDeleteFailedException, e:
-            handle_error(self.response, 404, e.message)
-            return
+        rules_list = rules.get_rules(url=GNIP_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
+        rules_list = [r for r in rules_list if r['tag'] == tag]
+        response = rules.delete_rules(rules_list, url=GNIP_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
 
         self.response.headers['Content-Type'] = 'application/json'   
         self.response.out.write(json.dumps(response))
@@ -322,12 +309,7 @@ class ApiRuleList(webapp2.RequestHandler):
         
         table = self.request.get("table", None)
         
-        response = None
-        try:
-            response = rules.get_rules(url=GNIP_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
-        except RulesGetFailedException, e:
-            handle_error(self.response, 404, e.message)
-            return
+        response = rules.get_rules(url=GNIP_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
         
         if table:
             response = [r for r in response if r['tag'] in table]
@@ -358,16 +340,9 @@ class ApiRuleDelete(webapp2.RequestHandler):
         response = None
         
         # BUGBUG: fix this
-        try:
-            rules_list = rules.get_rules(url=GNIP_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
-            rule_delete = rules_list[rule_index]
-            response = rules.delete_rule(rule_delete, url=GNIP_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
-        except RulesGetFailedException, e:
-            handle_error(self.response, 404, e.message)
-            return
-        except RuleDeleteFailedException, e:
-            handle_error(self.response, 404, e.message)
-            return
+        rules_list = rules.get_rules(url=GNIP_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
+        rule_delete = rules_list[rule_index]
+        response = rules.delete_rule(rule_delete, url=GNIP_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
         
         self.response.headers['Content-Type'] = 'application/json'   
         self.response.out.write(json.dumps(response))
@@ -526,10 +501,6 @@ def parse_bqid(id):
     import re
     return re.split('\:|\.', id)
     
-def handle_error(response, status, message):
-    response.set_status(status)
-    response.out.write(message)
-
 application = webapp2.WSGIApplication([
     
     # API calls supporting JSON
@@ -551,3 +522,26 @@ application = webapp2.WSGIApplication([
     ('/', Chart),
     
 ], debug=True)
+
+def handle_500(request, response, exception):
+
+    status = 500
+    message = "Unknown error occurred"
+    try:
+        raise exception
+    except HttpError, e:
+        status = e.resp.status
+        message = e._get_reason()
+    except RulesGetFailedException, e:
+        status = 500
+        message = e.message
+    except RuleDeleteFailedException, e:
+        status = 500
+        message = e.message
+    except:
+        logging.exception(exception)
+
+    response.set_status(status)
+    response.out.write(message)
+
+application.error_handlers[500] = handle_500
