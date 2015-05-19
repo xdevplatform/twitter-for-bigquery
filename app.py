@@ -3,15 +3,18 @@ import os, sys
 BASE_DIR = os.path.dirname(os.path.realpath(__file__))
 sys.path.insert(0, "%s/libs" % BASE_DIR)
 
+import jinja2
+import webapp2
+
 import re
 import httplib2
 import json
-import webapp2
 import time
 import logging
 
 from datetime import datetime, timedelta
 
+from requests.exceptions import *
 from google.appengine.ext.webapp import template
 from google.appengine.api import memcache
 from apiclient.discovery import build
@@ -25,46 +28,36 @@ from gnippy.errors import RuleDeleteFailedException, RulesGetFailedException
 from config import *
 from utils import Utils
 
-# template.register_template_library('tags.verbatim') 
+JINJA = jinja2.Environment(
+    loader=jinja2.FileSystemLoader("%s/templates" % BASE_DIR),
+    extensions=['jinja2.ext.autoescape'],
+    autoescape=True)
 
 _SCOPE = 'https://www.googleapis.com/auth/bigquery'
 
 credentials = appengine.AppAssertionCredentials(scope=_SCOPE)
 http = credentials.authorize(httplib2.Http())
 
-# [tweets:2015_01_09]
-FROM_CLAUSE = "[%s.%s]" % (DATASET_ID, TABLE_ID) 
-
 ONE_DAY = 1000 * 60 * 60 * 24
 REMOVE_HTML = re.compile(r'<.*?>')
-
-TEMPLATE_BASE = {
-     "id": "{{id}}", 
-     "projectId": "{{projectId}}",
-     "datasetId": "{{datasetId}}",
-     "tableId": "{{tableId}}", 
-     "tag": "{{tag}}", 
-     "value": "{{value}}", 
-     "count": "{{count}}"
-}
 
 class Chart(webapp2.RequestHandler):
     
     def get(self):
         
         template_data = {}
-        template_path = 'templates/chart.html'
-        self.response.out.write(template.render(template_path, template_data))
+        self.response.out.write(JINJA.get_template('chart.html').render(template_data))
 
 class ChartData(webapp2.RequestHandler):
     
     def get(self):
         
-        source = self.request.get("source")
+        table = self.request.get("table")
+        field = self.request.get("field")
         charttype = self.request.get("charttype")
         interval = int(self.request.get("interval")) if self.request.get("interval") else 7
 
-        builder = QueryBuilder(QueryBuilder.GNIP, source, charttype, interval) 
+        builder = QueryBuilder(QueryBuilder.GNIP if "gnip" in table else QueryBuilder.PUBLIC, table, field, charttype, interval) 
         query = builder.query()
         print query
         
@@ -196,8 +189,7 @@ class TableList(webapp2.RequestHandler):
              "rulesEnd" : "{{/rules}}",
              "projectIdName" : PROJECT_ID
         }
-        template_path = 'templates/table_list.html'
-        self.response.out.write(template.render(template_path, template_data))
+        self.response.out.write(JINJA.get_template('table_list.html').render(template_data))
         
 class ApiTableList(webapp2.RequestHandler):
     
@@ -286,23 +278,16 @@ class TableDetail(webapp2.RequestHandler):
     def get(self, id):
         
         (project, dataset, table) = parse_bqid(id)
-
         response = get_service().tables().get(projectId=project, datasetId=dataset, tableId=table).execute()
-        
-        params = TEMPLATE_BASE
-        params.update(response)
-        
-        template_path = 'templates/table_detail.html'
-        self.response.out.write(template.render(template_path, params))
+        self.response.out.write(JINJA.get_template('table_detail.html').render(response))
 
 class RuleList(webapp2.RequestHandler):
     
     def get(self):
         
-        template_data = TEMPLATE_BASE
-        template_path = 'templates/rule_list.html'
-        self.response.out.write(template.render(template_path, template_data))
-
+        template_data = {}
+        self.response.out.write(JINJA.get_template('rule_list.html').render(template_data))
+                
 class ApiRuleList(webapp2.RequestHandler):
     
     def get(self):
@@ -350,8 +335,7 @@ class Admin(webapp2.RequestHandler):
     
     def get(self):
         template_data = {}
-        template_path = 'templates/admin.html'
-        self.response.out.write(template.render(template_path, template_data))
+        self.response.out.write(JINJA.get_template('admin.html').render(template_data))
         
 def get_datasets():
     
@@ -381,15 +365,20 @@ class QueryBuilder():
     GNIP = "gnip"
     
     type = None
-    source = None
+    table = None
+    field = None
     charttype = None
     interval = None
+    FROM_CLAUSE = None
 
-    def __init__(self, type, source, charttype, interval):
+    def __init__(self, type, table, field, charttype, interval):
         self.type = type
-        self.source = source
+        self.table = table
+        self.field = field
         self.charttype = charttype
         self.interval = interval
+        self.FROM_CLAUSE = "[%s]" % self.table
+        print self.FROM_CLAUSE
         
     def query(self):
         
@@ -402,33 +391,33 @@ class QueryBuilder():
 
         if self.type == QueryBuilder.PUBLIC:
             created_field = 'created_at'
-            if self.source == 'hashtags':
+            if self.field == 'hashtags':
                 object = 'Hashtags'
                 prefix = '#'
                 col = 'entities.hashtags.text'
                 flatten_field = 'entities.hashtags'
-            elif self.source == 'mentions':
+            elif self.field == 'mentions':
                 object = 'User mentions'
                 prefix = '@'
                 col = 'entities.user_mentions.screen_name'
                 flatten_field = 'entities.user_mentions'            
-            elif self.source == 'sources':
+            elif self.field == 'sources':
                 object = 'Tweet sources'
                 prefix = '@'
                 col = 'source' 
         else:
             created_field = 'postedTime'
-            if self.source == 'hashtags':
+            if self.field == 'hashtags':
                 object = 'Hashtags'
                 prefix = '#'
                 col = 'twitter_entities.hashtags.text'
                 flatten_field = 'twitter_entities.hashtags'
-            elif self.source == 'mentions':
+            elif self.field == 'mentions':
                 object = 'User mentions'
                 prefix = '@'
                 col = 'twitter_entities.user_mentions.screen_name'
                 flatten_field = 'twitter_entities.user_mentions'            
-            elif self.source == 'sources':
+            elif self.field == 'sources':
                 object = 'Tweet sources'
                 prefix = '@'
                 col = 'source'
@@ -443,7 +432,7 @@ class QueryBuilder():
             time_limit = time_limit - (ONE_DAY * 7)
         
         select = "%s as value,count(*) as count" % col 
-        fromclause = "flatten(%s, %s)" % (FROM_CLAUSE, flatten_field) if flatten_field else FROM_CLAUSE
+        fromclause = "flatten(%s, %s)" % (self.FROM_CLAUSE, flatten_field) if flatten_field else self.FROM_CLAUSE
         filter = "%s is not null AND %s > %s" % (col, created_field, time_limit)
         groupby = "value"
         orderby = "count DESC"
@@ -452,7 +441,7 @@ class QueryBuilder():
         # requires join AND tranlating all tables to scoped t1/t2
         if self.charttype == "timeseries":
             select = "t1.%s, CONCAT('2015-', STRING(MONTH(TIMESTAMP(t1.%s))), '-', STRING(DAY(TIMESTAMP(t1.%s)))) AS create_hour" % (select, created_field, created_field)
-            fromclause = "flatten(%s, %s)" % (FROM_CLAUSE, flatten_field) if flatten_field else FROM_CLAUSE
+            fromclause = "flatten(%s, %s)" % (self.FROM_CLAUSE, flatten_field) if flatten_field else self.FROM_CLAUSE
             fromclause = """
                 %s t1
                 inner join each 
@@ -510,7 +499,7 @@ application = webapp2.WSGIApplication([
     ('/api/table/add', ApiTableAdd),
     ('/api/table/delete', ApiTableDelete),
     
-    # HTML
+    # web pages
     ('/table/list', TableList),
     ('/table/([A-Za-z0-9\-\_\:\.]+)', TableDetail),
     ('/rule/list', RuleList),
@@ -534,7 +523,7 @@ def handle_500(request, response, exception):
     except RuleDeleteFailedException, e:
         status = 500
         message = e.message
-    except requests.exceptions.ConnectionError, e:
+    except ConnectionError, e:
         status = 500
         message = str(e)
     except HttpError, e:

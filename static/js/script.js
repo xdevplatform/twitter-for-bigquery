@@ -123,24 +123,30 @@ var ChartPage = {
 
 	handleChange : function() {
 	
-		var source = $("#source").val();
+		var table = $("#select_table").val();
+		var field = $("#field").val();
 		var charttype = $("#charttype").val();
 		var interval = $("#interval").val();
 	
 		var args = null;
-	
-		if (!source){
+
+		if (!table){
+			$("#chart").html("<span class='alert alert-warning'>Please select a table.</span>").show();
+			return false;
+		}
+
+		if (!field){
 			$("#chart").html("<span class='alert alert-warning'>Please select a source.</span>").show();
 			return false;
 		}
 	
-		$("#map").hide();
 		$("#chart").hide();
 		
 		if (charttype == 'donut' || charttype == 'bar' || charttype == 'timeseries') {
 	
 			var args = {
-				source : source,
+				table : table,
+				field : field,
 				charttype : charttype,
 				interval : interval
 			};
