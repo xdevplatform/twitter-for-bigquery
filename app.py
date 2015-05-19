@@ -24,15 +24,17 @@ from oauth2client import appengine
 
 from gnippy import rules
 from gnippy.errors import RuleDeleteFailedException, RulesGetFailedException
+from gnip_search import gnip_search_api
 
-from config import *
 from utils import Utils
+from config import *
 
 JINJA = jinja2.Environment(
     loader=jinja2.FileSystemLoader("%s/templates" % BASE_DIR),
     extensions=['jinja2.ext.autoescape'],
     autoescape=True)
 
+GNIP_SEARCH_DATE_FORMAT = "%Y-%m-%d %H:%M"
 REMOVE_HTML = re.compile(r'<.*?>')
 TABLE_CACHE = {}
 
@@ -58,12 +60,12 @@ class ApiTableList(webapp2.RequestHandler):
     
         if TABLE_CACHE.get("cache", None) == None:
     
-            datasets = get_service().datasets().list(projectId=PROJECT_ID).execute()
+            datasets = get_bq().datasets().list(projectId=PROJECT_ID).execute()
             datasets = datasets.get("datasets", None)
             
             for d in datasets:
                 ref = d.get("datasetReference", None)
-                bq_tables = get_service().tables().list(projectId=ref.get("projectId"), datasetId=ref.get("datasetId")).execute()
+                bq_tables = get_bq().tables().list(projectId=ref.get("projectId"), datasetId=ref.get("datasetId")).execute()
                 for t in bq_tables.get("tables", None):
                     id = t.get("id")
                     ref = t.get("tableReference", None)
@@ -74,7 +76,7 @@ class ApiTableList(webapp2.RequestHandler):
                         "tableId": ref.get("tableId", None) 
                     })
                     
-            rules_list = rules.get_rules(url=GNIP_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
+            rules_list = rules.get_rules(url=GNIP_STREAM_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
             for t in tables:
                 tag = make_tag(t['datasetId'], t['tableId'])
                 rs = [r['value'] for r in rules_list if r['tag'] == tag]
@@ -120,13 +122,13 @@ class ApiTableAdd(webapp2.RequestHandler):
             }
         }
 
-        response = get_service().tables().insert(projectId=PROJECT_ID, datasetId=dataset, body=body).execute()
+        response = get_bq().tables().insert(projectId=PROJECT_ID, datasetId=dataset, body=body).execute()
         TABLE_CACHE.clear()
             
         name = make_tag(dataset, table)
         rule_list = [s.strip() for s in rule_list.splitlines()]
         for r in rule_list:
-            rules.add_rule(r, tag=name, url=GNIP_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
+            rules.add_rule(r, tag=name, url=GNIP_STREAM_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
             TABLE_CACHE.clear()
 
         self.response.headers['Content-Type'] = 'application/json'   
@@ -139,7 +141,7 @@ class ApiTableDelete(webapp2.RequestHandler):
         (project, dataset, table) = parse_bqid(id)
         
         try:
-            response = get_service().tables().delete(projectId=project, datasetId=dataset, tableId=table).execute()
+            response = get_bq().tables().delete(projectId=project, datasetId=dataset, tableId=table).execute()
             TABLE_CACHE.clear()
         except:
             # OK to ignore here if it's already deleted; continue onto deleting rules
@@ -147,9 +149,9 @@ class ApiTableDelete(webapp2.RequestHandler):
         
         tag = dataset + "." + table
 
-        rules_list = rules.get_rules(url=GNIP_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
+        rules_list = rules.get_rules(url=GNIP_STREAM_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
         rules_list = [r for r in rules_list if r['tag'] == tag]
-        response = rules.delete_rules(rules_list, url=GNIP_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
+        response = rules.delete_rules(rules_list, url=GNIP_STREAM_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
         TABLE_CACHE.clear()
 
         self.response.headers['Content-Type'] = 'application/json'   
@@ -167,7 +169,7 @@ class ApiTableData(webapp2.RequestHandler):
         query = builder.query()
         print query
         
-        results = get_service().jobs().query(projectId=PROJECT_NUMBER, body={'query':query}).execute()
+        results = get_bq().jobs().query(projectId=PROJECT_NUMBER, body={'query':query}).execute()
 
         if charttype == 'donut' or charttype == 'bar':
                  
@@ -289,7 +291,7 @@ class TableDetail(webapp2.RequestHandler):
     def get(self, id):
         
         (project, dataset, table) = parse_bqid(id)
-        response = get_service().tables().get(projectId=project, datasetId=dataset, tableId=table).execute()
+        response = get_bq().tables().get(projectId=project, datasetId=dataset, tableId=table).execute()
         
         created = float(response['creationTime'])
         response['creationTime'] = millis_to_date(created)
@@ -312,7 +314,7 @@ class ApiRuleList(webapp2.RequestHandler):
         
         table = self.request.get("table", None)
         
-        response = rules.get_rules(url=GNIP_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
+        response = rules.get_rules(url=GNIP_STREAM_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
         
         if table:
             (project, dataset, table) = parse_bqid(table)
@@ -332,7 +334,7 @@ class ApiRuleAdd(webapp2.RequestHandler):
         if not rule or not tag:
             raise Exception("missing parameter")
 
-        response = rules.add_rule(rule, tag=tag, url=GNIP_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
+        response = rules.add_rule(rule, tag=tag, url=GNIP_STREAM_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
         TABLE_CACHE.clear()
         
         self.response.headers['Content-Type'] = 'application/json'   
@@ -341,16 +343,31 @@ class ApiRuleAdd(webapp2.RequestHandler):
 class ApiRuleTest(webapp2.RequestHandler):
     
     def get(self):
-        
+
         rule = self.request.get("rule")
 
-        if not rule or not tag:
+        if not rule:
             raise Exception("missing parameter")
 
-        response = {}
+        end = datetime.now()
+        start = end - timedelta(days=7)
+    
+        start_str = start.strftime(GNIP_SEARCH_DATE_FORMAT)
+        end_str = end.strftime(GNIP_SEARCH_DATE_FORMAT)
+        
+        g = get_gnip()
+        timeline = g.query_api(rule, 0, use_case="timeline", start=start_str, end=end_str, count_bucket="day", csv_flag=False)
+        timeline = json.loads(timeline)
+        
+        print timeline
+        
+        count = 0 
+        for r in timeline["results"]:
+            count = count + r["count"]
+        timeline['count'] = count
 
         self.response.headers['Content-Type'] = 'application/json'   
-        self.response.out.write(json.dumps(response))
+        self.response.out.write(json.dumps(timeline))
         
 class ApiRuleDelete(webapp2.RequestHandler):
     
@@ -361,7 +378,7 @@ class ApiRuleDelete(webapp2.RequestHandler):
             "value" : value
         }
 
-        response = rules.delete_rule(rule_delete, url=GNIP_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
+        response = rules.delete_rule(rule_delete, url=GNIP_STREAM_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
         TABLE_CACHE.clear()
         
         self.response.headers['Content-Type'] = 'application/json'   
@@ -498,8 +515,12 @@ class QueryBuilder():
 BQ_CREDENTIALS = appengine.AppAssertionCredentials(scope='https://www.googleapis.com/auth/bigquery')
 BQ_HTTP = BQ_CREDENTIALS.authorize(httplib2.Http())
 
-def get_service():
+def get_bq():
     return build('bigquery', 'v2', http=BQ_HTTP)
+
+def get_gnip():
+    g = gnip_search_api.GnipSearchAPI(GNIP_USERNAME, GNIP_PASSWORD, GNIP_SEARCH_URL)
+    return g
 
 def millis_to_date(ts):
     return datetime.fromtimestamp(ts/1000).strftime('%Y-%m-%d %H:%M')
@@ -547,6 +568,9 @@ def handle_500(request, response, exception):
     except HttpError, e:
         status = e.resp.status
         message = e._get_reason()
+    except Exception, e:
+        status = 500
+        message = e.message
     except:
         status = 500
         message = str(exception)
@@ -555,4 +579,4 @@ def handle_500(request, response, exception):
     response.set_status(status)
     response.out.write(message)
 
-# application.error_handlers[500] = handle_500
+application.error_handlers[500] = handle_500

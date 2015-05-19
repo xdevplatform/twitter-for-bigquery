@@ -113,13 +113,18 @@ var ChartPage = {
 		event.preventDefault();
 
 		if (load_tables){
-			var callback = null; 
+			var callback = function(){
+				$("#query_submit").prop("disabled", false);
+			}; 
 			if (autoload){
 				callback = function(){
+					$("#query_submit").prop("disabled", false);
 					ChartPage.handleChange();
 				}
 			}
-			TablePage.load_select('#select_table', "#query_submit", callback);
+			
+			$("#query_submit").prop("disabled", true);
+			TablePage.load_select('#select_table', callback);
 		}
 		
 		$('#form').submit(function(event){
@@ -219,19 +224,8 @@ var RulePage = {
 				});
 			}
 		});
-	
-		$(document.body).on("click", ".rule_add", function(){
-			var rule = $("#rule_text").val();
-			var tag = $("#rule_tag").val();
-			RulePage.add(rule, tag, function(response){
-				$('#myModal').modal('hide');
-				RulePage.list();
-			});
-		});
-
-		TablePage.load_select('#rule_tag', '#rule_add');
-		TablePage.init_import_count("#rule_text");
 		
+		RulePage.init_add_dialog();
 		RulePage.list();
 	},
 	
@@ -242,7 +236,64 @@ var RulePage = {
 		}
 		Page.list(url, callback)
 	},
+
+	// initialization for rule_add_partial.html
+	init_add_dialog : function(){
+		
+		$(document.body).on("click", ".rule_test", function(){
+			var rule = $("#rule_text").val();
+			var tag = $("#rule_tag").val();
+			
+			RulePage.test(rule, RulePage.test_callback)
+			
+		});
+		
+		// any change to rule results in need for re-test
+		$(document.body).on("keypress", "#rule_text", function(){
+			$("#rule_add").prop("disabled", true);
+		});
 	
+		$(document.body).on("click", ".rule_add", function(){
+			var rule = $("#rule_text").val();
+			var tag = $("#rule_tag").val();
+			
+			RulePage.test(rule, function(){
+				RulePage.add(rule, tag, function(response){
+					$('#myModal').modal('hide');
+					RulePage.list();
+				});
+			})
+			
+		});
+		
+		RulePage.init_import_count("#rule_text");
+		$("#rule_add").prop("disabled", true);
+		TablePage.load_select('#rule_tag', function(){
+		});
+	},
+	
+	init_import_count : function(rule_input_field){
+		
+		$("#rule_import_count").hide();
+	    $('#rule_import').change(function() {
+	    	
+	    	var rule = $(rule_input_field).val();
+	    	
+	    	if (!rule){
+	    		alert("Please enter a rule to calculate volume of tweets.");
+	    		$(this).attr("checked", false);
+	    		return false;
+	    	}
+	    	
+	        if($(this).is(":checked")) {
+		    	RulePage.test(rule, RulePage.test_callback);
+	        } else {
+	        	$("#rule_import_count").hide();
+	        }
+	    });
+	    
+	},
+
 	add : function(rule, tag, callback){
 		 var params = {
 			'rule': rule,
@@ -250,14 +301,38 @@ var RulePage = {
 		 }
 		 Page.add("/api/rule/add", params, callback);
 	},
+
+	test : function(rule, success){
+    	$("#rule_import_count").fadeIn();
+    	$("#rule_import_loading").show();
+    	$("#rule_import_text").html("Calculating volume of tweets...")
+		 var params = {
+			'rule': rule
+		 }
+		 $.ajax({
+				type : "GET",
+				url : "/api/rule/test",
+				data : params,
+				dataType : "json",
+				success : success,
+				error : Page.handle_error 
+			});	
+	},
 	
+	test_callback : function(response){
+		var count = response['count'];
+		$("#rule_import_loading").hide();
+		$("#rule_import_text").html(count + " records found.")
+		$("#rule_add").prop("disabled", false);
+	},
+
 	delete : function(value, callback){
 		 var params = {
 			'value': value
 		 }
 		 Page.delete("/api/rule/delete", params, callback)
 	}
-
+	
 }
 
 var TablePage = {
@@ -298,8 +373,6 @@ var TablePage = {
 			
 		});
 		
-		TablePage.init_import_count("#table_rules");
-	    
 		TablePage.list();
 	},
 	
@@ -320,24 +393,6 @@ var TablePage = {
 			}
 		});
 
-		$(document.body).on("click", ".rule_delete", function(){
-			if (confirm('Are you sure?')){
-				value = $(this).data("value");
-				RulePage.delete(value, function(response){
-					RulePage.list(id);
-				});
-			}
-		});
-
-		$(document.body).on("click", ".rule_add", function(){
-			var rule = $("#rule_text").val();
-			var tag = $("#rule_tag").val();
-			RulePage.add(rule, tag, function(response){
-				$('#myModal').modal('hide');
-				RulePage.list(id);
-			});
-		});
-		
 		// doctor the chart options to fit in table detail
 		$("#chart_bird").remove();
 		$(".chart_option").first().remove();
@@ -346,10 +401,7 @@ var TablePage = {
 			$(this).addClass("col-md-4");
 		});
 		
-
-		TablePage.load_select('#rule_tag', '#rule_add');
-		TablePage.init_import_count("#rule_text");
-
+		RulePage.init_add_dialog();
 		RulePage.list(id);
 		ChartPage.init();
 		
@@ -376,9 +428,7 @@ var TablePage = {
 		 Page.delete("/api/table/"+id+"/delete", {}, callback)
 	},
 	
-	load_select : function(select_id, disable_id, callback) {
-		
-		$(disable_id).prop("disabled", true);
+	load_select : function(select_id, callback) {
 		
 		TablePage.list(function(response){
 
@@ -395,37 +445,12 @@ var TablePage = {
 				
 			}
 			
-			$(disable_id).prop("disabled", false);
-			
 			if (callback){
 				callback();
 			}
 		});
 		
-	},
-	
-	init_import_count : function(rule_input_field){
-		
-		$("#table_import_count").hide();
-	    $('#table_import').change(function() {
-	    	
-	    	var rule = $(rule_input_field).val();
-	    	
-	    	if (!rule){
-	    		alert("Please enter a rule to calculate volume of tweets.");
-	    		$(this).attr("checked", false);
-	    		return false;
-	    	}
-	    	
-	        if($(this).is(":checked")) {
-	        	$("#table_import_count").fadeIn();
-	        } else {
-	        	$("#table_import_count").hide();
-	        }
-	    });
-	    
 	}
-
 	
 }
 

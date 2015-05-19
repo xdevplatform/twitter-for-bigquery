@@ -26,20 +26,20 @@
 		  <div class="form-group">
 		    <label for="" class="col-sm-2 control-label"></label>
 		    <div class="col-sm-10 checkbox">
-		    	<label for="table_import">
-		      		<input type="checkbox" id="table_import"> Import last 7 days of data
+		    	<label for="rule_import">
+		      		<input type="checkbox" id="rule_import"> Import last 7 days of data
 	      		</label>
 		    </div>
 		  </div>
-		  <div class="form-group" id="table_import_count">
+		  <div class="form-group" id="rule_import_count">
 		    <label for="" class="col-sm-2 control-label"></label>
 		    <div class="col-sm-10">
 			    <hr>
 		      	<center>
-		      		<img src="/static/img/loading.gif">
+		      		<img id="rule_import_loading" class='loading' src="/static/img/loading.gif">
 		      		<br>
 		      		<br>
-		      		<p>Calculating volume of tweets...</p>
+		      		<p id="rule_import_text"></p>
 		      	</center>
 		    </div>
 	      </div>
@@ -48,7 +48,8 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary rule_add" id="rule_add">Save Rule</button>
+        <button type="button" class="btn btn-default rule_test" id="rule_test">Test rule</button>
+        <button type="button" class="btn btn-primary rule_add" id="rule_add">Save rule</button>
       </div>
     </div>
   </div>
