@@ -278,10 +278,12 @@ class TableDetail(webapp2.RequestHandler):
 
         service = get_service()
         response = service.tables().get(projectId=project, datasetId=dataset, tableId=table).execute()
-        print response
+        
+        params = TEMPLATE_BASE
+        params.update(response)
         
         template_path = 'templates/table_detail.html'
-        self.response.out.write(template.render(template_path, response))
+        self.response.out.write(template.render(template_path, params))
 
 class RuleList(webapp2.RequestHandler):
     
@@ -295,7 +297,13 @@ class ApiRuleList(webapp2.RequestHandler):
     
     def get(self):
         
+        table = self.request.get("table", None)
+        
         response = rules.get_rules(url=GNIP_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
+        
+        if table:
+            response = [r for r in response if r['tag'] in table]
+        
         self.response.headers['Content-Type'] = 'application/json'   
         self.response.out.write(json.dumps(response))
         

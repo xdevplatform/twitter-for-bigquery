@@ -185,7 +185,7 @@ var ChartPage = {
 
 var RulePage = {
 
-	init : function(){
+	init_list : function(){
 	
 		TablePage.load_select('#rule_tag', '#rule_add');
 
@@ -207,13 +207,17 @@ var RulePage = {
 			});
 		});
 
-		TablePage.import_count("#rule_text");
+		TablePage.init_import_count("#rule_text");
 		
 		RulePage.list();
 	},
 	
-	list : function(callback){
-		Page.list("/api/rule/list", callback)
+	list : function(table, callback){
+		var url = "/api/rule/list"
+		if (table){
+			url = url + "?table=" + table
+		}
+		Page.list(url, callback)
 	},
 	
 	add : function(rule, tag, callback){
@@ -235,7 +239,7 @@ var RulePage = {
 
 var TablePage = {
 
-	init : function(){
+	init_list : function(){
 	
 		$(document.body).on("click", ".table_delete", function(){
 			if (confirm('Are you sure?')){
@@ -269,13 +273,44 @@ var TablePage = {
 			
 		});
 		
-		TablePage.import_count("#table_rules");
+		TablePage.init_import_count("#table_rules");
 	    
 		TablePage.list();
 	},
 	
 	list : function(callback){
 		Page.list("/api/table/list", callback)
+	},
+	
+	init_detail : function(id){
+		$(document.body).on("click", ".table_delete", function(){
+			if (confirm('Are you sure?')){
+				datasetid = $(this).data("id");
+				TablePage.delete(datasetid, function(response){
+					window.location = "/table/list"
+				});
+			}
+		});
+
+		$(document.body).on("click", ".rule_delete", function(){
+			if (confirm('Are you sure?')){
+				ruleid = $(this).data("ruleid");
+				RulePage.delete(ruleid, function(response){
+					RulePage.list();
+				});
+			}
+		});
+
+		$(document.body).on("click", ".rule_add", function(){
+			var rule = $("#rule_text").val();
+			var tag = $("#rule_tag").val();
+			RulePage.add(rule, tag, function(response){
+				$('#myModal').modal('hide');
+				RulePage.list();
+			});
+		});
+		
+		RulePage.list(id);
 	},
 	
 	detail : function(id, callback){
@@ -324,7 +359,7 @@ var TablePage = {
 		
 	},
 	
-	import_count : function(rule_input_field){
+	init_import_count : function(rule_input_field){
 		
 		$("#table_import_count").hide();
 	    $('#table_import').change(function() {

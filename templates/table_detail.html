@@ -1,17 +1,68 @@
 {% extends "base.html" %}
 {% block bodycontent %}
 	
-<button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#myModal">
-  Delete
-</button>
+<a class="btn btn-primary pull-right table_delete" data-id="{{id}}" target="_target">Delete</a>
 
 <h1>Dataset: {{tableReference.datasetId}}.{{tableReference.tableId}}</h1>
 
-<br>
-				
+<br><br>
+
+<div class="row">
+  <div class="col-md-2"><label>Project</label></div>
+  <div class="col-md-4">{{tableReference.projectId}}</div>
+  <div class="col-md-2"><label>Type</label></div>
+  <div class="col-md-4">Gnip</div>
+</div>
+
+<div class="row">
+  <div class="col-md-2"><label>Created</label></div>
+  <div class="col-md-4">{{creationTime}}</div>
+  <div class="col-md-2"><label>Updated</label></div>
+  <div class="col-md-4">{{lastModifiedTime}}</div>
+</div>
+		
+<br><br>
+
+<button type="button" class="btn btn-sm pull-right" data-toggle="modal" data-target="#myModal">
+  Add rule
+</button>
+
+		
+<h3>PowerTrack Rules</h3>
+
+		
+<table class="table table-striped">
+<thead>
+<tr>
+  <th>Rule</th>
+  <th>Dataset</th>
+  <th>Actions</th>
+</tr>
+</thead>
+<tbody id="table_data">
+</tbody>
+</table>
+
+<script id="table_row" type="text/template">
+<tr>
+	<td>
+		{{value}}
+	</td>
+	<td>
+		{{tag}}
+	</td>
+	<td>
+		<a class="rule_delete" data-ruleid="{{count}}">delete</a>
+	</td>
+</tr>
+</script>
+		
 <script language="JavaScript1.2">
 
 $(document).ready(function(){
+
+	TablePage.init_detail("{{id}}");
+
 })
 
 </script>
