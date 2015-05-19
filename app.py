@@ -195,18 +195,14 @@ class ApiTableList(webapp2.RequestHandler):
     
     def get(self):
 
-        response = None
-        
         response = rules.get_rules(url=GNIP_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
-        
-        print response
 
         tables = get_datasets()
         for t in tables:
-            tag = "%s.%s" % (t['datasetId'], t['tableId'])
+            tag = make_tag(t['datasetId'], t['tableId'])
             rs = [r['value'] for r in response if r['tag'] == tag]
             t['rules'] = rs
-        
+            
         self.response.headers['Content-Type'] = 'application/json'   
         self.response.out.write(json.dumps(tables))   
         
@@ -243,7 +239,7 @@ class ApiTableAdd(webapp2.RequestHandler):
 
         response = get_service().tables().insert(projectId=PROJECT_ID, datasetId=dataset, body=body).execute()
             
-        name = "%s.%s" % (dataset, table)
+        name = make_tag(dataset, table)
         rule_list = [s.strip() for s in rule_list.splitlines()]
         for r in rule_list:
             rules.add_rule(r, tag=name, url=GNIP_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
@@ -297,7 +293,11 @@ class ApiRuleList(webapp2.RequestHandler):
         response = rules.get_rules(url=GNIP_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
         
         if table:
-            response = [r for r in response if r['tag'] in table]
+            (project, dataset, table) = parse_bqid(table)
+            tag = make_tag(dataset, table)
+            response = [r for r in response if r['tag'] == tag]
+            
+        print response
         
         self.response.headers['Content-Type'] = 'application/json'   
         self.response.out.write(json.dumps(response))
@@ -488,6 +488,9 @@ def get_service():
 def parse_bqid(id):
     import re
     return re.split('\:|\.', id)
+
+def make_tag(dataset, table):
+    return "%s.%s" % (dataset, table)
     
 application = webapp2.WSGIApplication([
     

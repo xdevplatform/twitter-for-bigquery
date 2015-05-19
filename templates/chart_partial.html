@@ -1,0 +1,75 @@
+<form name="form" id="form">
+    
+	<div class="row">
+	
+		<div class="col-md-1 hidden-sm hidden-xs">
+			<img src="/static/img/bird_large.png" width="100%" class="logo" id="chart_bird">
+		</div>
+
+		<div class="col-md-9">
+		
+			<div class="row">
+    	
+	    		<div class="chart_option col-md-3">
+	
+		    		<h4>Table</h4>
+					<select id="select_table" name="select_table" class="form-control">
+					  <option value="">Loading...</option>
+					</select>
+					
+	    		</div>
+
+	    		<div class="chart_option col-md-3">
+	
+		    		<h4>Field</h4>
+					<select id="field" name="field" class="form-control">
+					  <option value="hashtags">Hashtags</option>
+					  <option value="mentions">User mentions</option>
+					  <option value="sources">Tweet sources</option>
+					</select>
+					
+	    		</div>
+	
+	    		<div class="chart_option col-md-3">
+	
+					<h4>Chart</h4>
+					<select id="charttype" name="charttype" class="form-control">
+					  <option value="donut">Donut</option>
+					  <option value="bar">Bar</option>
+					  <option value="timeseries">Timeseries</option>
+					</select>
+	
+	    		</div>
+
+	    		<div class="chart_option col-md-3">
+	
+					<h4>Time</h4>
+					<select id="interval" name="interval" class="form-control">
+					  <option value="1">Day</option>
+					  <option value="7" SELECTED>Week</option>
+					  <option value="31">Month</option>
+					</select>
+	
+	    		</div>
+    		
+			</div>
+			
+	  </div>
+		
+	  <div class="col-md-2">
+		  	<h4>&nbsp;</h4>
+    		<input id="query_submit" class="btn btn-primary" type="submit" value="Submit">
+	  </div>
+
+	
+	</div>
+	
+</form>
+
+<hr>
+
+<div id="canvas">
+
+    <div id="chart">Please select a data source and click "Submit".</div>
+    
+</div>

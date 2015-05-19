@@ -21,16 +21,25 @@
   <div class="col-md-4">{{lastModifiedTime}}</div>
 </div>
 		
-<br><br>
+<br>
 
-<button type="button" class="btn btn-sm btn-primary pull-right" data-toggle="modal" data-target="#myModal">
-  Add rule
-</button>
+  <!-- Nav tabs -->
+  <ul class="nav nav-tabs" role="tablist">
+    <li role="presentation" class="active"><a href="#tab_chart" aria-controls="tab_chart" role="tab" data-toggle="tab">Overview</a></li>
+    <li role="presentation">
+	    <a href="#tab_rules" aria-controls="tab_rules" role="tab" data-toggle="tab">PowerTrack Rules
+	    &nbsp; &nbsp; 
+		<button type="button" class="btn btn-xs btn-primary pull-right" data-toggle="modal" data-target="#myModal">
+		  Add rule
+		</button>
+		</a>
+	</li>
+  </ul>
 
-		
-<h3>PowerTrack Rules</h3>
+  <!-- Tab panes -->
+  <div class="tab-content">
+    <div role="tabpanel" class="tab-pane" id="tab_rules">
 
-		
 <table class="table table-striped">
 <thead>
 <tr>
@@ -43,7 +52,20 @@
 </tbody>
 </table>
 
+    </div>
+    <div role="tabpanel" class="tab-pane active" id="tab_chart">
+
+<br>
+<input type="hidden" id="select_table" value="{{tableReference.datasetId}}.{{tableReference.tableId}}">
+{% include "chart_partial.html" %}
+
+	</div>
+  </div>
+
+
 {% include "rule_add_partial.html" %}
+
+{% raw %}
 
 <script id="table_row" type="text/template">
 <tr>
@@ -58,6 +80,8 @@
 	</td>
 </tr>
 </script>
+
+{% endraw %}
 
 <script language="JavaScript1.2">
 

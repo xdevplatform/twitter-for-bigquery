@@ -105,14 +105,16 @@ var Page = {
 
 var ChartPage = {
 		
-	init : function() {
+	init : function(load_tables) {
 
 		Page.init();
 		
 		// prevent default browser behaviour
 		event.preventDefault();
 
-		TablePage.load_select('#select_table', "#query_submit");
+		if (load_tables){
+			TablePage.load_select('#select_table', "#query_submit");
+		}
 		
 		$('#form').submit(function(event){
 			ChartPage.handleChange();
@@ -136,7 +138,7 @@ var ChartPage = {
 		}
 
 		if (!field){
-			$("#chart").html("<span class='alert alert-warning'>Please select a source.</span>").show();
+			$("#chart").html("<span class='alert alert-warning'>Please select a field.</span>").show();
 			return false;
 		}
 	
@@ -158,7 +160,7 @@ var ChartPage = {
 	
 	queryData : function(charttype, args){
 	
-		$("#chart").html("<img class='loading' src='/static/img/loading.gif'>");
+		$("#chart").html("<center><img class='loading' src='/static/img/loading.gif'></center>");
 		$("#chart").show();
 		
 		 $.ajax({
@@ -329,11 +331,24 @@ var TablePage = {
 				RulePage.list(id);
 			});
 		});
+		
+		// doctor the chart options to fit in table detail
+		$("#chart_bird").remove();
+		$(".chart_option").first().remove();
+		$(".chart_option").each(function(index){
+			$(this).removeClass("col-md-3");
+			$(this).addClass("col-md-4");
+		});
+		
 
 		TablePage.load_select('#rule_tag', '#rule_add');
 		TablePage.init_import_count("#rule_text");
 
 		RulePage.list(id);
+		ChartPage.init();
+		
+		// auto load first chart
+		ChartPage.handleChange();
 	},
 	
 	detail : function(id, callback){
