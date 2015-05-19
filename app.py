@@ -35,7 +35,7 @@ JINJA = jinja2.Environment(
 
 ONE_DAY = 1000 * 60 * 60 * 24
 REMOVE_HTML = re.compile(r'<.*?>')
-BQ_TABLES_CACHE = None
+TABLE_CACHE = {}
 
 credentials = appengine.AppAssertionCredentials(scope='https://www.googleapis.com/auth/bigquery')
 http = credentials.authorize(httplib2.Http())
@@ -72,38 +72,38 @@ class ApiTableList(webapp2.RequestHandler):
 
         tables = []
     
-        print GNIP_URL
-    
-#         if BQ_TABLES_CACHE != None:
-#             
-#             tables = BQ_TABLES_CACHE
-#             
-#         else:
-            
-        datasets = get_service().datasets().list(projectId=PROJECT_ID).execute()
-        datasets = datasets.get("datasets", None)
+        print "table_cache %s" % TABLE_CACHE
         
-        for d in datasets:
-            ref = d.get("datasetReference", None)
-            bq_tables = get_service().tables().list(projectId=ref.get("projectId"), datasetId=ref.get("datasetId")).execute()
-            for t in bq_tables.get("tables", None):
-                id = t.get("id")
-                ref = t.get("tableReference", None)
-                tables.append({
-                    "id": id, 
-                    "projectId": ref.get("projectId", None), 
-                    "datasetId": ref.get("datasetId", None), 
-                    "tableId": ref.get("tableId", None) 
-                })
-                
-#             BQ_TABLES_CACHE = tables
-
-        rules_list = rules.get_rules(url=GNIP_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
-        for t in tables:
-            tag = make_tag(t['datasetId'], t['tableId'])
-            rs = [r['value'] for r in rules_list if r['tag'] == tag]
-            t['rules'] = rs
+        if TABLE_CACHE.get("cache", None) == None:
+    
+            datasets = get_service().datasets().list(projectId=PROJECT_ID).execute()
+            datasets = datasets.get("datasets", None)
             
+            for d in datasets:
+                ref = d.get("datasetReference", None)
+                bq_tables = get_service().tables().list(projectId=ref.get("projectId"), datasetId=ref.get("datasetId")).execute()
+                for t in bq_tables.get("tables", None):
+                    id = t.get("id")
+                    ref = t.get("tableReference", None)
+                    tables.append({
+                        "id": id, 
+                        "projectId": ref.get("projectId", None), 
+                        "datasetId": ref.get("datasetId", None), 
+                        "tableId": ref.get("tableId", None) 
+                    })
+                    
+            rules_list = rules.get_rules(url=GNIP_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
+            for t in tables:
+                tag = make_tag(t['datasetId'], t['tableId'])
+                rs = [r['value'] for r in rules_list if r['tag'] == tag]
+                t['rules'] = rs
+                
+            TABLE_CACHE["cache"] = tables
+            
+        else:
+            
+            tables = TABLE_CACHE.get("cache")
+                
         self.response.headers['Content-Type'] = 'application/json'   
         self.response.out.write(json.dumps(tables))   
         
@@ -139,7 +139,7 @@ class ApiTableAdd(webapp2.RequestHandler):
         }
 
         response = get_service().tables().insert(projectId=PROJECT_ID, datasetId=dataset, body=body).execute()
-        BQ_TABLES_CACHE = None
+        TABLE_CACHE.clear()
             
         name = make_tag(dataset, table)
         rule_list = [s.strip() for s in rule_list.splitlines()]
@@ -157,7 +157,7 @@ class ApiTableDelete(webapp2.RequestHandler):
         
         try:
             response = get_service().tables().delete(projectId=project, datasetId=dataset, tableId=table).execute()
-            BQ_TABLES_CACHE = None
+            TABLE_CACHE.clear()
         except:
             # OK to ignore here if it's already deleted; continue onto deleting rules
             pass

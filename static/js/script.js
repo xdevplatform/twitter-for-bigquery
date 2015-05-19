@@ -373,7 +373,7 @@ var TablePage = {
 	},
 	
 	delete : function(id, callback){
-		 Page.delete("/api/table/"+id+"/delete", params, callback)
+		 Page.delete("/api/table/"+id+"/delete", {}, callback)
 	},
 	
 	load_select : function(select_id, disable_id, callback) {
