@@ -105,7 +105,7 @@ var Page = {
 
 var ChartPage = {
 		
-	init : function(load_tables) {
+	init : function(load_tables, autoload) {
 
 		Page.init();
 		
@@ -113,7 +113,13 @@ var ChartPage = {
 		event.preventDefault();
 
 		if (load_tables){
-			TablePage.load_select('#select_table', "#query_submit");
+			var callback = null; 
+			if (autoload){
+				callback = function(){
+					ChartPage.handleChange();
+				}
+			}
+			TablePage.load_select('#select_table', "#query_submit", callback);
 		}
 		
 		$('#form').submit(function(event){
@@ -152,20 +158,20 @@ var ChartPage = {
 				charttype : charttype,
 				interval : interval
 			};
-			ChartPage.queryData(charttype, args);
+			ChartPage.queryData(table, charttype, args);
 	
 		}
 		
 	},
 	
-	queryData : function(charttype, args){
+	queryData : function(table, charttype, args){
 	
 		$("#chart").html("<center><img class='loading' src='/static/img/loading.gif'></center>");
 		$("#chart").show();
 		
 		 $.ajax({
 			type : "GET",
-			url : "/chart/data",
+			url : "/api/table/"+table+"/data",
 			data : args,
 			dataType : "json",
 			success : function(response) {
@@ -367,13 +373,10 @@ var TablePage = {
 	},
 	
 	delete : function(id, callback){
-		 var params = {
-			'id': id
-		 }
-		 Page.delete("/api/table/delete", params, callback)
+		 Page.delete("/api/table/"+id+"/delete", params, callback)
 	},
 	
-	load_select : function(select_id, disable_id) {
+	load_select : function(select_id, disable_id, callback) {
 		
 		$(disable_id).prop("disabled", true);
 		
@@ -393,6 +396,10 @@ var TablePage = {
 			}
 			
 			$(disable_id).prop("disabled", false);
+			
+			if (callback){
+				callback();
+			}
 		});
 		
 	},

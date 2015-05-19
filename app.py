@@ -33,26 +33,124 @@ JINJA = jinja2.Environment(
     extensions=['jinja2.ext.autoescape'],
     autoescape=True)
 
-_SCOPE = 'https://www.googleapis.com/auth/bigquery'
-
-credentials = appengine.AppAssertionCredentials(scope=_SCOPE)
-http = credentials.authorize(httplib2.Http())
-
 ONE_DAY = 1000 * 60 * 60 * 24
 REMOVE_HTML = re.compile(r'<.*?>')
 
-class Chart(webapp2.RequestHandler):
+XTABLES_CACHE = None
+XTABLES_CACHE_DIRTY = True
+
+credentials = appengine.AppAssertionCredentials(scope='https://www.googleapis.com/auth/bigquery')
+http = credentials.authorize(httplib2.Http())
+
+def get_service():
+    return build('bigquery', 'v2', http=http)
+
+class Home(webapp2.RequestHandler):
     
     def get(self):
         
         template_data = {}
-        self.response.out.write(JINJA.get_template('chart.html').render(template_data))
+        self.response.out.write(JINJA.get_template('home.html').render(template_data))
 
-class ChartData(webapp2.RequestHandler):
+class TableList(webapp2.RequestHandler):
     
     def get(self):
         
-        table = self.request.get("table")
+        template_data = {
+             "id": "{{id}}", 
+             "projectId": "{{projectId}}",
+             "datasetId": "{{datasetId}}",
+             "tableId": "{{tableId}}",
+             "rulesStart" : "{{#rules}}",
+             "rulesValue" : "{{.}}",
+             "rulesEnd" : "{{/rules}}",
+             "projectIdName" : PROJECT_ID
+        }
+        self.response.out.write(JINJA.get_template('table_list.html').render(template_data))
+        
+class ApiTableList(webapp2.RequestHandler):
+    
+    def get(self):
+
+        response = rules.get_rules(url=GNIP_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
+
+        tables = get_tables()
+        for t in tables:
+            tag = make_tag(t['datasetId'], t['tableId'])
+            rs = [r['value'] for r in response if r['tag'] == tag]
+            t['rules'] = rs
+            
+        self.response.headers['Content-Type'] = 'application/json'   
+        self.response.out.write(json.dumps(tables))   
+        
+class ApiTableAdd(webapp2.RequestHandler):
+    
+    def get(self):
+        
+        type = self.request.get("type")
+
+        dataset = self.request.get("dataset")
+        if "gnip" in dataset:
+            dataset = "gnip"
+        else:
+            dataset = "twitter"
+        
+        table = self.request.get("name")
+        rule_list = self.request.get("rules")
+        imprt = self.request.get("import")
+
+        schema_file = GNIP_SCHEMA_FILE if type == "gnip" else SCHEMA_FILE
+        schema_str = Utils.read_file(schema_file)
+        schema = json.loads(schema_str)
+        
+        body = {
+            "tableReference" : {
+                "projectId" : PROJECT_ID,
+                "tableId" : table,
+                "datasetId" : dataset
+            },
+            "schema" : {
+                "fields" : schema
+            }
+        }
+
+        response = get_service().tables().insert(projectId=PROJECT_ID, datasetId=dataset, body=body).execute()
+        XTABLES_CACHE_DIRTY = True
+            
+        name = make_tag(dataset, table)
+        rule_list = [s.strip() for s in rule_list.splitlines()]
+        for r in rule_list:
+            rules.add_rule(r, tag=name, url=GNIP_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
+
+        self.response.headers['Content-Type'] = 'application/json'   
+        self.response.out.write(json.dumps(response)) 
+        
+class ApiTableDelete(webapp2.RequestHandler):
+    
+    def get(self, id):
+        
+        (project, dataset, table) = parse_bqid(id)
+        
+        try:
+            response = get_service().tables().delete(projectId=project, datasetId=dataset, tableId=table).execute()
+            XTABLES_CACHE_DIRTY = True
+        except:
+            # OK to ignore here if it's already deleted; continue onto deleting rules
+            pass
+        
+        tag = dataset + "." + table
+
+        rules_list = rules.get_rules(url=GNIP_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
+        rules_list = [r for r in rules_list if r['tag'] == tag]
+        response = rules.delete_rules(rules_list, url=GNIP_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
+
+        self.response.headers['Content-Type'] = 'application/json'   
+        self.response.out.write(json.dumps(response))
+                   
+class ApiTableData(webapp2.RequestHandler):
+    
+    def get(self, table):
+        
         field = self.request.get("field")
         charttype = self.request.get("charttype")
         interval = int(self.request.get("interval")) if self.request.get("interval") else 7
@@ -174,101 +272,7 @@ class ChartData(webapp2.RequestHandler):
 
         self.response.headers['Content-Type'] = 'application/json'
         self.response.out.write(json.dumps(args))
-
-class TableList(webapp2.RequestHandler):
-    
-    def get(self):
-        
-        template_data = {
-             "id": "{{id}}", 
-             "projectId": "{{projectId}}",
-             "datasetId": "{{datasetId}}",
-             "tableId": "{{tableId}}",
-             "rulesStart" : "{{#rules}}",
-             "rulesValue" : "{{.}}",
-             "rulesEnd" : "{{/rules}}",
-             "projectIdName" : PROJECT_ID
-        }
-        self.response.out.write(JINJA.get_template('table_list.html').render(template_data))
-        
-class ApiTableList(webapp2.RequestHandler):
-    
-    def get(self):
-
-        response = rules.get_rules(url=GNIP_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
-
-        tables = get_datasets()
-        for t in tables:
-            tag = make_tag(t['datasetId'], t['tableId'])
-            rs = [r['value'] for r in response if r['tag'] == tag]
-            t['rules'] = rs
-            
-        self.response.headers['Content-Type'] = 'application/json'   
-        self.response.out.write(json.dumps(tables))   
-        
-class ApiTableAdd(webapp2.RequestHandler):
-    
-    def get(self):
-        
-        type = self.request.get("type")
-
-        dataset = self.request.get("dataset")
-        if "gnip" in dataset:
-            dataset = "gnip"
-        else:
-            dataset = "twitter"
-        
-        table = self.request.get("name")
-        rule_list = self.request.get("rules")
-        imprt = self.request.get("import")
-
-        schema_file = GNIP_SCHEMA_FILE if type == "gnip" else SCHEMA_FILE
-        schema_str = Utils.read_file(schema_file)
-        schema = json.loads(schema_str)
-        
-        body = {
-            "tableReference" : {
-                "projectId" : PROJECT_ID,
-                "tableId" : table,
-                "datasetId" : dataset
-            },
-            "schema" : {
-                "fields" : schema
-            }
-        }
-
-        response = get_service().tables().insert(projectId=PROJECT_ID, datasetId=dataset, body=body).execute()
-            
-        name = make_tag(dataset, table)
-        rule_list = [s.strip() for s in rule_list.splitlines()]
-        for r in rule_list:
-            rules.add_rule(r, tag=name, url=GNIP_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
-
-        self.response.headers['Content-Type'] = 'application/json'   
-        self.response.out.write(json.dumps(response)) 
-        
-class ApiTableDelete(webapp2.RequestHandler):
-    
-    def get(self):
-        
-        id = self.request.get("id")
-        (project, dataset, table) = parse_bqid(id)
-        
-        try:
-            response = get_service().tables().delete(projectId=project, datasetId=dataset, tableId=table).execute()
-        except:
-            # OK to ignore here if it's already deleted; continue onto deleting rules
-            pass
-        
-        tag = dataset + "." + table
-
-        rules_list = rules.get_rules(url=GNIP_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
-        rules_list = [r for r in rules_list if r['tag'] == tag]
-        response = rules.delete_rules(rules_list, url=GNIP_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
-
-        self.response.headers['Content-Type'] = 'application/json'   
-        self.response.out.write(json.dumps(response))
-                       
+                               
 class TableDetail(webapp2.RequestHandler):
     
     def get(self, id):
@@ -337,28 +341,6 @@ class Admin(webapp2.RequestHandler):
         template_data = {}
         self.response.out.write(JINJA.get_template('admin.html').render(template_data))
         
-def get_datasets():
-    
-    tables = []
-    
-    response = get_service().datasets().list(projectId=PROJECT_ID).execute()
-    datasets = response.get("datasets", None)
-    
-    for d in datasets:
-        ref = d.get("datasetReference", None)
-        response = get_service().tables().list(projectId=ref.get("projectId"), datasetId=ref.get("datasetId")).execute()
-        for t in response.get("tables", None):
-            id = t.get("id")
-            ref = t.get("tableReference", None)
-            tables.append({
-                "id": id, 
-                "projectId": ref.get("projectId", None), 
-                "datasetId": ref.get("datasetId", None), 
-                "tableId": ref.get("tableId", None) 
-            })
-            
-    return tables
-
 class QueryBuilder():
     
     PUBLIC = "public"
@@ -369,7 +351,7 @@ class QueryBuilder():
     field = None
     charttype = None
     interval = None
-    FROM_CLAUSE = None
+    from_clause = None
 
     def __init__(self, type, table, field, charttype, interval):
         self.type = type
@@ -377,8 +359,8 @@ class QueryBuilder():
         self.field = field
         self.charttype = charttype
         self.interval = interval
-        self.FROM_CLAUSE = "[%s]" % self.table
-        print self.FROM_CLAUSE
+        self.from_clause = "[%s]" % self.table
+        print self.from_clause
         
     def query(self):
         
@@ -432,7 +414,7 @@ class QueryBuilder():
             time_limit = time_limit - (ONE_DAY * 7)
         
         select = "%s as value,count(*) as count" % col 
-        fromclause = "flatten(%s, %s)" % (self.FROM_CLAUSE, flatten_field) if flatten_field else self.FROM_CLAUSE
+        fromclause = "flatten(%s, %s)" % (self.from_clause, flatten_field) if flatten_field else self.from_clause
         filter = "%s is not null AND %s > %s" % (col, created_field, time_limit)
         groupby = "value"
         orderby = "count DESC"
@@ -441,7 +423,7 @@ class QueryBuilder():
         # requires join AND tranlating all tables to scoped t1/t2
         if self.charttype == "timeseries":
             select = "t1.%s, CONCAT('2015-', STRING(MONTH(TIMESTAMP(t1.%s))), '-', STRING(DAY(TIMESTAMP(t1.%s)))) AS create_hour" % (select, created_field, created_field)
-            fromclause = "flatten(%s, %s)" % (self.FROM_CLAUSE, flatten_field) if flatten_field else self.FROM_CLAUSE
+            fromclause = "flatten(%s, %s)" % (self.from_clause, flatten_field) if flatten_field else self.from_clause
             fromclause = """
                 %s t1
                 inner join each 
@@ -482,8 +464,34 @@ class QueryBuilder():
             
         return query
     
-def get_service():
-    return build('bigquery', 'v2', http=http)
+def get_tables():
+    
+#     if XTABLES_CACHE_DIRTY == True:
+
+    tables = []
+
+    response = get_service().datasets().list(projectId=PROJECT_ID).execute()
+    datasets = response.get("datasets", None)
+    
+    for d in datasets:
+        ref = d.get("datasetReference", None)
+        response = get_service().tables().list(projectId=ref.get("projectId"), datasetId=ref.get("datasetId")).execute()
+        for t in response.get("tables", None):
+            id = t.get("id")
+            ref = t.get("tableReference", None)
+            tables.append({
+                "id": id, 
+                "projectId": ref.get("projectId", None), 
+                "datasetId": ref.get("datasetId", None), 
+                "tableId": ref.get("tableId", None) 
+            })
+      
+    return tables
+            
+#         XTABLES_CACHE = tables
+#         XTABLES_CACHE_DIRTY = False
+#     
+#     return TABLES_CACHE
 
 def parse_bqid(id):
     import re
@@ -500,17 +508,15 @@ application = webapp2.WSGIApplication([
     ('/api/rule/delete', ApiRuleDelete),
     ('/api/table/list', ApiTableList),
     ('/api/table/add', ApiTableAdd),
-    ('/api/table/delete', ApiTableDelete),
+    ('/api/table/([A-Za-z0-9\-\_\:\.]+)/delete', ApiTableDelete),
+    ('/api/table/([A-Za-z0-9\-\_\:\.]+)/data', ApiTableData),
     
     # web pages
     ('/table/list', TableList),
     ('/table/([A-Za-z0-9\-\_\:\.]+)', TableDetail),
     ('/rule/list', RuleList),
-    ('/chart/data', ChartData),
-    ('/chart', Chart),
     ('/admin', Admin),
-
-    ('/', Chart),
+    ('/', Home),
     
 ], debug=True)
 
@@ -538,4 +544,4 @@ def handle_500(request, response, exception):
     response.set_status(status)
     response.out.write(message)
 
-application.error_handlers[500] = handle_500
+# application.error_handlers[500] = handle_500
