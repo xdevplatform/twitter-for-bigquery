@@ -145,6 +145,7 @@ class ApiTableAdd(webapp2.RequestHandler):
         rule_list = [s.strip() for s in rule_list.splitlines()]
         for r in rule_list:
             rules.add_rule(r, tag=name, url=GNIP_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
+            TABLE_CACHE.clear()
 
         self.response.headers['Content-Type'] = 'application/json'   
         self.response.out.write(json.dumps(response)) 
@@ -167,6 +168,7 @@ class ApiTableDelete(webapp2.RequestHandler):
         rules_list = rules.get_rules(url=GNIP_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
         rules_list = [r for r in rules_list if r['tag'] == tag]
         response = rules.delete_rules(rules_list, url=GNIP_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
+        TABLE_CACHE.clear()
 
         self.response.headers['Content-Type'] = 'application/json'   
         self.response.out.write(json.dumps(response))
@@ -341,6 +343,7 @@ class ApiRuleAdd(webapp2.RequestHandler):
             raise Exception("missing parameter")
 
         response = rules.add_rule(rule, tag=tag, url=GNIP_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
+        TABLE_CACHE.clear()
         
         self.response.headers['Content-Type'] = 'application/json'   
         self.response.out.write(json.dumps(response))
@@ -355,6 +358,7 @@ class ApiRuleDelete(webapp2.RequestHandler):
         }
 
         response = rules.delete_rule(rule_delete, url=GNIP_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
+        TABLE_CACHE.clear()
         
         self.response.headers['Content-Type'] = 'application/json'   
         self.response.out.write(json.dumps(response))
@@ -527,13 +531,12 @@ def handle_500(request, response, exception):
     except RuleDeleteFailedException, e:
         status = 500
         message = e.message
-    except ConnectionError, e:
-        status = 500
-        message = str(e)
     except HttpError, e:
         status = e.resp.status
         message = e._get_reason()
     except:
+        status = 500
+        message = str(e)
         logging.exception(exception)
 
     response.set_status(status)
