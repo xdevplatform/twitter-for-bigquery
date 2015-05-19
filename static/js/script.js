@@ -1,4 +1,8 @@
 var Page = {
+
+	init : function(){
+		$("#error_message_holder").hide();
+	},
 		
 	list : function(list_url, callback){
 
@@ -8,7 +12,7 @@ var Page = {
 			var cols = $("#table_data").parent().find("tr:first th").length;
 			
 			$("#table_data").html("");
-			$("#table_data").append("<tr><td colspan="+cols+"><center><img src='/static/img/loading.gif'></td></tr>");
+			$("#table_data").append("<tr><td colspan="+cols+"><center><img class='loading' src='/static/img/loading.gif'></td></tr>");
 			
 			callback = Page.list_default
 			
@@ -50,7 +54,7 @@ var Page = {
 //			var cols = $("#table_data").parent().find("tr:first th").length;
 //			
 //			$("#table_data").html("");
-//			$("#table_data").append("<tr><td colspan="+cols+"><center><img src='/static/img/loading.gif'></td></tr>");
+//			$("#table_data").append("<tr><td colspan="+cols+"><center><img class='loading' src='/static/img/loading.gif'></td></tr>");
 			
 			callback = Page.detail_default
 			
@@ -91,8 +95,10 @@ var Page = {
 			});	
 	 },
 	 
-	 handle_error :	function(xhr, errorType, exception) {
-		console.log('Error occured');
+	 handle_error :	function(request, status, error) {
+		 $('#myModal').modal('hide');
+		 $("#error_message").html(request.responseText + " (" + request.status + ": " + error + ")");
+		 $("#error_message_holder").show();
 	 }
 
 }
@@ -101,6 +107,8 @@ var ChartPage = {
 		
 	init : function() {
 
+		Page.init();
+		
 		// prevent default browser behaviour
 		event.preventDefault();
 
@@ -144,7 +152,7 @@ var ChartPage = {
 	
 	queryData : function(charttype, args){
 	
-		$("#chart").html('<img src="/static/img/loading.gif">');
+		$("#chart").html("<img class='loading' src='/static/img/loading.gif'>");
 		$("#chart").show();
 		
 		 $.ajax({
@@ -187,7 +195,7 @@ var RulePage = {
 
 	init_list : function(){
 	
-		TablePage.load_select('#rule_tag', '#rule_add');
+		Page.init();
 
 		$(document.body).on("click", ".rule_delete", function(){
 			if (confirm('Are you sure?')){
@@ -207,6 +215,7 @@ var RulePage = {
 			});
 		});
 
+		TablePage.load_select('#rule_tag', '#rule_add');
 		TablePage.init_import_count("#rule_text");
 		
 		RulePage.list();
@@ -240,7 +249,9 @@ var RulePage = {
 var TablePage = {
 
 	init_list : function(){
-	
+
+		Page.init();
+
 		$(document.body).on("click", ".table_delete", function(){
 			if (confirm('Are you sure?')){
 				datasetid = $(this).data("id");
@@ -283,6 +294,9 @@ var TablePage = {
 	},
 	
 	init_detail : function(id){
+		
+		Page.init();
+
 		$(document.body).on("click", ".table_delete", function(){
 			if (confirm('Are you sure?')){
 				datasetid = $(this).data("id");
@@ -296,7 +310,7 @@ var TablePage = {
 			if (confirm('Are you sure?')){
 				ruleid = $(this).data("ruleid");
 				RulePage.delete(ruleid, function(response){
-					RulePage.list();
+					RulePage.list(id);
 				});
 			}
 		});
@@ -306,10 +320,13 @@ var TablePage = {
 			var tag = $("#rule_tag").val();
 			RulePage.add(rule, tag, function(response){
 				$('#myModal').modal('hide');
-				RulePage.list();
+				RulePage.list(id);
 			});
 		});
-		
+
+		TablePage.load_select('#rule_tag', '#rule_add');
+		TablePage.init_import_count("#rule_text");
+
 		RulePage.list(id);
 	},
 	

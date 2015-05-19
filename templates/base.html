@@ -51,10 +51,19 @@
 </nav>
 
 	<div class="container">
+
+	<div class="row">
+		<div class="col-md-offset-3 col-md-6" id="error_message_holder">
+          <div class="alert alert-danger alert-dismissable">
+              <button type="button" class="close" data-dismiss="alert" aria-hidden="true">x</button>
+              <p id="error_message">Something went wrong.</p>
+          </div>
+        </div>
+	</div>
 	
-		 {% block bodycontent %}
-		 Replace this
-		 {% endblock %}
+	 {% block bodycontent %}
+	 Replace this
+	 {% endblock %}
 
 	</div>
     <!-- /container -->

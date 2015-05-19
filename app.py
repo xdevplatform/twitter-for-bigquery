@@ -14,8 +14,11 @@ from google.appengine.ext.webapp import template
 from google.appengine.api import memcache
 from apiclient.discovery import build
 from apiclient import errors
+from apiclient.errors import HttpError
 from oauth2client import appengine
+
 from gnippy import rules
+from gnippy.errors import RuleDeleteFailedException, RulesGetFailedException
 
 from config import *
 from utils import Utils
@@ -43,10 +46,6 @@ TEMPLATE_BASE = {
      "count": "{{count}}"
 }
 
-def get_service():
-    
-    return build('bigquery', 'v2', http=http)
-
 class Chart(webapp2.RequestHandler):
     
     def get(self):
@@ -67,8 +66,7 @@ class ChartData(webapp2.RequestHandler):
         query = builder.query()
         print query
         
-        tableData = get_service().jobs()
-        results = tableData.query(projectId=PROJECT_NUMBER, body={'query':query}).execute()
+        results = get_service().jobs().query(projectId=PROJECT_NUMBER, body={'query':query}).execute()
 
         if charttype == 'donut' or charttype == 'bar':
                  
@@ -202,8 +200,15 @@ class TableList(webapp2.RequestHandler):
 class ApiTableList(webapp2.RequestHandler):
     
     def get(self):
+
+        response = None
         
-        response = rules.get_rules(url=GNIP_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
+        try:
+            response = rules.get_rules(url=GNIP_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
+        except RulesGetFailedException, e:
+            handle_error(self.response, 404, e.message)
+            return
+
         tables = get_datasets()
         for t in tables:
             tag = "%s.%s" % (t['datasetId'], t['tableId'])
@@ -243,11 +248,15 @@ class ApiTableAdd(webapp2.RequestHandler):
                 "fields" : schema
             }
         }
-        
-        service = get_service()
-        response = service.tables().insert(projectId=PROJECT_ID, datasetId=dataset, body=body).execute()
+
+        response = None
+        try:        
+            response = get_service().tables().insert(projectId=PROJECT_ID, datasetId=dataset, body=body).execute()
+        except HttpError, e:
+            handle_error(self.response, e.resp.status, e._get_reason())
+            return
+            
         name = "%s.%s" % (dataset, table)
-        
         rule_list = [s.strip() for s in rule_list.splitlines()]
         for r in rule_list:
             rules.add_rule(r, tag=name, url=GNIP_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
@@ -259,22 +268,29 @@ class ApiTableDelete(webapp2.RequestHandler):
     
     def get(self):
         
-        import re
-
         id = self.request.get("id")
-        (project, dataset, table) = re.split('\:|\.', id)
+        (project, dataset, table) = parse_bqid(id)
         
         try:
-            service = get_service()
-            response = service.tables().delete(projectId=project, datasetId=dataset, tableId=table).execute()
+            response = get_service().tables().delete(projectId=project, datasetId=dataset, tableId=table).execute()
         except:
+            # OK to ignore here if it's already deleted; continue onto deleting rules
             pass
         
         tag = dataset + "." + table
-        rules_list = rules.get_rules(url=GNIP_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
-        rules_list = [r for r in rules_list if r['tag'] == tag]
-        response = rules.delete_rules(rules_list, url=GNIP_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
-        
+
+        response = None        
+        try:
+            rules_list = rules.get_rules(url=GNIP_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
+            rules_list = [r for r in rules_list if r['tag'] == tag]
+            response = rules.delete_rules(rules_list, url=GNIP_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
+        except RulesGetFailedException, e:
+            handle_error(self.response, 404, e.message)
+            return
+        except RuleDeleteFailedException, e:
+            handle_error(self.response, 404, e.message)
+            return
+
         self.response.headers['Content-Type'] = 'application/json'   
         self.response.out.write(json.dumps(response))
                        
@@ -282,10 +298,9 @@ class TableDetail(webapp2.RequestHandler):
     
     def get(self, id):
         
-        (project, dataset, table) = re.split('\:|\.', id)
+        (project, dataset, table) = parse_bqid(id)
 
-        service = get_service()
-        response = service.tables().get(projectId=project, datasetId=dataset, tableId=table).execute()
+        response = get_service().tables().get(projectId=project, datasetId=dataset, tableId=table).execute()
         
         params = TEMPLATE_BASE
         params.update(response)
@@ -307,7 +322,12 @@ class ApiRuleList(webapp2.RequestHandler):
         
         table = self.request.get("table", None)
         
-        response = rules.get_rules(url=GNIP_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
+        response = None
+        try:
+            response = rules.get_rules(url=GNIP_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
+        except RulesGetFailedException, e:
+            handle_error(self.response, 404, e.message)
+            return
         
         if table:
             response = [r for r in response if r['tag'] in table]
@@ -335,10 +355,19 @@ class ApiRuleDelete(webapp2.RequestHandler):
     def get(self):
         
         rule_index = int(self.request.get("index"))
+        response = None
         
-        rules_list = rules.get_rules(url=GNIP_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
-        rule_delete = rules_list[rule_index]
-        response = rules.delete_rule(rule_delete, url=GNIP_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
+        # BUGBUG: fix this
+        try:
+            rules_list = rules.get_rules(url=GNIP_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
+            rule_delete = rules_list[rule_index]
+            response = rules.delete_rule(rule_delete, url=GNIP_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
+        except RulesGetFailedException, e:
+            handle_error(self.response, 404, e.message)
+            return
+        except RuleDeleteFailedException, e:
+            handle_error(self.response, 404, e.message)
+            return
         
         self.response.headers['Content-Type'] = 'application/json'   
         self.response.out.write(json.dumps(response))
@@ -354,13 +383,12 @@ def get_datasets():
     
     tables = []
     
-    service = get_service()
-    response = service.datasets().list(projectId=PROJECT_ID).execute()
+    response = get_service().datasets().list(projectId=PROJECT_ID).execute()
     datasets = response.get("datasets", None)
     
     for d in datasets:
         ref = d.get("datasetReference", None)
-        response = service.tables().list(projectId=ref.get("projectId"), datasetId=ref.get("datasetId")).execute()
+        response = get_service().tables().list(projectId=ref.get("projectId"), datasetId=ref.get("datasetId")).execute()
         for t in response.get("tables", None):
             id = t.get("id")
             ref = t.get("tableReference", None)
@@ -490,6 +518,17 @@ class QueryBuilder():
             LIMIT %s""" % (select, fromclause, filter, groupby, orderby, limit)
             
         return query
+    
+def get_service():
+    return build('bigquery', 'v2', http=http)
+
+def parse_bqid(id):
+    import re
+    return re.split('\:|\.', id)
+    
+def handle_error(response, status, message):
+    response.set_status(status)
+    response.out.write(message)
 
 application = webapp2.WSGIApplication([
     
