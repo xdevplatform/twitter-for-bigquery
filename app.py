@@ -338,6 +338,20 @@ class ApiRuleAdd(webapp2.RequestHandler):
         self.response.headers['Content-Type'] = 'application/json'   
         self.response.out.write(json.dumps(response))
         
+class ApiRuleTest(webapp2.RequestHandler):
+    
+    def get(self):
+        
+        rule = self.request.get("rule")
+
+        if not rule or not tag:
+            raise Exception("missing parameter")
+
+        response = {}
+
+        self.response.headers['Content-Type'] = 'application/json'   
+        self.response.out.write(json.dumps(response))
+        
 class ApiRuleDelete(webapp2.RequestHandler):
     
     def get(self):
@@ -501,6 +515,7 @@ application = webapp2.WSGIApplication([
     
     # API calls supporting JSON
     ('/api/rule/list', ApiRuleList),
+    ('/api/rule/test', ApiRuleTest),
     ('/api/rule/add', ApiRuleAdd),
     ('/api/rule/delete', ApiRuleDelete),
     ('/api/table/list', ApiTableList),
