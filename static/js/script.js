@@ -246,12 +246,11 @@ var RulePage = {
 		$(document.body).on("click", ".rule_test", function(){
 			var rule = $("#rule_text").val();
 			var tag = $("#rule_tag").val();
-			
 			RulePage.test(rule, RulePage.test_callback)
-			
 		});
 		
 		// any change to rule results in need for re-test
+		$("#rule_add").prop("disabled", true);
 		$(document.body).on("keypress", "#rule_text", function(){
 			$("#rule_add").prop("disabled", true);
 		});
@@ -270,17 +269,16 @@ var RulePage = {
 		});
 		
 		RulePage.init_import_count("#rule_text");
-		$("#rule_add").prop("disabled", true);
 		TablePage.load_select('#rule_tag', function(){
 		});
 	},
 	
-	init_import_count : function(rule_input_field){
+	init_import_count : function(rule_text_field){
 		
 		$("#rule_import_count").hide();
 	    $('#rule_import').change(function() {
 	    	
-	    	var rule = $(rule_input_field).val();
+	    	var rule = $(rule_text_field).val();
 	    	
 	    	if (!rule){
 	    		alert("Please enter a rule to calculate volume of tweets.");
@@ -370,15 +368,27 @@ var TablePage = {
 			});
 		});
 		
+		// any change to rule results in need for re-test
+		$("#table_add").prop("disabled", true);
+		$(document.body).on("keypress", "#table_rules", function(){
+			$("#table_add").prop("disabled", true);
+		});
+		
+		$(document.body).on("click", "#rule_test", function(){
+			var rule = $("#table_rules").val();
+			RulePage.test(rule, TablePage.test_callback)
+		});
+		
 		$(document.body).on("change", "#table_type", function(){
 			var dataset = "gnip."
 			if ($(this).val() == "twitter"){
 				dataset = "twitter."
 			}
-			$("#table_name").val(dataset);
+			$("#table_dataset").val(dataset);
 			
 		});
 		
+		RulePage.init_import_count("#table_rules");
 		TablePage.list();
 	},
 	
@@ -433,6 +443,13 @@ var TablePage = {
 		 Page.delete("/api/table/"+id+"/delete", {}, callback)
 	},
 	
+	test_callback : function(response){
+		var count = response['count'];
+		$("#rule_import_loading").hide();
+		$("#rule_import_text").html(count + " records found.")
+		$("#table_add").prop("disabled", false);
+	},
+
 	load_select : function(select_id, callback) {
 		
 		TablePage.list(function(response){

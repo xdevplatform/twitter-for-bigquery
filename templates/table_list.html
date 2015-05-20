@@ -44,7 +44,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">Add Dataset</h4>
+        <h4 class="modal-title" id="myModalLabel">Create table</h4>
       </div>
       <div class="modal-body">
 
@@ -61,7 +61,7 @@
 		  <div class="form-group">
 		    <label for="" class="col-sm-2 control-label">Project</label>
 		    <div class="col-sm-10">
-		      <input class="form-control align-right" id="table_project" type="text" value="{{projectIdName}}" readonly>
+		      <input class="form-control align-right" id="table_project" type="text" value="{{projectId}}" readonly>
 		    </div>
 		  </div>
 		  <div class="form-group">
@@ -83,29 +83,27 @@
 		  <div class="form-group">
 		    <label for="" class="col-sm-2 control-label"></label>
 		    <div class="col-sm-10 checkbox">
-		    	<label for="table_import">
-		      		<input type="checkbox" id="table_import"> Import last 7 days of data
+		    	<label for="rule_import">
+		      		<input type="checkbox" id="rule_import"> Import last 7 days of data
 	      		</label>
 		    </div>
 		  </div>
-		  <div class="form-group" id="table_import_count">
-		    <label for="" class="col-sm-2 control-label"></label>
-		    <div class="col-sm-10">
-			    <hr>
+		  <hr>
+		  <div class="form-group" id="rule_import_count">
+		    <div class="col-sm-12">
 		      	<center>
-		      		<img src="/static/img/loading.gif">
-		      		<br>
-		      		<br>
-		      		<p>Calculating volume of tweets...</p>
+		      		<img id="rule_import_loading" class='loading' src="/static/img/loading.gif">
+		      		<p id="rule_import_text"></p>
 		      	</center>
 		    </div>
-		  </div>
+	      </div>
 		</form>
 
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary table_add">Save table</button>
+        <button type="button" class="btn btn-default rule_test" id="rule_test">Test rule</button>
+        <button type="button" class="btn btn-primary table_add" id="table_add">Create table</button>
       </div>
     </div>
   </div>

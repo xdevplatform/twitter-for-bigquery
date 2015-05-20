@@ -49,7 +49,7 @@ class TableList(webapp2.RequestHandler):
     
     def get(self):
         
-        template_data = {}
+        template_data = {"projectId" : PROJECT_ID}
         self.response.out.write(JINJA.get_template('table_list.html').render(template_data))
         
 class ApiTableList(webapp2.RequestHandler):
