@@ -8,3 +8,4 @@ __license__ = 'Apache 2.0'
 __copyright__ = 'Copyright 2012-2013 Abhinav Ajgaonkar'
 
 from powertrackclient import PowerTrackClient
+from searchclient import SearchClient

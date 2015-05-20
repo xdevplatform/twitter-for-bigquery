@@ -19,7 +19,7 @@ sys.stdin = codecs.getreader('utf-8')(sys.stdin)
 TIME_FMT = "%Y%m%d%H%M"
 PAUSE = 3  # seconds between page requests
 
-class GnipSearchAPI(object):
+class SearchClient(object):
     
     def __init__(self
             , user
@@ -163,7 +163,7 @@ class GnipSearchAPI(object):
         return "\n".join(res)
 
 if __name__ == "__main__":
-    g = GnipSearchAPI("USER"
+    g = SearchClient("USER"
             , "PASSWORD"
             , "STREAM_URL",
             )
