@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
-__author__="Scott Hendrickson, Josh Montague" 
+__author__ = "Scott Hendrickson, Josh Montague" 
 
 import sys
 import requests
@@ -17,14 +17,7 @@ sys.stdin = codecs.getreader('utf-8')(sys.stdin)
 
 # formatter of data from API 
 TIME_FMT = "%Y%m%d%H%M"
-PAUSE = 3 # seconds between page requests
-
-#############################################
-# Some constants to configure column retrieval from TwacsCSV
-DATE_INDEX = 1
-TEXT_INDEX = 2
-LINKS_INDEX = 3
-USER_NAME_INDEX = 7 
+PAUSE = 3  # seconds between page requests
 
 class GnipSearchAPI(object):
     
@@ -47,7 +40,7 @@ class GnipSearchAPI(object):
             if not self.stream_url.endswith("counts.json"): 
                 self.stream_url = self.stream_url[:-5] + "/counts.json"
             if count_bucket not in ['day', 'minute', 'hour']:
-                print >> sys.stderr, "Error. Invalid count bucket: %s \n"%str(count_bucket)
+                print >> sys.stderr, "Error. Invalid count bucket: %s \n" % str(count_bucket)
                 sys.exit()
 
     def req(self):
@@ -57,10 +50,10 @@ class GnipSearchAPI(object):
             s.auth = (self.user, self.password)
             res = s.post(self.stream_url, data=json.dumps(self.rule_payload))
         except requests.exceptions.ConnectionError, e:
-            print >> sys.stderr, "Error (%s). Exiting without results."%str(e)
+            print >> sys.stderr, "Error (%s). Exiting without results." % str(e)
             sys.exit()
         except requests.exceptions.HTTPError, e:
-            print >> sys.stderr, "Error (%s). Exiting without results."%str(e)
+            print >> sys.stderr, "Error (%s). Exiting without results." % str(e)
             sys.exit()
         return res.text
 
@@ -71,13 +64,13 @@ class GnipSearchAPI(object):
         while repeat:
             doc = self.req()
             try:
-                tmp_response =  json.loads(doc)
+                tmp_response = json.loads(doc)
                 if "results" in tmp_response:
                     acs.extend(tmp_response["results"])
                 if "error" in tmp_response:
                     print >> sys.stderr, "Error, invalid request"
-                    print >> sys.stderr, "Query: %s"%self.rule_payload
-                    print >> sys.stderr, "Response: %s"%doc
+                    print >> sys.stderr, "Query: %s" % self.rule_payload
+                    print >> sys.stderr, "Response: %s" % doc
                     raise Exception(tmp_response["error"]["message"])
             except ValueError:
                 print >> sys.stderr, "Error, results not parsable"
@@ -108,13 +101,13 @@ class GnipSearchAPI(object):
 
     def query(self
             , pt_filter
-            , max_results = 100
-            , record_callback = None
-            , use_case = "wordcount"
-            , start = None
-            , end = None
-            , count_bucket = "day" 
-            , query = False):
+            , max_results=100
+            , record_callback=None
+            , use_case="wordcount"
+            , start=None
+            , end=None
+            , count_bucket="day" 
+            , query=False):
 
         self.set_index(use_case, count_bucket)
         
@@ -139,8 +132,8 @@ class GnipSearchAPI(object):
         if use_case.startswith("time"):
             self.rule_payload["bucket"] = count_bucket
         if query:
-            print >>sys.stderr, "API query:"
-            print >>sys.stderr, self.rule_payload
+            print >> sys.stderr, "API query:"
+            print >> sys.stderr, self.rule_payload
             sys.exit() 
 
         self.doc = []

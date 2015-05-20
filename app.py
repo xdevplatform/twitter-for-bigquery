@@ -242,14 +242,11 @@ class ApiRuleTest(webapp2.RequestHandler):
         if not rule:
             raise Exception("missing parameter")
 
+        g = get_gnip()
         end = datetime.now()
         start = end - timedelta(days=7)
-    
-        g = get_gnip()
         timeline = g.query(rule, 0, record_callback=None, use_case="timeline", start=start, end=end, count_bucket="day")
         timeline = json.loads(timeline)
-        
-        print timeline
         
         count = 0 
         for r in timeline["results"]:
@@ -262,7 +259,7 @@ class ApiRuleTest(webapp2.RequestHandler):
 class ApiRuleBackfill(webapp2.RequestHandler):
     
     # get is async task
-    def post(self):
+    def get(self):
         
         print "GET ApiRuleBackfill"
 
@@ -286,7 +283,7 @@ class ApiRuleBackfill(webapp2.RequestHandler):
         self.response.headers['Content-Type'] = 'application/json'   
         self.response.out.write(json.dumps(response))
 
-    def get(self):
+    def post(self):
         
         print "POST ApiRuleBackfill"
         
@@ -296,14 +293,9 @@ class ApiRuleBackfill(webapp2.RequestHandler):
 
         print "POST variables: %s %s %s" % (rule, dataset, table)
 
-        g = get_gnip()
-        
-        print "POST Got gnip client %s" % g
-        
         def record_callback(tweets):
             
-            print "POST Tweets: %s" % tweets
-            print "POST Insert: %s" % len(tweets)
+            print "POST record_callback: %s" % len(tweets)
             
             body = {
                 "kind": "bigquery#tableDataInsertAllRequest",
@@ -315,7 +307,10 @@ class ApiRuleBackfill(webapp2.RequestHandler):
             
             return response
         
-        g.query(rule, 500, record_callback, use_case="tweets")
+        g = get_gnip()
+        end = datetime.now()
+        start = end - timedelta(days=7)
+        g.query(rule, 0, record_callback=record_callback, use_case="tweets", start=start, end=end)
 
         response = {
             "completed" : True
