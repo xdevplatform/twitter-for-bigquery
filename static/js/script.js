@@ -259,12 +259,10 @@ var RulePage = {
 			var rule = $("#rule_text").val();
 			var tag = $("#rule_tag").val();
 			
-			RulePage.test(rule, function(){
-				RulePage.add(rule, tag, function(response){
-					$('#myModal').modal('hide');
-					RulePage.list(table_id);
-				});
-			})
+			RulePage.add(rule, tag, function(response){
+				$('#myModal').modal('hide');
+				RulePage.list(table_id);
+			});
 			
 		});
 		
@@ -303,10 +301,19 @@ var RulePage = {
 		 Page.add("/api/rule/add", params, callback);
 	},
 
-	test : function(rule, success){
+	test : function(rule, success, error){
+		
     	$("#rule_import_count").fadeIn();
     	$("#rule_import_loading").show();
     	$("#rule_import_text").html("Calculating volume of tweets...")
+    	
+    	if (!error){
+    		error = function (request, status, error){
+				$("#rule_import_count").hide();
+				Page.handle_error(request, status, error); 
+			}
+    	}
+    	
 		 var params = {
 			'rule': rule
 		 }
@@ -316,10 +323,7 @@ var RulePage = {
 				data : params,
 				dataType : "json",
 				success : success,
-				error : function (request, status, error){
-					$("#rule_import_count").hide();
-					Page.handle_error(request, status, error); 
-				}
+				error : error
 			});	
 	},
 	
