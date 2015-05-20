@@ -18,6 +18,7 @@ from requests.exceptions import *
 from google.appengine.ext.webapp import template
 from google.appengine.api import memcache
 from google.appengine.api import taskqueue
+from google.appengine.api.taskqueue import TombstonedTaskError
 
 from apiclient.discovery import build
 from apiclient import errors
@@ -270,15 +271,17 @@ class ApiRuleBackfill(webapp2.RequestHandler):
             "table": table
         }
         
-        print "GET variables: %s %s" % (rule, table)
-        
         name = "%s_%s" % (rule, table)
         name = re.sub("[\W\d]", "_", name.strip()) 
         name = "Backfill_%s" % name
-        
-        print name
-          
-        task = taskqueue.add(name=name, url='/api/rule/backfill', params=params)
+
+        print "GET task: %s" % name
+                
+        try:
+            task = taskqueue.add(name=name, url='/api/rule/backfill', params=params)
+        except TombstonedTaskError, e:
+            raise Exception("Task for '%s' is already in the queue." % rule)
+            
         response = {
             "enqueued" : True
         }
