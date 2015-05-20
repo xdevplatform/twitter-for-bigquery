@@ -2,6 +2,9 @@ var Page = {
 
 	init : function(){
 		$("#error_message_holder").hide();
+		$(document.body).on("click", "#alert_dismiss", function(){
+			$("#error_message_holder").hide();
+		});
 	},
 		
 	list : function(list_url, callback){
@@ -212,7 +215,7 @@ var ChartPage = {
 
 var RulePage = {
 
-	init_list : function(){
+	init_list : function(table_id){
 	
 		Page.init();
 
@@ -220,25 +223,25 @@ var RulePage = {
 			if (confirm('Are you sure?')){
 				value = $(this).data("value");
 				RulePage.delete(value, function(response){
-					RulePage.list();
+					RulePage.list(table_id);
 				});
 			}
 		});
 		
-		RulePage.init_add_dialog();
-		RulePage.list();
+		RulePage.init_add_dialog(table_id);
+		RulePage.list(table_id);
 	},
 	
-	list : function(table, callback){
+	list : function(table_id, callback){
 		var url = "/api/rule/list"
-		if (table){
-			url = url + "?table=" + table
+		if (table_id){
+			url = url + "?table=" + table_id
 		}
 		Page.list(url, callback)
 	},
 
 	// initialization for rule_add_partial.html
-	init_add_dialog : function(){
+	init_add_dialog : function(table_id){
 		
 		$(document.body).on("click", ".rule_test", function(){
 			var rule = $("#rule_text").val();
@@ -260,7 +263,7 @@ var RulePage = {
 			RulePage.test(rule, function(){
 				RulePage.add(rule, tag, function(response){
 					$('#myModal').modal('hide');
-					RulePage.list();
+					RulePage.list(table_id);
 				});
 			})
 			
@@ -315,7 +318,10 @@ var RulePage = {
 				data : params,
 				dataType : "json",
 				success : success,
-				error : Page.handle_error 
+				error : function (request, status, error){
+					$("#rule_import_count").hide();
+					Page.handle_error(request, status, error); 
+				}
 			});	
 	},
 	
@@ -401,8 +407,7 @@ var TablePage = {
 			$(this).addClass("col-md-4");
 		});
 		
-		RulePage.init_add_dialog();
-		RulePage.list(id);
+		RulePage.init_list(id);
 		ChartPage.init();
 		
 		// auto load first chart
