@@ -272,9 +272,12 @@ class ApiRuleBackfill(webapp2.RequestHandler):
         
         print "GET variables: %s %s" % (rule, table)
         
-        now = datetime.now()
-        now = now.strftime("%Y%m%d_%H%M%S")
-        name = "ApiRuleBackfillTask_%s" % now  
+        name = "%s_%s" % (rule, table)
+        name = re.sub("[\W\d]", "_", name.strip()) 
+        name = "Backfill_%s" % name
+        
+        print name
+          
         task = taskqueue.add(name=name, url='/api/rule/backfill', params=params)
         response = {
             "enqueued" : True
