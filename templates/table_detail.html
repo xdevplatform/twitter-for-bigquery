@@ -1,7 +1,9 @@
 {% extends "base.html" %}
 {% block bodycontent %}
 	
-<a class="btn btn-default pull-right table_delete" data-id="{{id}}" target="_target">Delete</a>
+<div class="pull-right">
+	<a class="btn btn-default table_delete" data-id="{{id}}" target="_target">Delete</a>
+</div>
 
 <h1>Dataset: {{tableReference.datasetId}}.{{tableReference.tableId}}</h1>
 

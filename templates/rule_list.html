@@ -1,38 +1,34 @@
 {% extends "base.html" %}
 {% block bodycontent %}
 	
-		<button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#myModal">
-		  Add rule
-		</button>
+<div class="pull-right">
+	<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
+	  Add rule
+	</button>
+</div>
 	
-		<h1>PowerTrack Rules</h1>
+<h1>PowerTrack Rules</h1>
+
+<p>Add or remove rules to your stream to update data piped to BigQuery.</p>
+
+<br>
 		
-		<p>Add or remove rules to your stream to update data piped to BigQuery.</p>
-		
-		<br>
-				
-		<div>
-		
-			<table class="table table-striped">
-			<thead>
-	        <tr>
-	          <th>Rule</th>
-	          <th>Destination Table</th>
-	          <th>Actions</th>
-	        </tr>
-      		</thead>
-      		<tbody id="table_data">
-      		</tbody>
-			</table>
-			
-        </div>
+<div>
+
+	<table class="table table-striped">
+	<thead>
+    <tr>
+      <th>Rule</th>
+      <th>Destination Table</th>
+      <th>Actions</th>
+    </tr>
+	</thead>
+	<tbody id="table_data">
+	</tbody>
+	</table>
+	
+</div>
         
-    </div>
-    
-	<hr>
-
-<!-- /container -->
-
 {% include "rule_add_partial.html" %}
 
 {% raw %}

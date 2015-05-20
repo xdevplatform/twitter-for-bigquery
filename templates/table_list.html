@@ -1,43 +1,36 @@
 {% extends "base.html" %}
 {% block bodycontent %}
+
+<div class="pull-right">
+	<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
+	  Create table
+	</button>
+</div>
+
+<h1>BigQuery Tables</h1>
+
+<p>View and manage BigQuery tables in your project.</p>
+
+<br>
+		
+<div>
+
+	<table class="table table-striped">
+	<thead>
+    <tr>
+      <th>Table</th>
+      <th>Project</th>
+      <th>Type</th>
+      <th>Rules</th>
+      <th>Actions</th>
+    </tr>
+	</thead>
+	<tbody id="table_data">
+	</tbody>
+	</table>
 	
-		<button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#myModal">
-		  Create table
-		</button>
-
-		<h1>BigQuery Tables</h1>
-		
-		<p>View and manage BigQuery tables in your project.</p>
-		
-		<br>
-				
-		<div>
-		
-			<table class="table table-striped">
-			<thead>
-	        <tr>
-	          <th>Table</th>
-	          <th>Project</th>
-	          <th>Type</th>
-	          <th>Rules</th>
-	          <th>Actions</th>
-	        </tr>
-      		</thead>
-      		<tbody id="table_data">
-      		</tbody>
-			</table>
-			
-        </div>
+</div>
         
-    </div>
-    
-	<hr>
-
-    <div class="container page_footer">
-    
-    </div>
-    <!-- /container -->
-
 <!-- Modal -->
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog">
