@@ -268,6 +268,8 @@ class ApiRuleBackfill(webapp2.RequestHandler):
     # get is async task
     def get(self):
         
+        print "GET ApiRuleBackfill"
+
         rule = self.request.get("rule", None)
         table = self.request.get("table", None)
 
@@ -275,7 +277,13 @@ class ApiRuleBackfill(webapp2.RequestHandler):
             "rule": rule,
             "table": table
         }
-        task = taskqueue.add(name="ApiRuleBackfillTask", url='/api/rule/backfill', params=params)
+        
+        print "GET variables: %s %s" % (rule, table)
+        
+        now = datetime.now()
+        now = now.strftime("%Y%m%d_%H%M%S")
+        name = "ApiRuleBackfillTask_%s" % now  
+        task = taskqueue.add(name=name, url='/api/rule/backfill', params=params)
         response = {
             "enqueued" : True
         }
@@ -284,13 +292,13 @@ class ApiRuleBackfill(webapp2.RequestHandler):
 
     def post(self):
         
-        print "POST In ApiRuleBackfill"
+        print "POST ApiRuleBackfill"
         
         rule = self.request.get("rule", None)
         table = self.request.get("table", None)
         (dataset, table) = parse_bqid(table)  
 
-        print "POST Got variables: %s %s %s" % (rule, dataset, table)
+        print "POST variables: %s %s %s" % (rule, dataset, table)
 
         g = get_gnip()
         
