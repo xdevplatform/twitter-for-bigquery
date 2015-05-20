@@ -275,7 +275,7 @@ class ApiRuleBackfill(webapp2.RequestHandler):
             "rule": rule,
             "table": table
         }
-        task = taskqueue.add(url='/api/rule/backfill', params=params)
+        task = taskqueue.add(name='ApiRuleBackfillTask', url='/api/rule/backfill', params=params)
         response = {
             "enqueued" : True
         }
