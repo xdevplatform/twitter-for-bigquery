@@ -27,7 +27,7 @@ from oauth2client import appengine
 
 from gnippy import rules
 from gnippy.errors import RuleDeleteFailedException, RulesGetFailedException
-from gnip_search import gnip_search_api
+from gnip_search import searchclient
 
 from utils import Utils
 from config import *
@@ -588,7 +588,7 @@ def get_bq():
     return build('bigquery', 'v2', http=BQ_HTTP)
 
 def get_gnip():
-    g = gnip_search_api.GnipSearchAPI(GNIP_USERNAME, GNIP_PASSWORD, GNIP_SEARCH_URL)
+    g = searchclient.GnipSearchAPI(GNIP_USERNAME, GNIP_PASSWORD, GNIP_SEARCH_URL)
     return g
 
 def millis_to_date(ts):
