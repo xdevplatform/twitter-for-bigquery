@@ -13,13 +13,16 @@ import time
 import logging
 
 from datetime import datetime, timedelta
-
 from requests.exceptions import *
+
 from google.appengine.ext.webapp import template
 from google.appengine.api import memcache
+from google.appengine.api import taskqueue
+
 from apiclient.discovery import build
 from apiclient import errors
 from apiclient.errors import HttpError
+
 from oauth2client import appengine
 
 from gnippy import rules
@@ -262,14 +265,40 @@ class ApiRuleTest(webapp2.RequestHandler):
         
 class ApiRuleBackfill(webapp2.RequestHandler):
     
+    # get is async task
     def get(self):
         
-        rule = self.request.get("rule")
-        table = self.request.get("table")
-        (dataset, table) = parse_bqid(table)  
+        rule = self.request.get("rule", None)
+        table = self.request.get("table", None)
+
+        params = {
+            "rule": rule,
+            "table": table
+        }
+        task = taskqueue.add(url='/api/rule/backfill', params=params)
+        response = {
+            "enqueued" : True
+        }
+        self.response.headers['Content-Type'] = 'application/json'   
+        self.response.out.write(json.dumps(response))
+
+    def post(self):
         
+        print "POST In ApiRuleBackfill"
+        
+        rule = self.request.get("rule", None)
+        table = self.request.get("table", None)
+        (dataset, table) = parse_bqid(table)  
+
+        print "POST Got variables: %s %s %s" % (rule, dataset, table)
+
         g = get_gnip()
+        
+        print "POST Got gnip client %s" % g
+        
         tweets = g.query_api(rule, 500, use_case="tweets")
+
+        print "POST Insert: %s" % len(tweets)
         
         body = {
             "kind": "bigquery#tableDataInsertAllRequest",
@@ -278,8 +307,7 @@ class ApiRuleBackfill(webapp2.RequestHandler):
 
         response = get_bq().tabledata().insertAll(projectId=PROJECT_ID, datasetId=dataset, tableId=table, body=body).execute()
 
-        print "Insert: %s" % len(tweets)
-        print "Response: %s" % response
+        print "POST Response: %s" % response
         
         self.response.headers['Content-Type'] = 'application/json'   
         self.response.out.write(json.dumps(response))
@@ -559,8 +587,10 @@ def millis_to_date(ts):
     return datetime.fromtimestamp(ts/1000).strftime('%Y-%m-%d %H:%M')
     
 def parse_bqid(id):
-    import re
-    return re.split('\:|\.', id)
+    if id:
+        import re
+        return re.split('\:|\.', id)
+    return None
 
 def make_tag(dataset, table):
     return "%s.%s" % (dataset, table)
