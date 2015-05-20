@@ -271,18 +271,15 @@ class ApiRuleBackfill(webapp2.RequestHandler):
         g = get_gnip()
         tweets = g.query_api(rule, 500, use_case="tweets")
         
-        print len(tweets)
-        
         body = {
             "kind": "bigquery#tableDataInsertAllRequest",
-            "rows": [{ "json" : Utils.scrub(t) } for t in tweets ]
+            "rows": [{ "insertId" : t["id"], "json" : Utils.scrub(t) } for t in tweets ]
         }
 
-#         print body
-        
         response = get_bq().tabledata().insertAll(projectId=PROJECT_ID, datasetId=dataset, tableId=table, body=body).execute()
 
-        print response
+        print "Insert: %s" % len(tweets)
+        print "Response: %s" % response
         
         self.response.headers['Content-Type'] = 'application/json'   
         self.response.out.write(json.dumps(response))
