@@ -37,7 +37,6 @@ JINJA = jinja2.Environment(
     extensions=['jinja2.ext.autoescape'],
     autoescape=True)
 
-GNIP_SEARCH_DATE_FORMAT = "%Y-%m-%d %H:%M"
 REMOVE_HTML = re.compile(r'<.*?>')
 TABLE_CACHE = {}
 
@@ -246,11 +245,8 @@ class ApiRuleTest(webapp2.RequestHandler):
         end = datetime.now()
         start = end - timedelta(days=7)
     
-        start_str = start.strftime(GNIP_SEARCH_DATE_FORMAT)
-        end_str = end.strftime(GNIP_SEARCH_DATE_FORMAT)
-        
         g = get_gnip()
-        timeline = g.query_api(rule, 0, use_case="timeline", start=start_str, end=end_str, count_bucket="day", csv_flag=False)
+        timeline = g.query(rule, 0, record_callback=None, use_case="timeline", start=start, end=end, count_bucket="day")
         timeline = json.loads(timeline)
         
         print timeline
@@ -266,7 +262,7 @@ class ApiRuleTest(webapp2.RequestHandler):
 class ApiRuleBackfill(webapp2.RequestHandler):
     
     # get is async task
-    def get(self):
+    def post(self):
         
         print "GET ApiRuleBackfill"
 
@@ -290,7 +286,7 @@ class ApiRuleBackfill(webapp2.RequestHandler):
         self.response.headers['Content-Type'] = 'application/json'   
         self.response.out.write(json.dumps(response))
 
-    def post(self):
+    def get(self):
         
         print "POST ApiRuleBackfill"
         
@@ -304,17 +300,26 @@ class ApiRuleBackfill(webapp2.RequestHandler):
         
         print "POST Got gnip client %s" % g
         
-        tweets = g.query_api(rule, 500, use_case="tweets")
-
-        print "POST Insert: %s" % len(tweets)
+        def record_callback(tweets):
+            
+            print "POST Tweets: %s" % tweets
+            print "POST Insert: %s" % len(tweets)
+            
+            body = {
+                "kind": "bigquery#tableDataInsertAllRequest",
+                "rows": [{ "insertId" : t["id"], "json" : Utils.scrub(t) } for t in tweets ]
+            }
+    
+            response = get_bq().tabledata().insertAll(projectId=PROJECT_ID, datasetId=dataset, tableId=table, body=body).execute()
+            print "POST BQ Response: %s" % response
+            
+            return response
         
-        body = {
-            "kind": "bigquery#tableDataInsertAllRequest",
-            "rows": [{ "insertId" : t["id"], "json" : Utils.scrub(t) } for t in tweets ]
+        g.query(rule, 500, record_callback, use_case="tweets")
+
+        response = {
+            "completed" : True
         }
-
-        response = get_bq().tabledata().insertAll(projectId=PROJECT_ID, datasetId=dataset, tableId=table, body=body).execute()
-
         print "POST Response: %s" % response
         
         self.response.headers['Content-Type'] = 'application/json'   
