@@ -260,6 +260,31 @@ class ApiRuleTest(webapp2.RequestHandler):
         self.response.headers['Content-Type'] = 'application/json'   
         self.response.out.write(json.dumps(timeline))
         
+class ApiRuleBackfill(webapp2.RequestHandler):
+    
+    def get(self):
+        
+        rule = self.request.get("rule")
+        table = self.request.get("table")
+        (dataset, table) = parse_bqid(table)  
+        
+        g = get_gnip()
+        tweets = g.query_api(rule, 500, use_case="tweets")
+        
+        body = {
+            "kind": "bigquery#tableDataInsertAllRequest",
+            "rows": [{ "json" : t } for t in tweet ]
+        }
+
+        print body
+        
+        response = get_bq().tabledata().insertAll(projectId=PROJECT_ID, datasetId=dataset, tableId=table, body=body).execute()
+
+        print response
+        
+        self.response.headers['Content-Type'] = 'application/json'   
+        self.response.out.write(json.dumps(response))
+        
 class ApiRuleDelete(webapp2.RequestHandler):
     
     def get(self):
@@ -548,6 +573,7 @@ application = webapp2.WSGIApplication([
     ('/api/rule/test', ApiRuleTest),
     ('/api/rule/add', ApiRuleAdd),
     ('/api/rule/delete', ApiRuleDelete),
+    ('/api/rule/backfill', ApiRuleBackfill),
     ('/api/table/list', ApiTableList),
     ('/api/table/add', ApiTableAdd),
     ('/api/table/([A-Za-z0-9\-\_\:\.]+)/delete', ApiTableDelete),

@@ -26,7 +26,7 @@ var Page = {
 				url : list_url,
 				dataType : "json",
 				success : callback,
-				error : Page.handle_error, 
+				error : Page.handle_error 
 			});	
 		
 	 },
@@ -221,13 +221,21 @@ var RulePage = {
 
 		$(document.body).on("click", ".rule_delete", function(){
 			if (confirm('Are you sure?')){
-				value = $(this).data("value");
-				RulePage.delete(value, function(response){
+				rule = $(this).data("rule");
+				RulePage.delete(rule, function(response){
 					RulePage.list(table_id);
 				});
 			}
 		});
-		
+
+		$(document.body).on("click", ".rule_backfill", function(){
+			if (confirm('This will populate data for the past 7 days. Are you sure?')){
+				rule = $(this).data("rule");
+				table = $(this).data("table");
+				RulePage.backfill(rule, table);
+			}
+		});
+
 		RulePage.init_add_dialog(table_id);
 		RulePage.list(table_id);
 	},
@@ -318,13 +326,13 @@ var RulePage = {
 			'rule': rule
 		 }
 		 $.ajax({
-				type : "GET",
-				url : "/api/rule/test",
-				data : params,
-				dataType : "json",
-				success : success,
-				error : error
-			});	
+			type : "GET",
+			url : "/api/rule/test",
+			data : params,
+			dataType : "json",
+			success : success,
+			error : error
+		});	
 	},
 	
 	test_callback : function(response){
@@ -332,6 +340,21 @@ var RulePage = {
 		$("#rule_import_loading").hide();
 		$("#rule_import_text").html(count + " records found.")
 		$("#rule_add").prop("disabled", false);
+	},
+
+	backfill : function(rule, table, callback){
+		 var params = {
+			'rule': rule,
+			'table': table
+		 }
+		 $.ajax({
+			type : "GET",
+			url : "/api/rule/backfill",
+			data : params,
+			dataType : "json",
+			success : callback,
+			error : Page.handle_error
+		});
 	},
 
 	delete : function(value, callback){
