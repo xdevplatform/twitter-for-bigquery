@@ -271,9 +271,10 @@ class ApiRuleBackfill(webapp2.RequestHandler):
             "table": table
         }
         
+        date = datetime.now().strftime("%Y%m%d_%H%M")
         name = "%s_%s" % (rule, table)
         name = re.sub("[\W\d]", "_", name.strip()) 
-        name = "Backfill_%s" % name
+        name = "Backfill_%s_%s" % (date, name)
 
         print "GET task: %s" % name
                 
