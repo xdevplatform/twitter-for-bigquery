@@ -1,7 +1,7 @@
 version: v1beta2
 containers:
   - name: image_proj
-    image: gcr.io/twitter_for_bigquery/image_proj
+    image: gcr.io/{{PROJECT_ID}}/image
     command: ['python' 'load.py']
     ports:
       - name: image_proj
