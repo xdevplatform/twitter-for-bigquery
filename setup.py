@@ -21,7 +21,7 @@ props = {}
 for name in (name for name in dir(config) if not name.startswith('_')):
     props[name] = getattr(config, name, '')
             
-container_template = Utils.read_file("./container_template.yaml")
+container_template = Utils.read_file("./container.yaml.template")
 container_template = Template(container_template).render(props)
 
 container_file = open("./image/container.yaml", 'w')
