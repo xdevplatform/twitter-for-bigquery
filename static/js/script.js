@@ -127,7 +127,7 @@ var ChartPage = {
 			}
 			
 			$("#query_submit").prop("disabled", true);
-			TablePage.load_select('#select_table', callback);
+			TablePage.load_select('#select_table', null, callback);
 		}
 		
 		$('#form').submit(function(event){
@@ -275,7 +275,7 @@ var RulePage = {
 		});
 		
 		RulePage.init_import_count("#rule_text");
-		TablePage.load_select('#rule_tag', function(){
+		TablePage.load_select('#rule_tag', table_id, function(){
 		});
 	},
 	
@@ -477,7 +477,7 @@ var TablePage = {
 		$("#table_add").prop("disabled", false);
 	},
 
-	load_select : function(select_id, callback) {
+	load_select : function(select_id, default_value, callback) {
 		
 		TablePage.list(function(response){
 
@@ -485,12 +485,17 @@ var TablePage = {
 			
 			for (var i = 0; i < response.length; i++){
 				
+				var id = response[i]['id'];
 				var dataset = response[i]['datasetId'];
 				var table = response[i]['tableId'];
 				var pair = dataset + "." + table;
 				var value = pair;
 				var label = pair;
-				$(select_id).append(new Option(label, value));
+				option = new Option(label, value);
+				if (id == default_value){
+					option.selected = true;
+				}
+				$(select_id).append(option);
 				
 			}
 			

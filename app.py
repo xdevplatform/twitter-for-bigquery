@@ -492,7 +492,7 @@ class QueryBuilder():
             args = {
                 'data' : {
                     'columns' : columns,
-                    'type' : charttype
+                    'type' : self.charttype
                 },
                 'donut' : {
                     'title' : "Tweet sources"
@@ -656,4 +656,4 @@ def handle_500(request, response, exception):
     response.set_status(status)
     response.out.write(message)
 
-application.error_handlers[500] = handle_500
+# application.error_handlers[500] = handle_500
