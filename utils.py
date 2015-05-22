@@ -28,14 +28,22 @@ class Utils:
             
             return Utils.BQ_CLIENT
         
-        # Use below for AppEngine and Cloud Engine 
-        from oauth2client import appengine
-        BQ_CREDENTIALS = appengine.AppAssertionCredentials(scope='https://www.googleapis.com/auth/bigquery')
-    
-        # Use below for running anywhere
-#         from oauth2client.client import SignedJwtAssertionCredentials
-#         KEY = Utils.read_file(config.KEY_FILE)
-#         BQ_CREDENTIALS = SignedJwtAssertionCredentials(config.SERVICE_ACCOUNT, KEY, 'https://www.googleapis.com/auth/bigquery')
+        BQ_CREDENTIALS = None
+        
+        # Use below for AppEngine and Cloud Engine
+        # http://stackoverflow.com/questions/1916579/in-python-how-can-i-test-if-im-in-google-app-engine-sdk
+        software = os.environ.get('SERVER_SOFTWARE', None) 
+        
+        if software and ("Google App Engine" in software or "Development" in software):
+            
+            from oauth2client import appengine
+            BQ_CREDENTIALS = appengine.AppAssertionCredentials(scope='https://www.googleapis.com/auth/bigquery')
+
+        else:
+            
+            from oauth2client.client import SignedJwtAssertionCredentials
+            KEY = Utils.read_file(config.KEY_FILE)
+            BQ_CREDENTIALS = SignedJwtAssertionCredentials(config.SERVICE_ACCOUNT, KEY, 'https://www.googleapis.com/auth/bigquery')
     
         BQ_HTTP = BQ_CREDENTIALS.authorize(httplib2.Http())
         Utils.BQ_CLIENT = build('bigquery', 'v2', http=BQ_HTTP)
