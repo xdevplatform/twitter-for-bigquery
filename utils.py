@@ -7,7 +7,6 @@ import logging.config
 from bigquery import schema_from_record
 
 from config import *
-from utils import Utils
 
 class Utils:
 
