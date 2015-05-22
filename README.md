@@ -15,7 +15,7 @@ Requirements
 - [Google Cloud Platform](https://cloud.google.com/) account 
 - [Google App Engine SDK for Python](https://cloud.google.com/appengine/downloads)
 
-Configuration
+Setup & Configuration
 ---
 
 To work with Google Cloud and BigQuery, follow the below instructions to create a new project, service account and get your PEM file.
@@ -31,58 +31,75 @@ To work with Google Cloud and BigQuery, follow the below instructions to create 
 
 	`cat key.p12 | openssl pkcs12 -nodes -nocerts -passin pass:notasecret | openssl rsa > key.pem`
 
-
-Loading Twitter data into BigQuery
----
-
-The enclosed sample includes a simple `load.py` file to stream Tweets directly into BigQuery.
-
-- Copy `config.py.dist` to `config.py`
+- Copy `config.template` to `config`
 - Fill out the following fields:
 
 	<img src="static/img/config_fields.png" style="width: 70%;"/>
 
+- Run `setup.py` to generate appropriate yaml and config files in the image_gnip and image_twitter
+
+Loading Twitter data into BigQuery from your local machine
+---
+
+The enclosed sample includes a simple `load.py` file to stream Tweets directly into BigQuery.
+
 - Go to [http://console.developers.google.com](http://console.developers.google.com)
 - Go to your project
 - In the left-hand side, click on "Big Data->BigQuery" to open the BigQuery console
-- Click on the down arrow by the project, select "Create new dataset" and enter "tweets"
-- Click on the down arrow by the dataset, select "Create new table" and enter "2015_01_17" (or whatever is configured in config.py)
+- Click on the down arrow by the project, select "Create new dataset" and enter "twitter"
+- Click on the down arrow by the dataset, select "Create new table" and enter "tweets" (or whatever is configured in `config`)
 - Run `python load.py` 
-- Run `create_config.py` to generate appropriate yaml and config files in the image_gnip and image_twitter
 
 When developing on top of the Twitter platform, you must abide by the [Developer Agreement & Policy](https://dev.twitter.com/overview/terms/agreement-and-policy).
 Most notably, you must respect the section entitled "Maintain the Integrity of TwitterÕs Products", including removing all relevant
 Content with regard to unfavorites, deletes and other user actions. 
 
-Loading Twitter data into BigQuery from Google Compute Engine
+Loading Twitter data into BigQuery from the Google cloud
 ---
 
-As you might expect, you can also choose to [Google Compute Engine](https://cloud.google.com/compute/) instance and run the script there.
-To setup the instance, install git and required libraries:
+This project is designed to use [Docker](http://www.docker.com) with [Google Compute Engine](https://cloud.google.com/compute/)
+to run the above process in the cloud.
 
-	`sudo apt-get update`
-	`sudo apt-get install git`
-	`sudo apt-get install python-dev`
-	`sudo apt-get install libffi-dev`
+The `Dockerfile` describes the required libraries and packaging for the container. The below runs through the steps to 
+create your own container and deploy it to Google Compute Engine.
 	
-To install pip:
-
-	`curl --silent --show-error --retry 5 https://bootstrap.pypa.io/get-pip.py | sudo python2.7`
+	# start docker locally
+	boot2docker start
+	$(boot2docker shellinit)
 	
-Be sure to install the required Python libraries:
-
-	`sudo pip install -r requirements.txt`
+	# build and run docker image locally
+	docker build -t gcr.io/twitter_for_bigquery/image .
+	docker run -i -t gcr.io/twitter_for_bigquery/image
 	
-Lastly, you'll want to copy `logging.conf.dist` to `logging.conf` and customize it to your machine.
+	# push to Google Cloud container registry
+	gcloud preview docker push gcr.io/twitter_for_bigquery/image
+	
+	# create and instance with docker container
+	gcloud compute instances create examplecontainervm01 \
+	    --image container-vm \
+	    --metadata-from-file google-container-manifest=./container.yaml \
+	    --zone us-central1-b \
+	    --machine-type n1-highcpu-2
+	    
+	# log into the new instance
+	gcloud compute instances list
+	gcloud compute --project "twitter-for-bigquery" ssh --zone "us-central1-b" "examplecontainervm01" 
+	
+	# pull the container and run it in docker 
+	sudo docker pull gcr.io/twitter_for_bigquery/image
+	sudo docker run -d gcr.io/twitter_for_bigquery/image
+	
+	# view logs to confirm its running
+	sudo -s
+	sudo docker ps
+	sudo docker logs --follow=true 5d
 
-You may need the following instructions on how to install Git:
+More notes for Docker + Google Cloud:
 
-- [Stack Overflow: How to Install git in google compute engine?](http://stackoverflow.com/questions/27460923/how-to-install-git-in-google-compute-engine)
-- [Stack Overflow: What is the official ÒpreferredÓ way to install pip and virtualenv systemwide?](http://stackoverflow.com/questions/5585875/what-is-the-official-preferred-way-to-install-pip-and-virtualenv-systemwide)
-- [Working around GCC issues with 'sudo apt-get install python-dev'](http://stackoverflow.com/questions/21530577/fatal-error-python-h-no-such-file-or-directory)
-- [Installing libffi-dev](http://askubuntu.com/questions/499714/error-installing-scrapy-in-virtualenv-using-pip)
+- https://docs.docker.com/userguide/dockerizing/
+- https://cloud.google.com/compute/docs/containers/container_vms
 
-Running the app
+Running the management console app
 ---
 
 ### Running locally from command line
@@ -190,6 +207,15 @@ Using BigQuery allows you to combine Twitter data with other public sources of i
 
 You can also visit http://demo.redash.io/ to perform queries and visualizations against publicly available data sources.
 
+FAQ
+
+When deploying to AppEngine, I'm getting the error "This application does not exist (app_id=u'twitter-for-bigquery')"
+
+You will want to create your own app_id in app.yaml. If that does not work, then 
+Per this thread (http://stackoverflow.com/questions/10407955/google-app-engine-this-application-does-not-exist), try the following:
+
+`rm .appcfg_oauth2_tokens`
+
 
 Additional reading
 ---
@@ -215,3 +241,13 @@ The following developers and bloggers have aided greatly in the development of t
 - [@jay3dec](https://twitter.com/jay3dec) - [https://twitter.com/jay3dec](https://twitter.com/jay3dec)
 - [@alexhanna](https://twitter.com/alexhanna) - [http://badhessian.org/2012/10/collecting-real-time-twitter-data-with-the-streaming-api/]
 
+TODO
+
+- Backfill
+    - UI Dialog
+    - Pull in X days of previous data
+- Daemon
+    - No duplicate based on IDs
+	- populate in multiple matching tables
+- Remove bigquery library and references
+- Admin save/config page + deploy of service?
