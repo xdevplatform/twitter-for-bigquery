@@ -14,6 +14,7 @@ import logging
 
 from datetime import datetime, timedelta
 from requests.exceptions import *
+from config import Config
 
 from google.appengine.ext.webapp import template
 from google.appengine.api import memcache
@@ -30,7 +31,14 @@ from gnippy import rules, searchclient
 from gnippy.errors import RuleDeleteFailedException, RulesGetFailedException
 
 from utils import Utils
-from config import *
+
+f = file("./config")
+config = Config(f)
+
+GNIP_RULES_PARAMS = { 
+     'url' : config.GNIP_STREAM_URL, 
+     'auth' : (config.GNIP_USERNAME, config.GNIP_PASSWORD) 
+ }
 
 JINJA = jinja2.Environment(
     loader=jinja2.FileSystemLoader("%s/templates" % BASE_DIR),
@@ -51,7 +59,7 @@ class TableList(webapp2.RequestHandler):
     
     def get(self):
         
-        template_data = {"projectId" : PROJECT_ID}
+        template_data = {"projectId" : config.PROJECT_ID}
         self.response.out.write(JINJA.get_template('table_list.html').render(template_data))
         
 class ApiTableList(webapp2.RequestHandler):
@@ -62,7 +70,7 @@ class ApiTableList(webapp2.RequestHandler):
     
         if TABLE_CACHE.get("cache", None) == None:
     
-            datasets = get_bq().datasets().list(projectId=PROJECT_ID).execute()
+            datasets = get_bq().datasets().list(projectId=config.PROJECT_ID).execute()
             datasets = datasets.get("datasets", None)
             
             for d in datasets:
@@ -78,7 +86,7 @@ class ApiTableList(webapp2.RequestHandler):
                         "tableId": ref.get("tableId", None) 
                     })
                     
-            rules_list = rules.get_rules(url=GNIP_STREAM_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
+            rules_list = rules.get_rules(**GNIP_RULES_PARAMS)
             for t in tables:
                 tag = make_tag(t['datasetId'], t['tableId'])
                 rs = [r['value'] for r in rules_list if r['tag'] == tag]
@@ -115,7 +123,7 @@ class ApiTableAdd(webapp2.RequestHandler):
         
         body = {
             "tableReference" : {
-                "projectId" : PROJECT_ID,
+                "projectId" : config.PROJECT_ID,
                 "tableId" : table,
                 "datasetId" : dataset
             },
@@ -124,13 +132,17 @@ class ApiTableAdd(webapp2.RequestHandler):
             }
         }
 
-        response = get_bq().tables().insert(projectId=PROJECT_ID, datasetId=dataset, body=body).execute()
+        response = get_bq().tables().insert(projectId=config.PROJECT_ID, datasetId=dataset, body=body).execute()
         TABLE_CACHE.clear()
             
         name = make_tag(dataset, table)
         rule_list = [s.strip() for s in rule_list.splitlines()]
         for r in rule_list:
-            rules.add_rule(r, tag=name, url=GNIP_STREAM_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
+            
+            params = GNIP_RULES_PARAMS
+            params['tag'] = name
+    
+            rules.add_rule(r, **params)
             TABLE_CACHE.clear()
 
         self.response.headers['Content-Type'] = 'application/json'   
@@ -151,9 +163,9 @@ class ApiTableDelete(webapp2.RequestHandler):
         
         tag = dataset + "." + table
 
-        rules_list = rules.get_rules(url=GNIP_STREAM_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
+        rules_list = rules.get_rules(**GNIP_RULES_PARAMS)
         rules_list = [r for r in rules_list if r['tag'] == tag]
-        response = rules.delete_rules(rules_list, url=GNIP_STREAM_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
+        response = rules.delete_rules(rules_list, **GNIP_RULES_PARAMS)
         TABLE_CACHE.clear()
 
         self.response.headers['Content-Type'] = 'application/json'   
@@ -170,7 +182,7 @@ class ApiTableData(webapp2.RequestHandler):
         builder = QueryBuilder(QueryBuilder.GNIP if "gnip" in table else QueryBuilder.PUBLIC, table, field, charttype, interval) 
         query = builder.query()
         
-        results = get_bq().jobs().query(projectId=PROJECT_NUMBER, body={'query':query}).execute()
+        results = get_bq().jobs().query(projectId=config.PROJECT_NUMBER, body={'query':query}).execute()
         args = builder.c3_args(query, results) 
 
 #         print query
@@ -207,7 +219,7 @@ class ApiRuleList(webapp2.RequestHandler):
         
         table = self.request.get("table", None)
         
-        response = rules.get_rules(url=GNIP_STREAM_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
+        response = rules.get_rules(**GNIP_RULES_PARAMS)
         
         if table:
             (project, dataset, table) = parse_bqid(table)
@@ -227,7 +239,10 @@ class ApiRuleAdd(webapp2.RequestHandler):
         if not rule or not tag:
             raise Exception("missing parameter")
 
-        response = rules.add_rule(rule, tag=tag, url=GNIP_STREAM_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
+        params = GNIP_RULES_PARAMS
+        params['tag'] = tag
+        
+        response = rules.add_rule(rule, **params)
         TABLE_CACHE.clear()
         
         self.response.headers['Content-Type'] = 'application/json'   
@@ -308,7 +323,7 @@ class ApiRuleBackfill(webapp2.RequestHandler):
                 "rows": [{ "insertId" : t["id"], "json" : Utils.scrub(t) } for t in tweets ]
             }
     
-            response = get_bq().tabledata().insertAll(projectId=PROJECT_ID, datasetId=dataset, tableId=table, body=body).execute()
+            response = get_bq().tabledata().insertAll(projectId=config.PROJECT_ID, datasetId=dataset, tableId=table, body=body).execute()
             print "POST BQ Response: %s" % response
             
             return response
@@ -335,7 +350,7 @@ class ApiRuleDelete(webapp2.RequestHandler):
             "value" : value
         }
 
-        response = rules.delete_rule(rule_delete, url=GNIP_STREAM_URL, auth=(GNIP_USERNAME, GNIP_PASSWORD))
+        response = rules.delete_rule(rule_delete, **GNIP_RULES_PARAMS)
         TABLE_CACHE.clear()
         
         self.response.headers['Content-Type'] = 'application/json'   
@@ -594,7 +609,7 @@ def get_bq():
     return build('bigquery', 'v2', http=BQ_HTTP)
 
 def get_gnip():
-    g = searchclient.SearchClient(GNIP_USERNAME, GNIP_PASSWORD, GNIP_SEARCH_URL)
+    g = searchclient.SearchClient(config.GNIP_USERNAME, config.GNIP_PASSWORD, config.GNIP_SEARCH_URL)
     return g
 
 def millis_to_date(ts):
