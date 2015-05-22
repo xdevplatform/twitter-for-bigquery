@@ -20,7 +20,7 @@ from google.appengine.api.taskqueue import TombstonedTaskError
 
 from apiclient.errors import HttpError
 
-from gnippy import rules, searchclient
+from gnippy import rules
 from gnippy.errors import RuleDeleteFailedException, RulesGetFailedException
 
 from utils import Utils
@@ -310,13 +310,7 @@ class ApiRuleBackfill(webapp2.RequestHandler):
         def record_callback(tweets):
             
             print "POST record_callback: %s" % len(tweets)
-            
-            body = {
-                "kind": "bigquery#tableDataInsertAllRequest",
-                "rows": [{ "insertId" : t["id"], "json" : Utils.scrub(t) } for t in tweets ]
-            }
-    
-            response = Utils.get_bq().tabledata().insertAll(projectId=config.PROJECT_ID, datasetId=dataset, tableId=table, body=body).execute()
+            response = Utils.insert_records(dataset, table, tweets)
             print "POST BQ Response: %s" % response
             
             return response

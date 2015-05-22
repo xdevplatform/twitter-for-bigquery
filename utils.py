@@ -5,13 +5,17 @@ import json
 from datetime import datetime, timedelta
 
 import httplib2
+import logging.config
+from config import Config
+
 from oauth2client import appengine
 from apiclient.discovery import build
+from gnippy import rules, searchclient
 
-import logging.config
 from bigquery import schema_from_record
 
-from config import *
+f = file("./config")
+config = Config(f)
 
 class Utils:
     
@@ -28,50 +32,33 @@ class Utils:
         return g
     
     @staticmethod
-    def insert_record(client, dataset_id, table_id, record):
+    def insert_records(dataset_id, table_id, tweets):
          
-        result = client.push_rows(dataset_id, table_id, [record], None) 
-         
-        if result.get('insertErrors', None):
-    
-            print "Record: %s" % (json.dumps(record))
-            print "Error result: %s" % result
-            
-#             exit()
-            
-            return False
-        
-        return True
+        # ensure insertId to avoid duplicate records
+        body = {
+            "kind": "bigquery#tableDataInsertAllRequest",
+            "rows": [{ "insertId" : t["id"], "json" : Utils.scrub(t) } for t in tweets ]
+        }
 
+        response = Utils.get_bq().tabledata().insertAll(projectId=config.PROJECT_ID, datasetId=dataset_id, tableId=table_id, body=body).execute()
+        return response
+         
     @staticmethod    
     def import_from_file(client, dataset_id, table_id, filename, single_tweet=False):
         
+        records = []
         if single_tweet:
             
-            record = json.loads(Utils.read_file(SAMPLE_TWEET_FILE))
-            success = Utils.insert_record(client, dataset_id, table_id, record)
+            records = [json.loads(Utils.read_file(SAMPLE_TWEET_FILE))]
+            success = Utils.insert_records(client, dataset_id, table_id, records)
             return success
 
-        row = 0
-        with open(filename, "r") as f:
-             
-            for tweet in f:
-                 
-                record = json.loads(tweet)
-     
-                # ignore delete records for now            
-                if record.get("delete", None):
-                    continue
-                 
-                record_scrubbed = Utils.scrub(record)
-                success = Utils.insert_record(client, dataset_id, table_id, record_scrubbed)
-                if not success:
-                    print "Failed row: %s %s" % (row, json.dumps(record))
-                    return
-                else:
-                    print "Processed row: %s" % row
-                 
-                row = row + 1
+        else:
+            
+            with open(filename, "r") as f:
+    
+                records = [Utils.scrub(json.loads(tweet)) for tweet in f if json.loads(tweet).get("delete", None) == None]             
+                success = Utils.insert_records(client, dataset_id, table_id, [record])
                 
     @staticmethod 
     def generate_schema_from_tweet(record_str):
