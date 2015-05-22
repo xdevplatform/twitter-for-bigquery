@@ -37,10 +37,10 @@ client_secrets.json
 .pydevproject
 *.p12
 *.pem
-**/config*
 **/*json
 **/*conf
 **/*txt
+config
 container.yaml
 schema.json
 output.txt
