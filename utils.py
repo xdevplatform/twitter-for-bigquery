@@ -30,7 +30,7 @@ class Utils:
         
         BQ_CREDENTIALS = None
         
-        # Use below for AppEngine and Cloud Engine
+        # If runing on Google stack, authenticate natively
         # http://stackoverflow.com/questions/1916579/in-python-how-can-i-test-if-im-in-google-app-engine-sdk
         software = os.environ.get('SERVER_SOFTWARE', None) 
         

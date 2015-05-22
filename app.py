@@ -98,6 +98,8 @@ class ApiTableAdd(webapp2.RequestHandler):
     
     def get(self):
         
+        response = []
+        
         type = self.request.get("type")
 
         dataset = self.request.get("dataset")
@@ -124,7 +126,7 @@ class ApiTableAdd(webapp2.RequestHandler):
             params = GNIP_RULES_PARAMS
             params['tag'] = name
     
-            rules.add_rule(r, **params)
+            response.append(rules.add_rule(r, **params))
             TABLE_CACHE.clear()
 
         self.response.headers['Content-Type'] = 'application/json'   
