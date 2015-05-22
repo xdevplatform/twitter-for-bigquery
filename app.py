@@ -109,7 +109,7 @@ class ApiTableAdd(webapp2.RequestHandler):
         rule_list = self.request.get("rules")
         imprt = self.request.get("import")
 
-        schema_file = GNIP_SCHEMA_FILE if type == "gnip" else SCHEMA_FILE
+        schema_file = "./schema.json"
         schema_str = Utils.read_file(schema_file)
         schema = json.loads(schema_str)
         

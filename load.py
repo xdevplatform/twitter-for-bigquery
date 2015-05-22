@@ -260,7 +260,7 @@ def main():
     client.swallow_results = False
     logger.info("BigQuery Client: %s" % client)
     
-    schema_str = Utils.read_file(config.SCHEMA_FILE)
+    schema_str = Utils.read_file("./schema")
     schema = json.loads(schema_str)
     
     created = client.create_table(config.DATASET_ID, config.TABLE_ID, schema)
