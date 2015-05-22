@@ -15,7 +15,6 @@ from config import Config
 import tweepy
 
 from bigquery import get_client
-from bigquery import schema_from_record
 
 from utils import Utils
 
@@ -276,14 +275,31 @@ def main():
 
     logger = Utils.enable_logging()
     
-    # get client
-    client = get_client(config.PROJECT_ID, service_account=config.SERVICE_ACCOUNT, private_key=KEY, readonly=False)
-    client.swallow_results = False
-    logger.info("BigQuery Client: %s" % client)
+#     # get client
+#     client = get_client(config.PROJECT_ID, service_account=config.SERVICE_ACCOUNT, private_key=KEY, readonly=False)
+#     client.swallow_results = False
+#     logger.info("BigQuery Client: %s" % client)
+#     
+#     schema = json.loads(Utils.read_file("./schema.json"))
+#     created = client.create_table(config.DATASET_ID, config.TABLE_ID, schema)
+#     logger.info("BigQuery table create: %s" % created)
+
+    schema_file = "./schema.json"
+    schema_str = Utils.read_file(schema_file)
+    schema = json.loads(schema_str)
     
-    schema = json.loads(Utils.read_file("./schema.json"))
-    created = client.create_table(config.DATASET_ID, config.TABLE_ID, schema)
-    logger.info("BigQuery table create: %s" % created)
+    body = {
+        "tableReference" : {
+            "projectId" : config.PROJECT_ID,
+            "tableId" : config.TABLE_ID,
+            "datasetId" : config.DATASET_ID
+        },
+        "schema" : {
+            "fields" : schema
+        }
+    }
+
+    response = get_bq().tables().insert(projectId=config.PROJECT_ID, datasetId=dataset, body=body).execute()
 
     if config.MODE == 'gnip':
         GnipListener.start(client, schema, logger)

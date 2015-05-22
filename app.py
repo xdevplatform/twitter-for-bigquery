@@ -7,7 +7,6 @@ import jinja2
 import webapp2
 
 import re
-import httplib2
 import json
 import time
 import logging
@@ -16,16 +15,10 @@ from datetime import datetime, timedelta
 from requests.exceptions import *
 from config import Config
 
-from google.appengine.ext.webapp import template
-from google.appengine.api import memcache
 from google.appengine.api import taskqueue
 from google.appengine.api.taskqueue import TombstonedTaskError
 
-from apiclient.discovery import build
-from apiclient import errors
 from apiclient.errors import HttpError
-
-from oauth2client import appengine
 
 from gnippy import rules, searchclient
 from gnippy.errors import RuleDeleteFailedException, RulesGetFailedException
@@ -70,12 +63,12 @@ class ApiTableList(webapp2.RequestHandler):
     
         if TABLE_CACHE.get("cache", None) == None:
     
-            datasets = get_bq().datasets().list(projectId=config.PROJECT_ID).execute()
+            datasets = Utils.get_bq().datasets().list(projectId=config.PROJECT_ID).execute()
             datasets = datasets.get("datasets", None)
             
             for d in datasets:
                 ref = d.get("datasetReference", None)
-                bq_tables = get_bq().tables().list(projectId=ref.get("projectId"), datasetId=ref.get("datasetId")).execute()
+                bq_tables = Utils.get_bq().tables().list(projectId=ref.get("projectId"), datasetId=ref.get("datasetId")).execute()
                 for t in bq_tables.get("tables", None):
                     id = t.get("id")
                     ref = t.get("tableReference", None)
@@ -88,7 +81,7 @@ class ApiTableList(webapp2.RequestHandler):
                     
             rules_list = rules.get_rules(**GNIP_RULES_PARAMS)
             for t in tables:
-                tag = make_tag(t['datasetId'], t['tableId'])
+                tag = Utils.make_tag(t['datasetId'], t['tableId'])
                 rs = [r['value'] for r in rules_list if r['tag'] == tag]
                 t['rules'] = rs
                 
@@ -132,10 +125,10 @@ class ApiTableAdd(webapp2.RequestHandler):
             }
         }
 
-        response = get_bq().tables().insert(projectId=config.PROJECT_ID, datasetId=dataset, body=body).execute()
+        response = Utils.get_bq().tables().insert(projectId=config.PROJECT_ID, datasetId=dataset, body=body).execute()
         TABLE_CACHE.clear()
             
-        name = make_tag(dataset, table)
+        name = Utils.make_tag(dataset, table)
         rule_list = [s.strip() for s in rule_list.splitlines()]
         for r in rule_list:
             
@@ -152,10 +145,10 @@ class ApiTableDelete(webapp2.RequestHandler):
     
     def get(self, id):
         
-        (project, dataset, table) = parse_bqid(id)
+        (project, dataset, table) = Utils.parse_bqid(id)
         
         try:
-            response = get_bq().tables().delete(projectId=project, datasetId=dataset, tableId=table).execute()
+            response = Utils.get_bq().tables().delete(projectId=project, datasetId=dataset, tableId=table).execute()
             TABLE_CACHE.clear()
         except:
             # OK to ignore here if it's already deleted; continue onto deleting rules
@@ -182,7 +175,7 @@ class ApiTableData(webapp2.RequestHandler):
         builder = QueryBuilder(QueryBuilder.GNIP if "gnip" in table else QueryBuilder.PUBLIC, table, field, charttype, interval) 
         query = builder.query()
         
-        results = get_bq().jobs().query(projectId=config.PROJECT_NUMBER, body={'query':query}).execute()
+        results = Utils.get_bq().jobs().query(projectId=config.PROJECT_NUMBER, body={'query':query}).execute()
         args = builder.c3_args(query, results) 
 
 #         print query
@@ -195,14 +188,14 @@ class TableDetail(webapp2.RequestHandler):
     
     def get(self, id):
         
-        (project, dataset, table) = parse_bqid(id)
-        response = get_bq().tables().get(projectId=project, datasetId=dataset, tableId=table).execute()
+        (project, dataset, table) = Utils.parse_bqid(id)
+        response = Utils.get_bq().tables().get(projectId=project, datasetId=dataset, tableId=table).execute()
         
         created = float(response['creationTime'])
-        response['creationTime'] = millis_to_date(created)
+        response['creationTime'] = Utils.millis_to_date(created)
         
         updated = float(response['lastModifiedTime'])
-        response['lastModifiedTime'] = millis_to_date(updated)
+        response['lastModifiedTime'] = Utils.millis_to_date(updated)
         
         self.response.out.write(JINJA.get_template('table_detail.html').render(response))
 
@@ -222,8 +215,8 @@ class ApiRuleList(webapp2.RequestHandler):
         response = rules.get_rules(**GNIP_RULES_PARAMS)
         
         if table:
-            (project, dataset, table) = parse_bqid(table)
-            tag = make_tag(dataset, table)
+            (project, dataset, table) = Utils.parse_bqid(table)
+            tag = Utils.make_tag(dataset, table)
             response = [r for r in response if r['tag'] == tag]
             
         self.response.headers['Content-Type'] = 'application/json'   
@@ -257,7 +250,7 @@ class ApiRuleTest(webapp2.RequestHandler):
         if not rule:
             raise Exception("missing parameter")
 
-        g = get_gnip()
+        g = Utils.get_gnip()
         end = datetime.now()
         start = end - timedelta(days=7)
         timeline = g.query(rule, 0, record_callback=None, use_case="timeline", start=start, end=end, count_bucket="day")
@@ -310,7 +303,7 @@ class ApiRuleBackfill(webapp2.RequestHandler):
         
         rule = self.request.get("rule", None)
         table = self.request.get("table", None)
-        (dataset, table) = parse_bqid(table)  
+        (dataset, table) = Utils.parse_bqid(table)  
 
         print "POST variables: %s %s %s" % (rule, dataset, table)
 
@@ -323,12 +316,12 @@ class ApiRuleBackfill(webapp2.RequestHandler):
                 "rows": [{ "insertId" : t["id"], "json" : Utils.scrub(t) } for t in tweets ]
             }
     
-            response = get_bq().tabledata().insertAll(projectId=config.PROJECT_ID, datasetId=dataset, tableId=table, body=body).execute()
+            response = Utils.get_bq().tabledata().insertAll(projectId=config.PROJECT_ID, datasetId=dataset, tableId=table, body=body).execute()
             print "POST BQ Response: %s" % response
             
             return response
         
-        g = get_gnip()
+        g = Utils.get_gnip()
         end = datetime.now()
         start = end - timedelta(days=7)
         g.query(rule, 0, record_callback=record_callback, use_case="tweets", start=start, end=end)
@@ -600,29 +593,6 @@ class QueryBuilder():
             }
             
         return args
-            
-    
-BQ_CREDENTIALS = appengine.AppAssertionCredentials(scope='https://www.googleapis.com/auth/bigquery')
-BQ_HTTP = BQ_CREDENTIALS.authorize(httplib2.Http())
-
-def get_bq():
-    return build('bigquery', 'v2', http=BQ_HTTP)
-
-def get_gnip():
-    g = searchclient.SearchClient(config.GNIP_USERNAME, config.GNIP_PASSWORD, config.GNIP_SEARCH_URL)
-    return g
-
-def millis_to_date(ts):
-    return datetime.fromtimestamp(ts/1000).strftime('%Y-%m-%d %H:%M')
-    
-def parse_bqid(id):
-    if id:
-        import re
-        return re.split('\:|\.', id)
-    return None
-
-def make_tag(dataset, table):
-    return "%s.%s" % (dataset, table)
     
 application = webapp2.WSGIApplication([
     
