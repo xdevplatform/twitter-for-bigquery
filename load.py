@@ -92,10 +92,14 @@ class BigQueryGnipListener(object):
             record = json.loads(r)
             if not record.get('delete', None):
                 
-                table = None
-                tag = self.get_table_tag(record)
-                print tag
-                if tag:
+                tags = self.get_table_tags(record)
+
+                if not tags:
+                    tags = [self.default_table]
+                
+                # process multiple tags on a record
+                for tag in tags:
+                
                     table = self.table_mapping.get(tag, None)
                     if not table:
                         table = tag.split(".")
@@ -103,29 +107,23 @@ class BigQueryGnipListener(object):
                         if created:
                             self.table_mapping[tag] = table
                             self.logger.info('Created BQ table: %s' % tag)
-
-                if not table:
-                    table = self.default_table
     
-                record_scrubbed = Utils.scrub(record)
-                Utils.insert_record(self.client, table[0], table[1], record_scrubbed)
+                    record_scrubbed = Utils.scrub(record)
+                    Utils.insert_record(self.client, table[0], table[1], record_scrubbed)
                 
                 if self.logger:
-                    self.logger.info('@%s: %s (%s)' % (record['actor']['preferredUsername'], record['body'].encode('ascii', 'ignore'), tag))
+                    self.logger.info('@%s: %s (%s)' % (record['actor']['preferredUsername'], record['body'].encode('ascii', 'ignore'), tags))
                 
                 self.count = self.count + 1
                 
         return True
     
-    def get_table_tag(self, record):
+    def get_table_tags(self, record):
         gnip = record.get('gnip', None)
         if gnip:
             matching_rules = gnip.get('matching_rules', None)
             if matching_rules:
-                for rule in matching_rules:
-                    tag = rule.get("tag", None)
-                    if tag and "." in tag:
-                        return tag
+                return [rule.get("tag", None) for rule in matching_rules]
             
         return None
 

@@ -41,7 +41,7 @@ client_secrets.json
 **/*json
 **/*conf
 **/*txt
-image/container.yaml
-image/schema.json
-image/output.txt
+container.yaml
+schema.json
+output.txt
 *.sh

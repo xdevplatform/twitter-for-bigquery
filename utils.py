@@ -112,8 +112,8 @@ class Utils:
     @staticmethod
     def enable_logging():
     
-        LOGGING_CONFIG = os.path.join(os.path.dirname(__file__), "logs", "logging.conf")
-        logging.config.fileConfig(LOGGING_CONFIG)
+        path = "./logging.conf"
+        logging.config.fileConfig(path)
         root = logging.getLogger("root")
     
         return root
