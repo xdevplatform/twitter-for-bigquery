@@ -114,18 +114,7 @@ class ApiTableAdd(webapp2.RequestHandler):
         schema_str = Utils.read_file(schema_file)
         schema = json.loads(schema_str)
         
-        body = {
-            "tableReference" : {
-                "projectId" : config.PROJECT_ID,
-                "tableId" : table,
-                "datasetId" : dataset
-            },
-            "schema" : {
-                "fields" : schema
-            }
-        }
-
-        response = Utils.get_bq().tables().insert(projectId=config.PROJECT_ID, datasetId=dataset, body=body).execute()
+        Utils.insert_table(dataset, table, schema)
         TABLE_CACHE.clear()
             
         name = Utils.make_tag(dataset, table)

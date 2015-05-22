@@ -14,8 +14,6 @@ from httplib import *
 from config import Config
 import tweepy
 
-from bigquery import get_client
-
 from utils import Utils
 
 NEWLINE = '\r\n'
@@ -23,8 +21,6 @@ SLEEP_TIME = 10
 
 f = file("./config")
 config = Config(f)
-
-KEY = Utils.read_file(config.KEY_FILE)
 
 class GnipListener(object):
     
@@ -37,9 +33,8 @@ class GnipListener(object):
                 'Authorization' : 'Basic %s' % base64.encodestring('%s:%s' % (config.GNIP_USERNAME, config.GNIP_PASSWORD))  }    
     
     """docstring for ClassName"""
-    def __init__(self, client, schema, table_mapping, logger=None):
+    def __init__(self, schema, table_mapping, logger=None):
 
-      self.client = client
       self.schema = schema
       self.table_mapping = table_mapping
       self.default_table = table_mapping.values()[0]
@@ -72,7 +67,7 @@ class GnipListener(object):
                             self.logger.info('Created BQ table: %s' % tag)
     
                     record_scrubbed = Utils.scrub(record)
-                    Utils.insert_record(self.client, table[0], table[1], record_scrubbed)
+                    Utils.insert_records(table[0], table[1], [record_scrubbed])
                 
                 if self.logger:
                     self.logger.info('@%s: %s (%s)' % (record['actor']['preferredUsername'], record['body'].encode('ascii', 'ignore'), tags))
@@ -91,14 +86,14 @@ class GnipListener(object):
         return None
 
     @staticmethod
-    def start(client, schema, logger):        
+    def start(schema, logger):        
         
         # initialize table mapping for default table
         table_mapping = {
              config.DATASET_ID + "." + config.TABLE_ID : [config.DATASET_ID, config.TABLE_ID]
          }
         
-        listener = GnipListener(client, schema, table_mapping, logger=logger)
+        listener = GnipListener(schema, table_mapping, logger=logger)
      
         while True:
     
@@ -161,9 +156,8 @@ class TwitterListener(tweepy.StreamListener):
         '@vueling'
     ]
     
-    def __init__(self, client, dataset_id, table_id, logger=None):
+    def __init__(self, dataset_id, table_id, logger=None):
 
-      self.client = client
       self.dataset_id = dataset_id
       self.table_id = table_id
       self.count = 0
@@ -180,7 +174,7 @@ class TwitterListener(tweepy.StreamListener):
         if not record.get('delete', None):
 
             record_scrubbed = Utils.scrub(record)
-            Utils.insert_record(self.client, self.dataset_id, self.table_id, record_scrubbed)
+            Utils.insert_records(self.dataset_id, self.table_id, [record_scrubbed])
             
             if self.logger:
                 self.logger.info('@%s: %s' % (record['user']['screen_name'], record['text'].encode('ascii', 'ignore')))
@@ -236,9 +230,9 @@ class TwitterListener(tweepy.StreamListener):
         return
     
     @staticmethod
-    def start(client, schema, logger):
+    def start(schema, logger):
         
-        listener = TwitterListener(client, config.DATASET_ID, config.TABLE_ID, logger=logger)
+        listener = TwitterListener(config.DATASET_ID, config.TABLE_ID, logger=logger)
         auth = tweepy.OAuthHandler(config.CONSUMER_KEY, config.CONSUMER_SECRET)
         auth.set_access_token(config.ACCESS_TOKEN, config.ACCESS_TOKEN_SECRET)
     
@@ -275,36 +269,20 @@ def main():
 
     logger = Utils.enable_logging()
     
-#     # get client
-#     client = get_client(config.PROJECT_ID, service_account=config.SERVICE_ACCOUNT, private_key=KEY, readonly=False)
-#     client.swallow_results = False
-#     logger.info("BigQuery Client: %s" % client)
-#     
-#     schema = json.loads(Utils.read_file("./schema.json"))
-#     created = client.create_table(config.DATASET_ID, config.TABLE_ID, schema)
-#     logger.info("BigQuery table create: %s" % created)
-
     schema_file = "./schema.json"
     schema_str = Utils.read_file(schema_file)
     schema = json.loads(schema_str)
     
-    body = {
-        "tableReference" : {
-            "projectId" : config.PROJECT_ID,
-            "tableId" : config.TABLE_ID,
-            "datasetId" : config.DATASET_ID
-        },
-        "schema" : {
-            "fields" : schema
-        }
-    }
-
-    response = get_bq().tables().insert(projectId=config.PROJECT_ID, datasetId=dataset, body=body).execute()
+    try:
+        Utils.insert_table(config.DATASET_ID, config.TABLE_ID, schema)
+        print "Created table: %s.%s" % (config.DATASET_ID, config.TABLE_ID)
+    except Exception, e:
+        print "Table already exists: %s" % e
 
     if config.MODE == 'gnip':
-        GnipListener.start(client, schema, logger)
+        GnipListener.start(schema, logger)
     elif config.MODE == 'twitter':
-        TwitterListener.start(client, schema, logger)
+        TwitterListener.start(schema, logger)
 
 if __name__ == "__main__":
     main()

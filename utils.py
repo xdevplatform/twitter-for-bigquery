@@ -1,5 +1,8 @@
-import os
-import sys
+import os, sys
+
+BASE_DIR = os.path.dirname(os.path.realpath(__file__))
+sys.path.insert(0, "%s/libs" % BASE_DIR)
+
 import time
 import json
 from datetime import datetime, timedelta
@@ -8,28 +11,58 @@ import httplib2
 import logging.config
 from config import Config
 
-from oauth2client import appengine
 from apiclient.discovery import build
 from gnippy import rules, searchclient
-
-from bigquery import schema_from_record
 
 f = file("./config")
 config = Config(f)
 
 class Utils:
     
-    BQ_CREDENTIALS = appengine.AppAssertionCredentials(scope='https://www.googleapis.com/auth/bigquery')
-    BQ_HTTP = BQ_CREDENTIALS.authorize(httplib2.Http())
+    BQ_CLIENT = None
     
     @staticmethod
     def get_bq():
-        return build('bigquery', 'v2', http=Utils.BQ_HTTP)
+        
+        if Utils.BQ_CLIENT:
+            
+            return Utils.BQ_CLIENT
+        
+        # Use below for AppEngine and Cloud Engine 
+        from oauth2client import appengine
+        BQ_CREDENTIALS = appengine.AppAssertionCredentials(scope='https://www.googleapis.com/auth/bigquery')
+    
+        # Use below for running anywhere
+#         from oauth2client.client import SignedJwtAssertionCredentials
+#         KEY = Utils.read_file(config.KEY_FILE)
+#         BQ_CREDENTIALS = SignedJwtAssertionCredentials(config.SERVICE_ACCOUNT, KEY, 'https://www.googleapis.com/auth/bigquery')
+    
+        BQ_HTTP = BQ_CREDENTIALS.authorize(httplib2.Http())
+        Utils.BQ_CLIENT = build('bigquery', 'v2', http=BQ_HTTP)
+        
+        return  Utils.BQ_CLIENT
     
     @staticmethod
     def get_gnip():
         g = searchclient.SearchClient(config.GNIP_USERNAME, config.GNIP_PASSWORD, config.GNIP_SEARCH_URL)
         return g
+    
+    @staticmethod
+    def insert_table(dataset_id, table_id, schema):
+         
+        body = {
+            "tableReference" : {
+                "projectId" : config.PROJECT_ID,
+                "tableId" : table_id,
+                "datasetId" : dataset_id
+            },
+            "schema" : {
+                "fields" : schema
+            }
+        }
+
+        response = Utils.get_bq().tables().insert(projectId=config.PROJECT_ID, datasetId=dataset_id, body=body).execute()
+        return response
     
     @staticmethod
     def insert_records(dataset_id, table_id, tweets):
@@ -44,13 +77,13 @@ class Utils:
         return response
          
     @staticmethod    
-    def import_from_file(client, dataset_id, table_id, filename, single_tweet=False):
+    def import_from_file(dataset_id, table_id, filename, single_tweet=False):
         
         records = []
         if single_tweet:
             
             records = [json.loads(Utils.read_file(SAMPLE_TWEET_FILE))]
-            success = Utils.insert_records(client, dataset_id, table_id, records)
+            success = Utils.insert_records(dataset_id, table_id, records)
             return success
 
         else:
@@ -58,16 +91,8 @@ class Utils:
             with open(filename, "r") as f:
     
                 records = [Utils.scrub(json.loads(tweet)) for tweet in f if json.loads(tweet).get("delete", None) == None]             
-                success = Utils.insert_records(client, dataset_id, table_id, [record])
+                success = Utils.insert_records(dataset_id, table_id, [record])
                 
-    @staticmethod 
-    def generate_schema_from_tweet(record_str):
-        
-        record = json.loads(record_str)
-        schema_str = schema_from_record(record)
-        
-        return schema_str
-
     @staticmethod
     def get_config(config_file):
         props = {}
@@ -139,17 +164,22 @@ class Utils:
     def make_tag(dataset, table):
         return "%s.%s" % (dataset, table)
     
-def main():
-    
-    tweet_str = Utils.read_file("data/sample_tweet_powertrack.json")
-    
-    schema = Utils.generate_schema_from_tweet(tweet_str)
-    schema = json.dumps(schema)
-    print schema
-    
+# main() generates a schema from a tweet. It requires the following 
+# library to work, and is not included in this TwitterDev package
+# https://github.com/tylertreat/BigQuery-Python
+# def main():
+# 
+#     from bigquery import schema_from_record
+#     
+#     tweet_str = Utils.read_file("data/sample_tweet_powertrack.json")
+#     record = json.loads(record_str)
+#     schema = schema_from_record(record)
+#     schema = json.dumps(schema)
+#     print schema
+#     
 #     with open('data/schema.json', 'wt') as out:
 #         res = json.dump(schema, out, sort_keys=False, indent=4, separators=(',', ': '))
-    
-if __name__ == "__main__":
-    main()    
+#     
+# if __name__ == "__main__":
+#     main()    
     

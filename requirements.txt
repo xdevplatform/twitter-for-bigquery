@@ -2,3 +2,4 @@ tweepy==3.2.0
 bigquery-python
 gnippy
 requests==2.0.0
+google-api-python-client
