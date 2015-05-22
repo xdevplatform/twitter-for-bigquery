@@ -1,9 +1,0 @@
-version: v1beta2
-containers:
-  - name: image_twitter
-    image: gcr.io/twitter_for_bigquery/image_twitter
-    command: ['python' 'load.py']
-    ports:
-      - name: image_twitter
-        hostPort: 8080
-        containerPort: 8080
