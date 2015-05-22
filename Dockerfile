@@ -12,6 +12,7 @@ ADD config /config
 ADD key.p12 /key.p12
 ADD logging.conf /logging.conf
 ADD schema.json /schema.json
+ADD libs /libs
 ADD utils.py /utils.py
 ADD load.py /load.py
 
