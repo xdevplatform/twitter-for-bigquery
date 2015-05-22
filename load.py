@@ -27,27 +27,6 @@ config = Config(f)
 
 KEY = Utils.read_file(config.KEY_FILE)
 
-print_lock = Lock()
-err_lock = Lock()
-
-class proc_entry(threading.Thread):
-    
-    def __init__(self, buf):
-        self.buf = buf
-        threading.Thread.__init__(self)
-
-    def run(self):
-        for rec in [x.strip() for x in self.buf.split(NEWLINE) if x.strip() <> '']:
-            try:
-                jrec = json.loads(rec.strip())
-                tmp = json.dumps(jrec)
-                with print_lock:
-                    print "\n"
-                    #print(tmp)
-            except ValueError, e:
-                with err_lock:
-                    sys.stderr.write("Error processing JSON: %s (%s)\n"%(str(e), rec))
-
 class GnipListener(object):
     
     CHUNK_SIZE = 4 * 1024
@@ -112,41 +91,47 @@ class GnipListener(object):
             
         return None
 
-    #handle errors without closing stream:
-    def on_error(self, status_code):
-
-        if status_code == 420:
-
-            time.sleep(SLEEP_TIME)
-
-            if self.logger:
-                self.logger.info("420, sleeping for %s seconds" % SLEEP_TIME)
-
-            return True
+    @staticmethod
+    def start(client, schema, logger):        
         
-        if self.logger:
-            self.logger.info("Error with status code: %s" % status_code)
-
-        return False 
-
-    def on_timeout(self):
+        # initialize table mapping for default table
+        table_mapping = {
+             config.DATASET_ID + "." + config.TABLE_ID : [config.DATASET_ID, config.TABLE_ID]
+         }
         
-        time.sleep(SLEEP_TIME)
-
-        if self.logger:
-            self.logger.info("Timeout, sleeping for %s seconds" % SLEEP_TIME)
-
-        return False 
-
-    def on_exception(self, exception):
-        
-        if self.logger:
-            self.logger.exception('Exception')
-
-        return False 
+        listener = GnipListener(client, schema, table_mapping, logger=logger)
+     
+        while True:
+    
+            stream = None
+    
+            try:
+                
+                req = urllib2.Request(config.GNIP_STREAM_URL, headers=GnipListener.HEADERS)
+                response = urllib2.urlopen(req, timeout=(1+GnipListener.KEEP_ALIVE))
+    
+                decompressor = zlib.decompressobj(16+zlib.MAX_WBITS)
+                remainder = ''
+                while True:
+                    tmp = decompressor.decompress(response.read(GnipListener.CHUNK_SIZE))
+                    if tmp == '':
+                        return
+                    [records, remainder] = ''.join([remainder, tmp]).rsplit(NEWLINE,1)
+                    listener.on_data(records)
+    
+                get_stream(listener)
+                
+            except:
+    
+                logger.exception("Unexpected error:");
+    
+                if stream:
+                    stream.disconnect()
+    
+                time.sleep(SLEEP_TIME)
     
 # Write records to BigQuery
-class TweetListener(tweepy.StreamListener):
+class TwitterListener(tweepy.StreamListener):
     
     # items to track if you're doing a public track call
     TRACK_ITEMS = [
@@ -250,9 +235,45 @@ class TweetListener(tweepy.StreamListener):
         time.sleep(60 * self.calm_count)
 
         return
+    
+    @staticmethod
+    def start(client, schema, logger):
+        
+        listener = TwitterListener(client, config.DATASET_ID, config.TABLE_ID, logger=logger)
+        auth = tweepy.OAuthHandler(config.CONSUMER_KEY, config.CONSUMER_SECRET)
+        auth.set_access_token(config.ACCESS_TOKEN, config.ACCESS_TOKEN_SECRET)
+    
+        while True:
+    
+            logger.info("Connecting to Twitter stream")
+    
+            stream = None
+    
+            try:
+                
+                stream = tweepy.Stream(auth, listener, headers = {"Accept-Encoding": "deflate, gzip"})
+    
+                # Choose stream: filtered or sample
+                stream.sample()
+                # stream.filter(track=TwitterListener.TRACK_ITEMS) 
+                
+            except:
+    
+                logger.exception("Unexpected error");
+    
+                if stream:
+                    stream.disconnect()
+    
+                time.sleep(60)  
 
 def main():
     
+    if config.MODE not in ['gnip', 'twitter']:
+        print "Invalid mode: %s" % config.MODE
+        exit()
+
+    print "Running in mode: %s" % config.MODE 
+
     logger = Utils.enable_logging()
     
     # get client
@@ -260,86 +281,14 @@ def main():
     client.swallow_results = False
     logger.info("BigQuery Client: %s" % client)
     
-    schema_str = Utils.read_file("./schema")
-    schema = json.loads(schema_str)
-    
+    schema = json.loads(Utils.read_file("./schema.json"))
     created = client.create_table(config.DATASET_ID, config.TABLE_ID, schema)
-    logger.info("BigQuery create table result: %s" % created)
+    logger.info("BigQuery table create: %s" % created)
 
     if config.MODE == 'gnip':
-        start_gnip(client, schema, logger)
-        
-    else:
-        start_twitter(client, schema, logger)
-
-def start_gnip(client, schema, logger):        
-    
-    # initialize table mapping for default table
-    table_mapping = {
-         config.DATASET_ID + "." + config.TABLE_ID : [config.DATASET_ID, config.TABLE_ID]
-     }
-    
-    listener = GnipListener(client, schema, table_mapping, logger=logger)
- 
-    while True:
-
-        stream = None
-
-        try:
-            
-            req = urllib2.Request(config.GNIP_STREAM_URL, headers=GnipListener.HEADERS)
-            response = urllib2.urlopen(req, timeout=(1+GnipListener.KEEP_ALIVE))
-
-            decompressor = zlib.decompressobj(16+zlib.MAX_WBITS)
-            remainder = ''
-            while True:
-                tmp = decompressor.decompress(response.read(GnipListener.CHUNK_SIZE))
-                if tmp == '':
-                    return
-                [records, remainder] = ''.join([remainder, tmp]).rsplit(NEWLINE,1)
-                listener.on_data(records)
-                proc_entry(records).start()
-
-            get_stream(listener)
-            
-        except:
-
-            logger.exception("Unexpected error:");
-
-            if stream:
-                stream.disconnect()
-
-            time.sleep(SLEEP_TIME)
-
-def start_twitter(client, schema, logger):
-    
-    listener = TweetListener(client, config.DATASET_ID, config.TABLE_ID, logger=logger)
-    auth = tweepy.OAuthHandler(config.CONSUMER_KEY, config.CONSUMER_SECRET)
-    auth.set_access_token(config.ACCESS_TOKEN, config.ACCESS_TOKEN_SECRET)
-
-    while True:
-
-        logger.info("Connecting to Twitter stream")
-
-        stream = None
-
-        try:
-            
-            # stream = tweepy.Stream(auth, l, headers = {"Accept-Encoding": "deflate, gzip"})
-            stream = tweepy.Stream(auth, listener)
-
-            # Choose stream: filtered or sample
-            stream.sample()
-#             stream.filter(track=TRACK_ITEMS) # async=True
-            
-        except:
-
-            logger.exception("Unexpected error");
-
-            if stream:
-                stream.disconnect()
-
-            time.sleep(60)    
+        GnipListener.start(client, schema, logger)
+    elif config.MODE == 'twitter':
+        TwitterListener.start(client, schema, logger)
 
 if __name__ == "__main__":
     main()
