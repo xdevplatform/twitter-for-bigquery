@@ -101,7 +101,14 @@ class Utils:
         schema_str = schema_from_record(record)
         
         return schema_str
-    
+
+    @staticmethod
+    def get_config(config_file):
+        props = {}
+        for name in (name for name in dir(config) if not name.startswith('_')):
+            props[name] = getattr(config, name, '')
+        return props
+
     @staticmethod
     def enable_logging():
     

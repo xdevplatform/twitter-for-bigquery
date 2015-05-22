@@ -3,6 +3,7 @@ FROM google/python
 RUN apt-get install -y libffi-dev
 
 RUN pip install --upgrade pip
+RUN pip install config
 RUN pip install tweepy
 RUN pip install bigquery-python
 RUN pip install --upgrade google-api-python-client

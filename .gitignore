@@ -32,17 +32,16 @@ nosetests.xml
 *.mo
 
 # Mr Developer
-.mr.developer.cfg
+client_secrets.json
 .project
 .pydevproject
-config.py
-bigquery/*
 *.p12
 *.pem
-client_secrets.json
-logs/output.txt
-logs/logging.conf
-*/**output.txt
-*/**logging.conf
-
+**/config*
+**/*json
+**/*conf
+**/*txt
+image/container.yaml
+image/schema.json
+image/output.txt
 *.sh

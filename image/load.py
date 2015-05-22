@@ -12,10 +12,14 @@ import sys
 import ssl
 import tweepy
 from httplib import *
+from config import Config
 from bigquery import get_client
 from bigquery import schema_from_record
-from config import *
+
 from utils import Utils
+
+f = file("./config")
+config = Config(f)
 
 SLEEP_TIME = 10
 CHUNKSIZE = 4*1024
@@ -25,7 +29,9 @@ NEWLINE = '\r\n'
 HEADERS = { 'Accept': 'application/json',
             'Connection': 'Keep-Alive',
             'Accept-Encoding' : 'gzip',
-            'Authorization' : 'Basic %s' % base64.encodestring('%s:%s' % (GNIP_USERNAME, GNIP_PASSWORD))  }
+            'Authorization' : 'Basic %s' % base64.encodestring('%s:%s' % (config.GNIP_USERNAME, config.GNIP_PASSWORD))  }
+
+KEY = Utils.read_file(config.KEY_FILE)
 
 print_lock = Lock()
 err_lock = Lock()
@@ -50,7 +56,7 @@ class proc_entry(threading.Thread):
 
 #Passing a BigQueryGnipListener object by reference
 def get_stream(BigQueryGnipListener):
-    req = urllib2.Request(GNIP_URL, headers=HEADERS)
+    req = urllib2.Request(config.GNIP_STREAM_URL, headers=HEADERS)
     response = urllib2.urlopen(req, timeout=(1+GNIPKEEPALIVE))
     # header -  print response.info()
     decompressor = zlib.decompressobj(16+zlib.MAX_WBITS)
@@ -105,7 +111,7 @@ class BigQueryGnipListener(object):
                 Utils.insert_record(self.client, table[0], table[1], record_scrubbed)
                 
                 if self.logger:
-                    self.logger.info('@%s: %s (%s.%s)' % (record['actor']['preferredUsername'], record['body'].encode('ascii', 'ignore'), table[0], table[1]))
+                    self.logger.info('@%s: %s (%s)' % (record['actor']['preferredUsername'], record['body'].encode('ascii', 'ignore'), tag))
                 
                 self.count = self.count + 1
                 
@@ -161,16 +167,16 @@ def main():
     logger = Utils.enable_logging()
     
     # get client
-    client = get_client(PROJECT_ID, service_account=SERVICE_ACCOUNT, private_key=KEY, readonly=False)
+    client = get_client(config.PROJECT_ID, service_account=config.SERVICE_ACCOUNT, private_key=KEY, readonly=False)
     client.swallow_results = False
     logger.info("client: %s" % client)
     
-    schema_str = Utils.read_file(GNIP_SCHEMA_FILE)
+    schema_str = Utils.read_file(config.SCHEMA_FILE)
     schema = json.loads(schema_str)
     
     # initialize table mapping for default table
     table_mapping = {
-         DATASET_ID + "." + TABLE_ID : [DATASET_ID, TABLE_ID]
+         config.DATASET_ID + "." + config.TABLE_ID : [config.DATASET_ID, config.TABLE_ID]
      }
     
     l = BigQueryGnipListener(client, schema, table_mapping, logger=logger)
