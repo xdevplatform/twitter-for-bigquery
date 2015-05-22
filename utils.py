@@ -1,10 +1,13 @@
 import os
 import sys
 import time
-import logging.config
 import json
 
+import logging.config
 from bigquery import schema_from_record
+
+from config import *
+from utils import Utils
 
 class Utils:
 
@@ -118,3 +121,17 @@ class Utils:
     
         return root
 
+def main():
+    
+    tweet_str = Utils.read_file("data/sample_tweet_powertrack.json")
+    
+    schema = Utils.generate_schema_from_tweet(tweet_str)
+    schema = json.dumps(schema)
+    print schema
+    
+#     with open('data/schema.json', 'wt') as out:
+#         res = json.dump(schema, out, sort_keys=False, indent=4, separators=(',', ': '))
+    
+if __name__ == "__main__":
+    main()    
+    
