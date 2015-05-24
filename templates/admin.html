@@ -1,13 +1,20 @@
 {% extends "base.html" %}
 {% block bodycontent %}
 
-	<div class="container">
-		
-		<h1>Administration</h1>
-		
-		<p>Configure GNIP and Twitter settings.</p>
-		
-		<br>
+<div class="pull-right">
+	<a class="btn btn-default" href="https://console.developers.google.com/project/{{projectId}}" target="_target">
+	  View project
+	</a>
+	<a class="btn btn-default" href="https://console.developers.google.com/project/twitter-for-bigquery/appengine/taskqueues/default" target="_target">
+	  View task queue
+	</a>
+</div>
+
+<h1>Administration</h1>
+
+<p>Configure GNIP and Twitter settings.</p>
+
+<br>
 				
 <form class="form-horizontal">
   <h3>Gnip</h3>
@@ -63,8 +70,15 @@
     </div>
   </div>
 </form>
-        
-    </div>
     
+<script language="JavaScript1.2">
+
+$(document).ready(function(){
+
+	  AdminPage.init(true, true);
+	
+})
+
+</script>
 {% endblock %}
     

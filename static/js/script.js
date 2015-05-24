@@ -511,7 +511,7 @@ var TablePage = {
 var AdminPage = {
 		
 	init : function(){
-		
+		Page.init();
 	}
 		
 }

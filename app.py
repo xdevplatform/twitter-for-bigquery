@@ -356,7 +356,7 @@ class ApiRuleDelete(webapp2.RequestHandler):
 class Admin(webapp2.RequestHandler):
     
     def get(self):
-        template_data = {}
+        template_data = {"projectId" : config.PROJECT_ID}
         self.response.out.write(JINJA.get_template('admin.html').render(template_data))
         
 class QueryBuilder():
