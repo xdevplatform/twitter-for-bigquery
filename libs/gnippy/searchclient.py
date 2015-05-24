@@ -1,15 +1,17 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
-__author__ = "Scott Hendrickson, Josh Montague" 
+__author__ = "Scott Hendrickson, Josh Montague, Ryan Choi" 
 
+import os
 import sys
+import re
+import time
 import requests
 import json
 import codecs
 import datetime
-import time
-import os
-import re
+
+import logging
 
 reload(sys)
 sys.stdout = codecs.getwriter('utf-8')(sys.stdout)
@@ -40,7 +42,7 @@ class SearchClient(object):
             if not self.stream_url.endswith("counts.json"): 
                 self.stream_url = self.stream_url[:-5] + "/counts.json"
             if count_bucket not in ['day', 'minute', 'hour']:
-                print >> sys.stderr, "Error. Invalid count bucket: %s \n" % str(count_bucket)
+                logging.error("Error. Invalid count bucket: %s \n" % str(count_bucket))
                 sys.exit()
 
     def req(self):
@@ -50,10 +52,10 @@ class SearchClient(object):
             s.auth = (self.user, self.password)
             res = s.post(self.stream_url, data=json.dumps(self.rule_payload))
         except requests.exceptions.ConnectionError, e:
-            print >> sys.stderr, "Error (%s). Exiting without results." % str(e)
+            logging.error("Error (%s). Exiting without results." % str(e))
             sys.exit()
         except requests.exceptions.HTTPError, e:
-            print >> sys.stderr, "Error (%s). Exiting without results." % str(e)
+            logging.error("Error (%s). Exiting without results." % str(e))
             sys.exit()
         return res.text
 
@@ -73,16 +75,16 @@ class SearchClient(object):
                 if "results" in tmp_response:
                     results = tmp_response["results"]
                     acs.extend(results)
-                    print >> sys.stdout, "Gnip query %s records (%sms)" % (len(results), timing)
+                    logging.info("Gnip query %s records (%sms)" % (len(results), timing))
 
                 if "error" in tmp_response:
-                    print >> sys.stderr, "Error, invalid request"
-                    print >> sys.stderr, "Query: %s" % self.rule_payload
-                    print >> sys.stderr, "Response: %s" % doc
+                    logging.error("Error, invalid request")
+                    logging.error("Query: %s" % self.rule_payload)
+                    logging.error("Response: %s" % doc)
                     raise Exception(tmp_response["error"]["message"])
             except ValueError:
-                print >> sys.stderr, "Error, results not parsable"
-                print >> sys.stderr, doc
+                logging.error("Error, results not parsable")
+                logging.error(doc)
                 sys.exit()
 
             repeat = False
@@ -94,13 +96,13 @@ class SearchClient(object):
                         self.record_callback(results, total_count)
                         total_count = total_count + len(results)
                 else:
-                    print >> sys.stderr, "no results returned for rule:{0}".format(str(self.rule_payload))
+                    logging.info("no results returned for rule:{0}".format(str(self.rule_payload)))
 
                 if "next" in tmp_response:
                     self.rule_payload["next"] = tmp_response["next"]
                     repeat = True
                     page_count += 1
-                    print >> sys.stderr, "Fetching page {}...".format(page_count)
+                    logging.info("Fetching page {}...".format(page_count))
                 else:
                     if "next" in self.rule_payload:
                         del self.rule_payload["next"]
@@ -142,9 +144,9 @@ class SearchClient(object):
         if use_case.startswith("time"):
             self.rule_payload["bucket"] = count_bucket
         if query:
-            print >> sys.stderr, "API query:"
-            print >> sys.stderr, self.rule_payload
-            sys.exit() 
+            logging.error("API query:")
+            logging.error(self.rule_payload)
+            return 
 
         self.doc = []
         self.res_cnt = 0
