@@ -60,57 +60,63 @@ class SearchClient(object):
         return res.text
 
     def parse_JSON(self):
-        acs = []
+        
+        records = None
         repeat = True
         page_count = 0
         total_count = 0
+        
         while repeat:
+            
+            repeat = False
+            
             timing_start = datetime.datetime.now()
             doc = self.req()
             timing = datetime.datetime.now() - timing_start
+            
             try:
                 
-                tmp_response = json.loads(doc)
+                response = json.loads(doc)
 
-                if "results" in tmp_response:
-                    results = tmp_response["results"]
-                    acs.extend(results)
-                    logging.info("Gnip query %s records (%sms)" % (len(results), timing))
+                if "results" in response:
+                    
+                    records = response["results"]
+                    count = len(records)
+                    logging.info("Gnip query %s records (%sms)" % (count, timing))
+                    
+                    # if no callback, can only return maximum of first page (500)
+                    if self.record_callback is None:
 
-                if "error" in tmp_response:
+                        return records
+                        
+                    else:
+
+                        self.record_callback(records, total_count)
+                        total_count = total_count + count
+                    
+                        # if there is another page
+                        if "next" in response:
+
+                            self.rule_payload["next"] = response["next"]
+                            repeat = True
+                            page_count += 1
+                            logging.info("Fetching page {}...".format(page_count))
+                            
+                if "error" in response:
+                    
                     logging.error("Error, invalid request")
                     logging.error("Query: %s" % self.rule_payload)
                     logging.error("Response: %s" % doc)
-                    raise Exception(tmp_response["error"]["message"])
+                    raise Exception(response["error"]["message"])
+                
             except ValueError:
+                
                 logging.error("Error, results not parsable")
                 logging.error(doc)
                 sys.exit()
 
-            repeat = False
-            if self.paged:
+            time.sleep(PAUSE)
                 
-                if len(acs) > 0:
-                    if self.record_callback is not None:
-                        results = tmp_response["results"]
-                        self.record_callback(results, total_count)
-                        total_count = total_count + len(results)
-                else:
-                    logging.info("no results returned for rule:{0}".format(str(self.rule_payload)))
-
-                if "next" in tmp_response:
-                    self.rule_payload["next"] = tmp_response["next"]
-                    repeat = True
-                    page_count += 1
-                    logging.info("Fetching page {}...".format(page_count))
-                else:
-                    if "next" in self.rule_payload:
-                        del self.rule_payload["next"]
-                    repeat = False
-                time.sleep(PAUSE)
-                
-        return acs
-
     def query(self
             , pt_filter
             , max_results=100
