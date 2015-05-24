@@ -99,7 +99,7 @@ var Page = {
 	 },
 	 
 	 handle_error :	function(request, status, error) {
-		 $('#myModal').modal('hide');
+		 $('#ruleModal').modal('hide');
 		 $("#error_message").html(request.responseText + " (" + request.status + ": " + error + ")");
 		 $("#error_message_holder").show();
 	 }
@@ -268,7 +268,7 @@ var RulePage = {
 			var tag = $("#rule_tag").val();
 			
 			RulePage.add(rule, tag, function(response){
-				$('#myModal').modal('hide');
+				$('#ruleModal').modal('hide');
 				RulePage.list(table_id);
 			});
 			
@@ -389,7 +389,7 @@ var TablePage = {
 			var imprt = $("#table_imprt").val();
 			
 			TablePage.add(dataset, table, type, rules, imprt, function(response){
-				$('#myModal').modal('hide');
+				$('#ruleModal').modal('hide');
 				$("#datasets").html("");
 				TablePage.list();
 			});
