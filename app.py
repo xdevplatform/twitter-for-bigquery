@@ -294,27 +294,40 @@ class ApiRuleBackfill(webapp2.RequestHandler):
         table = self.request.get("table", None)
         (dataset, table) = Utils.parse_bqid(table)  
 
-        logging.info("Task: %s %s %s" % (rule, dataset, table))
+        end = datetime.now()
+        start = end - timedelta(days=7)
+        
+        # Initial count
+        g = Utils.get_gnip()
+        timeline = g.query(rule, 0, record_callback=None, use_case="timeline", start=start, end=end, count_bucket="day")
+        timeline = json.loads(timeline)
+        
+        count = 0 
+        for r in timeline["results"]:
+            count = count + r["count"]
+            
+        tag = Utils.make_tag(dataset, table)
+        logging.info("Task: %s, %s records (%s)" % (rule, count, tag))
 
         def record_callback(tweets, total=0):
             
             response = None
             
             try: 
-
+                
+                timing_start = datetime.now()
                 response = Utils.insert_records(dataset, table, tweets)
-                total = total + len(tweets)
-                logging.info("BQ insert %s records: %s (%s)" % (len(tweets), response, total))
+                timing = datetime.now() - timing_start
+    
+                logging.info("BQ insert %s records: %s (%sms)" % (len(tweets), response, timing))
             
             except:
     
                 logging.exception("Unexpected error:");
-
+    
             return response
-        
+
         g = Utils.get_gnip()
-        end = datetime.now()
-        start = end - timedelta(days=7)
         g.query(rule, 0, record_callback=record_callback, use_case="tweets", start=start, end=end)
 
         response = {
@@ -324,7 +337,7 @@ class ApiRuleBackfill(webapp2.RequestHandler):
         
         self.response.headers['Content-Type'] = 'application/json'   
         self.response.out.write(json.dumps(response))
-        
+      
 class ApiRuleDelete(webapp2.RequestHandler):
     
     def get(self):

@@ -63,11 +63,18 @@ class SearchClient(object):
         page_count = 0
         total_count = 0
         while repeat:
+            timing_start = datetime.datetime.now()
             doc = self.req()
+            timing = datetime.datetime.now() - timing_start
             try:
+                
                 tmp_response = json.loads(doc)
+
                 if "results" in tmp_response:
-                    acs.extend(tmp_response["results"])
+                    results = tmp_response["results"]
+                    acs.extend(results)
+                    print >> sys.stdout, "Gnip query %s records (%sms)" % (len(results), timing)
+
                 if "error" in tmp_response:
                     print >> sys.stderr, "Error, invalid request"
                     print >> sys.stderr, "Query: %s" % self.rule_payload
