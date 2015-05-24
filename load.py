@@ -61,7 +61,7 @@ class GnipListener(object):
                     table = self.table_mapping.get(tag, None)
                     if not table:
                         table = tag.split(".")
-                        created = self.client.create_table(table[0], table[1], self.schema)
+                        created = Utils.insert_table(table[0], table[1], self.schema)
                         if created:
                             self.table_mapping[tag] = table
                             self.logger.info('Created BQ table: %s' % tag)
