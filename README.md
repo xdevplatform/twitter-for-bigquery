@@ -110,9 +110,10 @@ From the command line, you can use dev_appserver.py to run your local server. Yo
 	
 Once this is complete, open your browser to http://localhost:8080.
 
-### Running locally from the GAE Launcher
+### Running on Google App Engine
+---
 
-To set up the app using the GAE Launcher, do the following:
+To run in Google App Engine, do the following:
 
 - Open the GAE Launcher.
 - Click on "File->New Application".
@@ -129,22 +130,26 @@ To set up the app using the GAE Launcher, do the following:
 <img src="static/img/settings_2.png" style="width: 70%;"/>
 
 - Click "Update".
-- Click "Run".
-- Open your browser to http://localhost:8080](http://localhost:8080).
-
-Running on Google App Engine
----
-
-To run in Google App Engine, you first need to have it running from the GAE console. (See instructions above.) 
-
-Once this is complete, you can click on "Deploy" to deploy it to the cloud.
+- Click "Deploy".
+- Open your browser to http://YOUR_PROJECT_NAME.appspot.com/](http://YOUR_PROJECT_NAME.appspot.com/).
 
 To confirm the deploy worked, you can do the following to view the logs:
 
-- Open a browser to https://App Engine.google.com
+- Open a browser to https://console.developers.google.com
 - Click on "Logs" to the left
 - Find the entry with an orange "E" (for Error) and click on the "+" to expand it
 
+If you are using the backfill functionality to populate historical data, you need to run a custom task queue 
+and a backend server. This will enable your tasks to run beyond the 10 minute limit of a default task queue.
+
+To create the custom task queue, you need to Deploy using the launch instructions above. Because a 
+`queue.yaml` file exists in this project, you likely already created the custom queue definition on the previous
+production deply. 
+
+To run a backend server, deploy the app and the backfill server with the `appcfg.py` command, as such:  
+
+	`appcfg.py update app.yaml backfill.yaml`
+	
 
 The dataset
 ---

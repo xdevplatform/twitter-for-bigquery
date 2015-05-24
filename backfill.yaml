@@ -6,7 +6,7 @@ api_version: 1
 threadsafe: true
 
 module: backfill
-instance_class: B2
+instance_class: B8
 manual_scaling:
   instances: 1
   
