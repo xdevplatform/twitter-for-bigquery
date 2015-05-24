@@ -5,6 +5,11 @@ runtime: python27
 api_version: 1
 threadsafe: true
 
+module: backfill
+instance_class: B2
+manual_scaling:
+  instances: 1
+  
 handlers:
 - url: /static
   static_dir: static
@@ -19,4 +24,4 @@ libraries:
   version: latest
 - name: ssl
   version: latest
-  
+    

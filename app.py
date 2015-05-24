@@ -279,7 +279,7 @@ class ApiRuleBackfill(webapp2.RequestHandler):
         name = "Backfill_%s_%s" % (date, name)
 
         try:
-            task = taskqueue.add(name=name, url='/api/rule/backfill', params=params, target='backfill')
+            task = taskqueue.add(name=name, url='/api/rule/backfill', params=params, target='backfill', queue_name='backfill')
         except TombstonedTaskError, e:
             raise Exception("Task for '%s' is already in the queue." % rule)
             
