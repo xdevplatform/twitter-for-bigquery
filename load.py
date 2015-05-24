@@ -288,7 +288,7 @@ def main():
     if config.MODE == 'gnip':
         schema_file = "./schema/schema_gnip.json"
     else: 
-        schema_file = "./schema/schema.json"
+        schema_file = "./schema/schema_twitter.json"
     schema_str = Utils.read_file(schema_file)
     schema = json.loads(schema_str)
     

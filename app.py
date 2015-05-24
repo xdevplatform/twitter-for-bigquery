@@ -72,11 +72,14 @@ class ApiTableList(webapp2.RequestHandler):
                 for t in bq_tables.get("tables", None):
                     id = t.get("id")
                     ref = t.get("tableReference", None)
+                    dataset = ref.get("datasetId", None)
+                    table = ref.get("tableId", None)
                     tables.append({
                         "id": id, 
                         "projectId": ref.get("projectId", None), 
-                        "datasetId": ref.get("datasetId", None), 
-                        "tableId": ref.get("tableId", None) 
+                        "datasetId": dataset, 
+                        "tableId": table,
+                        "type": "Twitter" if "twitter" in dataset else "Gnip"
                     })
                     
             rules_list = rules.get_rules(**GNIP_RULES_PARAMS)
@@ -108,7 +111,7 @@ class ApiTableAdd(webapp2.RequestHandler):
             schema_file = "./schema/schema_gnip.json"
         else:
             dataset = "twitter"
-            schema_file = "./schema/schema.json"
+            schema_file = "./schema/schema_twitter.json"
         
         table = self.request.get("name")
         rule_list = self.request.get("rules")
