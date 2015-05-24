@@ -105,14 +105,15 @@ class ApiTableAdd(webapp2.RequestHandler):
         dataset = self.request.get("dataset")
         if "gnip" in dataset:
             dataset = "gnip"
+            schema_file = "./schema/schema_gnip.json"
         else:
             dataset = "twitter"
+            schema_file = "./schema/schema.json"
         
         table = self.request.get("name")
         rule_list = self.request.get("rules")
         imprt = self.request.get("import")
 
-        schema_file = "./schema.json"
         schema_str = Utils.read_file(schema_file)
         schema = json.loads(schema_str)
         

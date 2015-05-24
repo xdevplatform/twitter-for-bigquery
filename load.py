@@ -89,9 +89,25 @@ class GnipListener(object):
     def start(schema, logger):        
         
         # initialize table mapping for default table
+        # BUGBUG: initialize based on query to prod
         table_mapping = {
              config.DATASET_ID + "." + config.TABLE_ID : [config.DATASET_ID, config.TABLE_ID]
          }
+        
+        datasets = Utils.get_bq().datasets().list(projectId=config.PROJECT_ID).execute()
+        datasets = datasets.get("datasets", None)
+        
+        for d in datasets:
+            ref = d.get("datasetReference", None)
+            bq_tables = Utils.get_bq().tables().list(projectId=ref.get("projectId"), datasetId=ref.get("datasetId")).execute()
+            for t in bq_tables.get("tables", None):
+                ref = t.get("tableReference", None)
+                dataset_id = ref.get("datasetId", None)
+                table_id = ref.get("tableId", None)
+                key = Utils.make_tag(dataset_id, table_id)
+                table_mapping[key] = [dataset_id, table_id]
+                
+        print("Initialized tables: %s" % table_mapping)    
         
         listener = GnipListener(schema, table_mapping, logger=logger)
      
@@ -265,17 +281,20 @@ def main():
         print "Invalid mode: %s" % config.MODE
         exit()
 
-    print "Running in mode: %s" % config.MODE 
-
     logger = Utils.enable_logging()
+    print "Running in mode: %s" % config.MODE
     
-    schema_file = "./schema.json"
+    schema_file = None
+    if config.MODE == 'gnip':
+        schema_file = "./schema/schema_gnip.json"
+    else: 
+        schema_file = "./schema/schema.json"
     schema_str = Utils.read_file(schema_file)
     schema = json.loads(schema_str)
     
     try:
         Utils.insert_table(config.DATASET_ID, config.TABLE_ID, schema)
-        print "Created table: %s.%s" % (config.DATASET_ID, config.TABLE_ID)
+        print "Created default table: %s.%s" % (config.DATASET_ID, config.TABLE_ID)
     except Exception, e:
         print "Table already exists: %s" % e
 

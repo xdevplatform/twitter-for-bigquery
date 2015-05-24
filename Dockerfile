@@ -9,9 +9,9 @@ RUN pip install bigquery-python
 RUN pip install --upgrade google-api-python-client
 
 ADD config /config
+ADD schema /schema
 ADD key.p12 /key.p12
 ADD logging.conf /logging.conf
-ADD schema.json /schema.json
 ADD libs /libs
 ADD utils.py /utils.py
 ADD load.py /load.py
