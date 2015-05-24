@@ -40,6 +40,7 @@ JINJA = jinja2.Environment(
 
 REMOVE_HTML = re.compile(r'<.*?>')
 TABLE_CACHE = {}
+SEARCH_DAYS = 3 
 
 class Home(webapp2.RequestHandler):
     
@@ -165,7 +166,7 @@ class ApiTableData(webapp2.RequestHandler):
         
         field = self.request.get("field")
         charttype = self.request.get("charttype")
-        interval = int(self.request.get("interval")) if self.request.get("interval") else 7
+        interval = int(self.request.get("interval")) if self.request.get("interval") else SEARCH_DAYS
 
         builder = QueryBuilder(QueryBuilder.GNIP if "gnip" in table else QueryBuilder.PUBLIC, table, field, charttype, interval) 
         query = builder.query()
@@ -247,7 +248,7 @@ class ApiRuleTest(webapp2.RequestHandler):
 
         g = Utils.get_gnip()
         end = datetime.now()
-        start = end - timedelta(days=7)
+        start = end - timedelta(days=SEARCH_DAYS)
         timeline = g.query(rule, 0, record_callback=None, use_case="timeline", start=start, end=end, count_bucket="day")
         timeline = json.loads(timeline)
         
@@ -295,7 +296,7 @@ class ApiRuleBackfill(webapp2.RequestHandler):
         (dataset, table) = Utils.parse_bqid(table)  
 
         end = datetime.now()
-        start = end - timedelta(days=7)
+        start = end - timedelta(days=SEARCH_DAYS)
         
         # Initial count
         g = Utils.get_gnip()

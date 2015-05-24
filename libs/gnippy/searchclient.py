@@ -155,16 +155,15 @@ class SearchClient(object):
             return 
 
         self.doc = []
-        self.res_cnt = 0
-
-        for rec in self.parse_JSON():
-            self.res_cnt += 1
-            if use_case.startswith("json"):
-                self.doc.append(json.dumps(rec))
-            elif use_case.startswith("tweets"):
-                self.doc.append(rec)
-            elif use_case.startswith("time"):
-                self.doc.append(rec)
+        results = self.parse_JSON()
+        if results:
+            for rec in results:
+                if use_case.startswith("json"):
+                    self.doc.append(json.dumps(rec))
+                elif use_case.startswith("tweets"):
+                    self.doc.append(rec)
+                elif use_case.startswith("time"):
+                    self.doc.append(rec)
 
         return self.get_repr(pt_filter)
 
