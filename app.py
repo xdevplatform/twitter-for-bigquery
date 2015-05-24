@@ -264,8 +264,6 @@ class ApiRuleBackfill(webapp2.RequestHandler):
     # get is async task
     def get(self):
         
-        print "GET ApiRuleBackfill"
-
         rule = self.request.get("rule", None)
         table = self.request.get("table", None)
 
@@ -279,8 +277,6 @@ class ApiRuleBackfill(webapp2.RequestHandler):
         name = re.sub("[\W\d]", "_", name.strip()) 
         name = "Backfill_%s_%s" % (date, name)
 
-        print "GET task: %s" % name
-                
         try:
             task = taskqueue.add(name=name, url='/api/rule/backfill', params=params)
         except TombstonedTaskError, e:
@@ -294,20 +290,26 @@ class ApiRuleBackfill(webapp2.RequestHandler):
 
     def post(self):
         
-        print "POST ApiRuleBackfill"
-        
         rule = self.request.get("rule", None)
         table = self.request.get("table", None)
         (dataset, table) = Utils.parse_bqid(table)  
 
-        print "POST variables: %s %s %s" % (rule, dataset, table)
+        logging.info("Task: %s %s %s" % (rule, dataset, table))
 
-        def record_callback(tweets):
+        def record_callback(tweets, total=0):
             
-            print "POST record_callback: %s" % len(tweets)
-            response = Utils.insert_records(dataset, table, tweets)
-            print "POST BQ Response: %s" % response
+            response = None
             
+            try: 
+
+                response = Utils.insert_records(dataset, table, tweets)
+                total = total + len(tweets)
+                logging.info("BQ insert %s records: %s (%s)" % (len(tweets), response, total))
+            
+            except:
+    
+                logging.exception("Unexpected error:");
+
             return response
         
         g = Utils.get_gnip()
@@ -318,7 +320,7 @@ class ApiRuleBackfill(webapp2.RequestHandler):
         response = {
             "completed" : True
         }
-        print "POST Response: %s" % response
+        logging.info("POST Response: %s" % response)
         
         self.response.headers['Content-Type'] = 'application/json'   
         self.response.out.write(json.dumps(response))

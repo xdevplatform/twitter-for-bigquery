@@ -31,10 +31,7 @@ class Utils:
         BQ_CREDENTIALS = None
         
         # If runing on Google stack, authenticate natively
-        # http://stackoverflow.com/questions/1916579/in-python-how-can-i-test-if-im-in-google-app-engine-sdk
-        software = os.environ.get('SERVER_SOFTWARE', None) 
-        
-        if software and ("Google App Engine" in software or "Development" in software):
+        if Utils.isGae():
             
             from oauth2client import appengine
             BQ_CREDENTIALS = appengine.AppAssertionCredentials(scope='https://www.googleapis.com/auth/bigquery')
@@ -49,6 +46,13 @@ class Utils:
         Utils.BQ_CLIENT = build('bigquery', 'v2', http=BQ_HTTP)
         
         return  Utils.BQ_CLIENT
+    
+    @staticmethod
+    def isGae():
+        
+        # http://stackoverflow.com/questions/1916579/in-python-how-can-i-test-if-im-in-google-app-engine-sdk
+        software = os.environ.get('SERVER_SOFTWARE', None) 
+        return software and ("Google App Engine" in software or "Development" in software)
     
     @staticmethod
     def get_gnip():
@@ -111,9 +115,14 @@ class Utils:
     @staticmethod
     def enable_logging():
     
-        path = "./logging.conf"
-        logging.config.fileConfig(path)
-        root = logging.getLogger("root")
+        root = None
+    
+        if Utils.isGae():
+            logging.getLogger().setLevel(logging.DEBUG)
+        else:
+            path = "./logging.conf"
+            logging.config.fileConfig(path)
+            root = logging.getLogger("root")
     
         return root
 

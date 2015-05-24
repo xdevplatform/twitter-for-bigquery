@@ -61,6 +61,7 @@ class SearchClient(object):
         acs = []
         repeat = True
         page_count = 0
+        total_count = 0
         while repeat:
             doc = self.req()
             try:
@@ -82,7 +83,9 @@ class SearchClient(object):
                 
                 if len(acs) > 0:
                     if self.record_callback is not None:
-                        self.record_callback(tmp_response["results"])
+                        results = tmp_response["results"]
+                        self.record_callback(results, total_count)
+                        total_count = total_count + len(results)
                 else:
                     print >> sys.stderr, "no results returned for rule:{0}".format(str(self.rule_payload))
 
