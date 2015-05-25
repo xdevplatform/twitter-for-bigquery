@@ -7,7 +7,7 @@ from multiprocessing import Pool, Process, Queue
 table = "gnip.ws2014"
 mypath = "data"
 
-def process_file(file_gz, output):
+def process_file(file_gz, output=None):
 
 	file = file_gz[:-3]
 	
@@ -19,7 +19,8 @@ def process_file(file_gz, output):
 	print call_batch
 	os.system(call_batch)
 	
-	output.put("%s: Done" % (file))
+	if output:
+		output.put("%s: Done" % (file))
 
 def info(title):
     print(title)
@@ -43,39 +44,18 @@ if __name__ == '__main__':
  	processes = []
  	
   	for (dirpath, dirnames, filenames) in walk(mypath):
-  		for f in filenames[:10]:
+  		for f in filenames:
   			if f.endswith(".gz"):
   				file = "%s/%s" % (dirpath, f)
   				files.append(file)
 
-	output = Queue()
-
- 	processes = [Process(target=process_file, args=(f, output)) for f in files]
-
- 	for p in processes:
- 	    p.start()
-   			
- 	for p in processes:
- 	    p.join()
+	pool = Pool(processes=10)
+	results = [pool.apply_async(process_file, args=(f,)) for f in files]
 	
-	# Get process results from the output queue
- 	results = [output.get() for p in processes]
-	
- 	print results
+	output = [p.get() for p in results]
+	print output
 
-# 	# start 4 worker processes
-# 	with Pool(processes=4) as pool:
-# 
-# 		result = pool.apply_async(process_file, files)
-# 		print result.get(timeout=1)
-		
-#  			
-#  			print f
-#  			
-# 
-# 				p = Process(target=process_file, args=(dirpath, f,))
-# 				p.start()
-# 				p.join()
+
  				
 		
 

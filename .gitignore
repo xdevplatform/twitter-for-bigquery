@@ -45,3 +45,4 @@ container.yaml
 schema.json
 output.txt
 *.sh
+data/*
