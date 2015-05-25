@@ -51,17 +51,14 @@ The enclosed sample includes a simple `load.py` file to stream Tweets directly i
 - Run `python load.py` 
 
 When developing on top of the Twitter platform, you must abide by the [Developer Agreement & Policy](https://dev.twitter.com/overview/terms/agreement-and-policy).
-Most notably, you must respect the section entitled "Maintain the Integrity of TwitterÕs Products", including removing all relevant
-Content with regard to unfavorites, deletes and other user actions. 
+Most notably, you must respect the section entitled "Maintain the Integrity of TwitterÕs Products", including removing all relevant Content with regard to unfavorites, deletes and other user actions. 
 
-Loading Twitter data into BigQuery from the Google cloud
+Loading Twitter data into BigQuery from Google Compute Engine
 ---
 
-This project is designed to use [Docker](http://www.docker.com) with [Google Compute Engine](https://cloud.google.com/compute/)
-to run the above process in the cloud.
+To help simplify your setup, this project is designed to use [Docker](http://www.docker.com) with [Google Compute Engine](https://cloud.google.com/compute/) to run the above process in the cloud.
 
-The `Dockerfile` describes the required libraries and packaging for the container. The below runs through the steps to 
-create your own container and deploy it to Google Compute Engine.
+The `Dockerfile` describes the required libraries and packaging for the container. The below runs through the steps to  create your own container and deploy it to Google Compute Engine.
 	
 	# start docker locally
 	boot2docker start
@@ -99,10 +96,10 @@ More notes for Docker + Google Cloud:
 - https://docs.docker.com/userguide/dockerizing/
 - https://cloud.google.com/compute/docs/containers/container_vms
 
-Running the management console app
+Running the app
 ---
 
-### Running locally from command line
+### Running locally
 
 From the command line, you can use dev_appserver.py to run your local server. You'll need to specify your service account and private key file on the command line, as such:
 
@@ -110,8 +107,7 @@ From the command line, you can use dev_appserver.py to run your local server. Yo
 	
 Once this is complete, open your browser to http://localhost:8080.
 
-### Running on Google App Engine
----
+### Deploying on Google App Engine
 
 To run in Google App Engine, do the following:
 
@@ -139,11 +135,11 @@ To confirm the deploy worked, you can do the following to view the logs:
 - Click on "Logs" to the left
 - Find the entry with an orange "E" (for Error) and click on the "+" to expand it
 
-If you are using the backfill functionality to populate historical data, you need to run a custom task queue 
-and a backend server. This will enable your tasks to run beyond the 10 minute limit of a default task queue.
+### Deploying background servers on Google App Engine
 
-To create the custom task queue, you need to Deploy using the launch instructions above. Because a 
-`queue.yaml` file exists in this project, you likely already created the custom queue definition on the previous
+If you are using the backfill functionality to populate historical data, you need to run a custom task queue and a backend server. This will enable your tasks to run beyond the 10 minute limit of a default task queue.
+
+To create the custom task queue, you need to Deploy using the launch instructions above. Because a `queue.yaml` file exists in this project, you likely already created the custom queue definition on the previous
 production deply. 
 
 To run a backend server, deploy the app and the backfill server with the `appcfg.py` command, as such:  
@@ -151,19 +147,12 @@ To run a backend server, deploy the app and the backfill server with the `appcfg
 	`appcfg.py update app.yaml backfill.yaml`
 	
 
-The dataset
+The schema
 ---
 
 ### Schema
 
-The `load.py` file takes tweets and loads them one-by-one into BigQuery. Some basic scrubbing of the data is done to simplify the dataset. (For more information, view the `Utils.scrub()` function.) 
-
- JSON files are provided in `/data` as samples of the data formats from Twitter and stored into BigQuery.
-
-- `sample_stream.jsonr` - Small sample of Twitter Stream, written to file
-- `sample_tweet_cleaned.json` - Tweet from stream, but scrubbed to be consistent with BigQuery/schema.json
-- `sample_tweet.json` - Tweet from stream 
-- `schema.json` - Tweet representation as BigQuery table schema
+The `load.py` file takes tweets and loads them one-by-one into BigQuery. Some basic scrubbing of the data is done to simplify the dataset. (For more information, view the `Utils.scrub()` function.) Additionally, JSON files are provided in `/schema` as samples of the data formats from Gnip/Twitter and stored into BigQuery.
 
 ### Sample queries
 
@@ -173,31 +162,31 @@ To help you get started, below are some sample queries.
 
 Querying for tweets contain a specific word or phrase.
 
-	SELECT text FROM [tweets.2015_01_09] WHERE text CONTAINS ' something ' LIMIT 10
+	SELECT text FROM [twitter.tweets] WHERE text CONTAINS ' something ' LIMIT 10
 
 ##### #Hashtag search
 
 Searching for specific hashtags.
 
-	SELECT entities.hashtags.text, HOUR(TIMESTAMP(created_at)) AS create_hour, count(*) as count FROM [tweets.2015_01_09] WHERE LOWER(entities.hashtags.text) in ('John', 'Paul', 'George', 'Ringo') GROUP by create_hour, entities.hashtags.text ORDER BY entities.hashtags.text ASC, create_hour ASC
+	SELECT entities.hashtags.text, HOUR(TIMESTAMP(created_at)) AS create_hour, count(*) as count FROM [twitter.tweets] WHERE LOWER(entities.hashtags.text) in ('John', 'Paul', 'George', 'Ringo') GROUP by create_hour, entities.hashtags.text ORDER BY entities.hashtags.text ASC, create_hour ASC
 
 ##### Tweet source
 
 Listing the most popular Twitter applications.
 
-    SELECT source, count(*) as count FROM [tweets.2015_01_09] GROUP by source ORDER BY count DESC LIMIT 1000
+    SELECT source, count(*) as count FROM [twitter.tweets] GROUP by source ORDER BY count DESC LIMIT 1000
 
 ##### Media/URLs shared
 
 Finding the most popular content shared on Twitter.
 
-	SELECT text, entities.urls.url FROM [tweets.2015_01_09] WHERE entities.urls.url IS NOT NULL LIMIT 10
+	SELECT text, entities.urls.url FROM [twitter.tweets] WHERE entities.urls.url IS NOT NULL LIMIT 10
 
 ##### User activity
 
 Users that tweet the most.
 
-	SELECT user.screen_name, count(*) as count FROM [tweets.2015_01_09] GROUP BY user.screen_name ORDER BY count DESC LIMIT 10
+	SELECT user.screen_name, count(*) as count FROM [twitter.tweets] GROUP BY user.screen_name ORDER BY count DESC LIMIT 10
 	
 To learn more about querying, go to [https://cloud.google.com/bigquery/query-reference]https://cloud.google.com/bigquery/query-reference)
 
@@ -213,13 +202,22 @@ Using BigQuery allows you to combine Twitter data with other public sources of i
 You can also visit http://demo.redash.io/ to perform queries and visualizations against publicly available data sources.
 
 FAQ
+---
 
-When deploying to AppEngine, I'm getting the error "This application does not exist (app_id=u'twitter-for-bigquery')"
+### When deploying to AppEngine, I'm getting the error "This application does not exist (app_id=u'twitter-for-bigquery')"
 
 You will want to create your own app_id in app.yaml. If that does not work, then 
 Per this thread (http://stackoverflow.com/questions/10407955/google-app-engine-this-application-does-not-exist), try the following:
 
-`rm .appcfg_oauth2_tokens`
+	`rm .appcfg_oauth2_tokens`
+
+### My TaskQueue entries die unexpectedly/only run for 10 minutes/get a DeadlineExceededError.
+
+The default Google AppEngine TaskQueue (named 'default') has a limit of 10 minutes for any task. To run a task for longer, you need to set up a custom task queue and a backend server. The instructions are above, but the basics include:
+
+- Ensure the queues.xml file (which defines a new queue named 'backfill') is uploaded to AppEngine.
+- Ensure a background app is created using the `appcfg.py update app.yaml backfill.yaml` command to start both the main app and the background app.
+
 
 
 Additional reading
