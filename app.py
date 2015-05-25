@@ -438,11 +438,11 @@ class QueryBuilder():
         if self.charttype == "timeseries":
             
             # default create hour: daily
-            create_hour = "CONCAT('2015-', STRING(MONTH(TIMESTAMP(t1.%s))), '-', STRING(DAY(TIMESTAMP(t1.%s))), ' 00:00')" % (created_field, created_field)
+            create_hour = "CONCAT(STRING(YEAR(TIMESTAMP(t1.%s))), '-', STRING(MONTH(TIMESTAMP(t1.%s))), '-', STRING(DAY(TIMESTAMP(t1.%s))), ' 00:00')" % (created_field, created_field, created_field)
             
             # create hour: hourly
             if self.interval == 1:
-                create_hour = "CONCAT('2015-', STRING(MONTH(TIMESTAMP(t1.%s))), '-', STRING(DAY(TIMESTAMP(t1.%s))), ' ', LPAD(STRING(HOUR(TIMESTAMP(t1.%s))), 2, '0'), ':00')" % (created_field, created_field, created_field)
+                create_hour = "CONCAT(STRING(YEAR(TIMESTAMP(t1.%s))), '-', STRING(MONTH(TIMESTAMP(t1.%s))), '-', STRING(DAY(TIMESTAMP(t1.%s))), ' ', LPAD(STRING(HOUR(TIMESTAMP(t1.%s))), 2, '0'), ':00')" % (created_field, created_field, created_field, created_field)
                 
             select = "t1.%s, %s AS create_hour" % (select, create_hour)
             fromclause = "flatten(%s, %s)" % (self.from_clause, flatten_field) if flatten_field else self.from_clause
