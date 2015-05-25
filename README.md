@@ -51,6 +51,7 @@ The enclosed sample includes a simple `load.py` file to stream Tweets directly i
 - Run `python load.py` 
 
 When developing on top of the Twitter platform, you must abide by the [Developer Agreement & Policy](https://dev.twitter.com/overview/terms/agreement-and-policy).
+
 Most notably, you must respect the section entitled "Maintain the Integrity of TwitterÕs Products", including removing all relevant Content with regard to unfavorites, deletes and other user actions. 
 
 Loading Twitter data into BigQuery from Google Compute Engine
@@ -135,14 +136,17 @@ To confirm the deploy worked, you can do the following to view the logs:
 - Click on "Logs" to the left
 - Find the entry with an orange "E" (for Error) and click on the "+" to expand it
 
-### Deploying background servers on Google App Engine
+### Deploying queues and background servers on Google App Engine
 
 If you are using the backfill functionality to populate historical data, you need to run a custom task queue and a backend server. This will enable your tasks to run beyond the 10 minute limit of a default task queue.
 
-To create the custom task queue, you need to Deploy using the launch instructions above. Because a `queue.yaml` file exists in this project, you likely already created the custom queue definition on the previous
-production deply. 
+To create the custom task queue, you need to Deploy using the launch instructions above. Because a `queue.yaml` file exists in this project, you likely already created the custom queue definition on the previous production deploy.
 
-To run a backend server, deploy the app and the backfill server with the `appcfg.py` command, as such:  
+Alternatively, you can run the following command to update the production queues:
+
+	`appcfg.py update_queues . ` 
+
+To deploy a backend server, deploy the app and the backfill server with the `appcfg.py` command, as such:  
 
 	`appcfg.py update app.yaml backfill.yaml`
 	
@@ -206,8 +210,7 @@ FAQ
 
 ### When deploying to AppEngine, I'm getting the error "This application does not exist (app_id=u'twitter-for-bigquery')"
 
-You will want to create your own app_id in app.yaml. If that does not work, then 
-Per this thread (http://stackoverflow.com/questions/10407955/google-app-engine-this-application-does-not-exist), try the following:
+You will want to create your own app_id in app.yaml. If that does not work, then per this thread (http://stackoverflow.com/questions/10407955/google-app-engine-this-application-does-not-exist), try the following:
 
 	`rm .appcfg_oauth2_tokens`
 
@@ -218,6 +221,15 @@ The default Google AppEngine TaskQueue (named 'default') has a limit of 10 minut
 - Ensure the queues.xml file (which defines a new queue named 'backfill') is uploaded to AppEngine.
 - Ensure a background app is created using the `appcfg.py update app.yaml backfill.yaml` command to start both the main app and the background app.
 
+### I am getting 'Process terminated due to exceeding quotas.' errors in my log console/'This application is temporarily over its serving quota. Please try again later.' when accessing my backend server.
+
+Google AppEngine has usage quotas to regulate billing and usage. You can read about the quotas for various products here: 
+
+https://cloud.google.com/appengine/docs/quotas#When_a_Resource_is_Depleted
+
+To increase quota limits, you can go into Compute->App Engine->Settings and edit your daily budget to allow for increased usage.
+
+https://console.developers.google.com/project/YOUR_PROJECT_NAME/appengine/settings
 
 
 Additional reading
@@ -249,8 +261,4 @@ TODO
 - Backfill
     - UI Dialog
     - Pull in X days of previous data
-- Daemon
-    - No duplicate based on IDs
-	- populate in multiple matching tables
-- Remove bigquery library and references
 - Admin save/config page + deploy of service?
