@@ -313,7 +313,7 @@ var RulePage = {
 		
     	$("#rule_import_count").fadeIn();
     	$("#rule_import_loading").show();
-    	$("#rule_import_text").html("Calculating volume of tweets...")
+    	$("#rule_import_text").html("Calculating volume of tweets over last 7 days...")
     	
     	if (!error){
     		error = function (request, status, error){

@@ -40,7 +40,7 @@ JINJA = jinja2.Environment(
 
 REMOVE_HTML = re.compile(r'<.*?>')
 TABLE_CACHE = {}
-SEARCH_DAYS = 3 
+SEARCH_DAYS = 7 
 
 class Home(webapp2.RequestHandler):
     

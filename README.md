@@ -150,6 +150,19 @@ To deploy a backend server, deploy the app and the backfill server with the `app
 
 	`appcfg.py update app.yaml backfill.yaml`
 	
+### Querying and loading large sets of tweets onto BigQuery
+
+If you need large amounts of past tweets loaded onto BigQuery, you will need to use Gnip's Historical Power Track. The best way to load large amounts of tweets is:
+
+- Use the [Gnip Python Historical Utilities](https://github.com/DrSkippy/Gnip-Python-Historical-Utilities) library to run an async PowerTrack job and download the data. 
+- Run the included `batch.py` file to process each gzip file and load onto BigQuery
+ 
+ When running the above processing, choose an environment that is optimized for network performance, as you may be downloading multiple GB of files onto your server and then onto BigQuery.
+ 
+- [Bitnami Django AMI](https://aws.amazon.com/marketplace/pp/B007I9Z8HG?ref=cns_srchrow)
+- `curl https://sdk.cloud.google.com | bash` [BigQuery command line tool](https://cloud.google.com/sdk/)
+- pip install requests
+
 
 The schema
 ---
