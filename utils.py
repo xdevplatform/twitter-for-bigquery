@@ -73,7 +73,14 @@ class Utils:
             }
         }
 
-        response = Utils.get_bq().tables().insert(projectId=config.PROJECT_ID, datasetId=dataset_id, body=body).execute()
+        response = None
+        try:
+            response = Utils.get_bq().tables().insert(projectId=config.PROJECT_ID, datasetId=dataset_id, body=body).execute()
+        except HttpError, e:
+            # ignore table already exist errors
+            if e.code != 409 and "Already Exists" not in e.reason:
+                raise e
+        
         return response
     
     @staticmethod
