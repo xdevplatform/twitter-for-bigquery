@@ -78,7 +78,9 @@ class Utils:
             response = Utils.get_bq().tables().insert(projectId=config.PROJECT_ID, datasetId=dataset_id, body=body).execute()
         except HttpError, e:
             # ignore table already exist errors
-            if e.code != 409 and "Already Exists" not in e.reason:
+            if e.code == 409 or "Already Exists" in e.reason:
+                response = True
+            else:
                 raise e
         
         return response
