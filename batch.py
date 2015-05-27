@@ -1,14 +1,13 @@
 import os
 from os import walk
+import sys
 import thread
 import gzip
 from multiprocessing import Pool, Process, Queue
 
 PROCESS_COUNT = 8
 
-table = "gnip.tweets_io15"
-mypath = "data"
-
+# file utilities
 class Utils:
 
     @staticmethod
@@ -73,21 +72,23 @@ class Utils:
         print call_cat
         os.system(call_cat)
 
-        return file
 
-def reset_file(file, output=None):
+# restore file to original gzip 
+def reset_file(file, table, output=None):
+
+    if ".archive" in file:
+        file = Utils.unarchive(file)
 
     # ignore archive files
-    if "json.gz" in file:
-        
-        Utils.gunzip(file)
+    if file.endswith(".json"):
+        file = Utils.gzip(file)
 
     if output:
         output.put(file)
 
     return file
 
-def process_file(file, output=None):
+def process_file(file, table, output=None):
 
     # ignore archive files
     if ".archive" in file:
@@ -116,19 +117,35 @@ def process_file(file, output=None):
 
 if __name__ == '__main__':
 
+    if len(sys.argv) != 4:
+        print "Usage: batch.py [reset|process] [file|directory] <table>"
+
+    (script, action, mypath, table) = sys.argv
+
     files = []
     processes = []
 
-    # process all files and let async handle archiving 
-    for (dirpath, dirnames, filenames) in walk(mypath):
-        for f in filenames:
-            file = "%s/%s" % (dirpath, f)
-            files.append(file)
+    if os.path.isfile(mypath):
+
+        files.append(mypath)
+
+    else:
+
+        # process all files and let async handle archiving 
+        for (dirpath, dirnames, filenames) in walk(mypath):
+            for f in filenames:
+                file = "%s/%s" % (dirpath, f)
+                files.append(file)
+
+    function = None
+    if action == 'reset':
+        function = reset_file
+    elif action == 'process':
+        function = process_file
 
     pool = Pool(processes=PROCESS_COUNT)
-    results = [pool.apply_async(reset_file, args=(f,)) for f in files]
+    results = [pool.apply_async(function, args=(f, table)) for f in files]
 
     output = [p.get() for p in results]
     print output
-
 
