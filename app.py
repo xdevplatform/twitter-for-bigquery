@@ -70,18 +70,19 @@ class ApiTableList(webapp2.RequestHandler):
             for d in datasets:
                 ref = d.get("datasetReference", None)
                 bq_tables = Utils.get_bq().tables().list(projectId=ref.get("projectId"), datasetId=ref.get("datasetId")).execute()
-                for t in bq_tables.get("tables", None):
-                    id = t.get("id")
-                    ref = t.get("tableReference", None)
-                    dataset = ref.get("datasetId", None)
-                    table = ref.get("tableId", None)
-                    tables.append({
-                        "id": id, 
-                        "projectId": ref.get("projectId", None), 
-                        "datasetId": dataset, 
-                        "tableId": table,
-                        "type": "Twitter" if "twitter" in dataset else "Gnip"
-                    })
+                if bq_tables['totalItems'] > 0:
+                    for t in bq_tables.get("tables", None):
+                        id = t.get("id")
+                        ref = t.get("tableReference", None)
+                        dataset = ref.get("datasetId", None)
+                        table = ref.get("tableId", None)
+                        tables.append({
+                            "id": id,
+                            "projectId": ref.get("projectId", None),
+                            "datasetId": dataset,
+                            "tableId": table,
+                            "type": "Twitter" if "twitter" in dataset else "Gnip"
+                        })
                     
             rules_list = rules.get_rules(**GNIP_RULES_PARAMS)
             for t in tables:
