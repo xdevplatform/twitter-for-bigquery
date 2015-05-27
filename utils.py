@@ -12,6 +12,8 @@ import logging.config
 from config import Config
 
 from apiclient.discovery import build
+from apiclient.errors import HttpError
+
 from gnippy import rules, searchclient
 
 f = file("./config")
@@ -136,6 +138,7 @@ class Utils:
         return root
 
     @staticmethod
+    # BUGBUG: aim to NOT scrub results
     def scrub(d):
     
         # d.iteritems isn't used as you can't del or the iterator breaks.
