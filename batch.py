@@ -68,10 +68,22 @@ class Utils:
     @staticmethod
     def cat_all(path, file):
 
-        call_cat = "find %s -type f -exec cat {} + > " % (path, file)
+        call_cat = "find %s -type f -exec cat {} + > %s" % (path, file)
         print call_cat
         os.system(call_cat)
 
+    @staticmethod
+    def get_files(path):
+
+        files = []
+
+        # process all files and let async handle archiving 
+        for (dirpath, dirnames, filenames) in walk(path):
+            for f in filenames:
+                file = "%s/%s" % (dirpath, f)
+                files.append(file)
+
+        return files
 
 # restore file to original gzip 
 def reset_file(file, table, output=None):
@@ -88,64 +100,55 @@ def reset_file(file, table, output=None):
 
     return file
 
-def process_file(file, table, output=None):
+def process_files(path, table):
 
-    # ignore archive files
-    if ".archive" in file:
-        print "ignoring archive: %s" % file
-        return file
+    files = Utils.get_files(path)
 
     # if zipped, unzip for loading
-    if "json.gz" in file:
-        file = Utils.gunzip(file)
+    for f in files:
+        if "json.gz" in f:
+            file = Utils.gunzip(f)
+
+    # get new list of files
+    files = Utils.get_files(path)
+
+    file_result = "master.json"
+    Utils.cat_all(path, file_result)
 
     # load to bigquery
-    call_batch = "bq load --source_format=NEWLINE_DELIMITED_JSON --max_bad_records=5000 %s %s" % (table, file)
+    call_batch = "bq load --source_format=NEWLINE_DELIMITED_JSON --max_bad_records=500000 %s %s" % (table, file_result)
     print call_batch
     os.system(call_batch)
 
-    # pack file back up so it doesn't take up any more memory
-    file_gz = Utils.gzip(file)
-
-    # archive processed file (re-entrant processing)
-    Utils.archive(file_gz)
-
-    if output:
-        output.put(file)
-
-    return file
+    return file_result
 
 if __name__ == '__main__':
 
     if len(sys.argv) != 4:
         print "Usage: batch.py [reset|process] [file|directory] <table>"
 
-    (script, action, mypath, table) = sys.argv
+    (script, action, path, table) = sys.argv
 
     files = []
     processes = []
 
-    if os.path.isfile(mypath):
-
-        files.append(mypath)
-
-    else:
-
-        # process all files and let async handle archiving 
-        for (dirpath, dirnames, filenames) in walk(mypath):
-            for f in filenames:
-                file = "%s/%s" % (dirpath, f)
-                files.append(file)
 
     function = None
     if action == 'reset':
-        function = reset_file
+
+        if os.path.isfile(path):
+            files.append(path)
+        else:
+            files = Utils.get_files(path)
+
+        pool = Pool(processes=PROCESS_COUNT)
+        results = [pool.apply_async(reset_file, args=(f, table)) for f in files]
+
+        output = [p.get() for p in results]
+        print output
+
     elif action == 'process':
-        function = process_file
 
-    pool = Pool(processes=PROCESS_COUNT)
-    results = [pool.apply_async(function, args=(f, table)) for f in files]
+        process_files(path, table)
 
-    output = [p.get() for p in results]
-    print output
 
