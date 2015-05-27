@@ -20,3 +20,5 @@ libraries:
 - name: ssl
   version: latest
   
+skip_files:
+- ^data$
