@@ -41,6 +41,7 @@ JINJA = jinja2.Environment(
 REMOVE_HTML = re.compile(r'<.*?>')
 TABLE_CACHE = {}
 SEARCH_DAYS = 7 
+TASK_QUEUE_NAME = "default" # "backfill"
 
 class Home(webapp2.RequestHandler):
     
@@ -269,24 +270,8 @@ class ApiRuleBackfill(webapp2.RequestHandler):
         rule = self.request.get("rule", None)
         table = self.request.get("table", None)
 
-        params = {
-            "rule": rule,
-            "table": table
-        }
+        self.enqueue(rule, table, page_next=None, page_count=0, count_total=0)
         
-        date = datetime.now().strftime("%Y%m%d_%H%M")
-        name = "%s_%s" % (rule, table)
-        name = re.sub("[\W\d]", "_", name.strip()) 
-        name = "Backfill_%s_%s" % (date, name)
-
-        # attempt to create task on separate backend module; see README.md for instructions 
-        # on how to launch backend module + custom queue separately. 
-        # https://cloud.google.com/appengine/docs/python/modules/
-        try:
-            task = taskqueue.add(name=name, url='/api/rule/backfill', params=params, target='backfill', queue_name='backfill')
-        except TombstonedTaskError, e:
-            raise Exception("Task for '%s' is already in the queue." % rule)
-            
         response = {
             "enqueued" : True
         }
@@ -296,44 +281,54 @@ class ApiRuleBackfill(webapp2.RequestHandler):
     def post(self):
         
         rule = self.request.get("rule", None)
-        table = self.request.get("table", None)
-        (dataset, table) = Utils.parse_bqid(table)  
+        table_fqdn = self.request.get("table", None)
+        (dataset, table) = Utils.parse_bqid(table_fqdn)  
+        tag = Utils.make_tag(dataset, table)
+
+        page_next = self.request.get("page_next", None)
+        page_count = self.request.get("page_count", None)
+        count_total = int(self.request.get("count_total", 0))
+        if not page_count:
+            page_count = 0
+        else:
+            page_count = int(page_count) + 1
 
         end = datetime.now()
         start = end - timedelta(days=SEARCH_DAYS)
         
-        # Initial count
-        g = Utils.get_gnip()
-        timeline = g.query(rule, 0, record_callback=None, use_case="timeline", start=start, end=end, count_bucket="day")
-        timeline = json.loads(timeline)
+        if not page_next:
         
-        count = 0 
-        for r in timeline["results"]:
-            count = count + r["count"]
+            # Initial count
+            g = Utils.get_gnip()
+            timeline = g.query(rule, 0, record_callback=None, use_case="timeline", start=start, end=end, count_bucket="day")
+            timeline = json.loads(timeline)
             
-        tag = Utils.make_tag(dataset, table)
-        logging.info("Task: %s, %s records (%s)" % (rule, count, tag))
-
-        def record_callback(tweets, total=0):
-            
-            response = None
-            
-            try: 
+            count_estimate = 0 
+            for r in timeline["results"]:
+                count_estimate = count_estimate + r["count"]
                 
-                timing_start = datetime.now()
-                response = Utils.insert_records(dataset, table, tweets)
-                timing = datetime.now() - timing_start
-    
-                logging.info("BQ insert %s records: %s (%sms)" % (len(tweets), response, timing))
+            logging.info("Task start: %s => %s (%s)" % (rule, tag, count_estimate))
             
-            except:
-    
-                logging.exception("Unexpected error:");
-    
-            return response
-
         g = Utils.get_gnip()
-        g.query(rule, 0, record_callback=record_callback, use_case="tweets", start=start, end=end)
+        tweets = g.query(rule, use_case="tweets", start=start, end=end, page=page_next)
+
+        try: 
+             
+            timing_start = datetime.now()
+            response = Utils.insert_records(dataset, table, tweets)
+            timing = datetime.now() - timing_start
+            
+            logging.info("Task page %s: %s => %s (%s, %sms)" % (page_count, rule, tag, count_total, timing))
+            
+            count_total = count_total + len(tweets)
+         
+        except:
+ 
+            logging.exception("Unexpected error:");
+
+        page_next = g.rule_payload.get("next", None)
+        if page_next:
+            self.enqueue(rule, table_fqdn, page_next, page_count=page_count, count_total=count_total)
 
         response = {
             "completed" : True
@@ -343,6 +338,36 @@ class ApiRuleBackfill(webapp2.RequestHandler):
         self.response.headers['Content-Type'] = 'application/json'   
         self.response.out.write(json.dumps(response))
       
+    # enqueue a pagination task. needed because AppEngine limits tasks to < 10 minutes, 
+    # so we can't run long-running tasks
+    def enqueue(self, rule, table, page_next=None, page_count=0, count_total=0):
+
+        params = {
+            "rule": rule,
+            "table": table,
+            "page_count": page_count,
+            "count_total": count_total 
+        }
+        if page_next:
+            params["page_next"] = page_next
+            
+#         logging.info("Enqueue task: %s" % params)
+        
+        date = datetime.now().strftime("%Y%m%d_%H%M%S")
+        name = "%s_%s" % (rule, table)
+        name = re.sub("[\W\d]", "_", name.strip()) 
+        name = "Backfill_%s_%s" % (date, name)
+
+        # attempt to create task on separate backend module; see README.md for instructions 
+        # on how to launch backend module + custom queue separately. 
+        # https://cloud.google.com/appengine/docs/python/modules/
+        try:
+#             target = "backfill"
+            target = TASK_QUEUE_NAME
+            task = taskqueue.add(name=name, url='/api/rule/backfill', params=params, target=target, queue_name=target)
+        except TombstonedTaskError, e:
+            raise Exception("Task for '%s' is already in the queue." % rule)
+        
 class ApiRuleDelete(webapp2.RequestHandler):
     
     def get(self):

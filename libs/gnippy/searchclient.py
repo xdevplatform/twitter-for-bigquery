@@ -78,9 +78,13 @@ class SearchClient(object):
                 
                 response = json.loads(doc)
 
-                if "results" in response:
+                records = response.get("results", None)
+                page = response.get("next", None)
+                if page:
+                    self.rule_payload["next"] = page
+
+                if records:
                     
-                    records = response["results"]
                     count = len(records)
                     logging.info("Gnip query %s records (%sms)" % (count, timing))
                     
@@ -94,13 +98,11 @@ class SearchClient(object):
                         self.record_callback(records, total_count)
                         total_count = total_count + count
                     
-                        # if there is another page
-                        if "next" in response:
-
-                            self.rule_payload["next"] = response["next"]
-                            repeat = True
-                            page_count += 1
-                            logging.info("Fetching page {}...".format(page_count))
+                # if there is another page
+                if page:
+                    repeat = True
+                    page_count += 1
+                    logging.info("Fetching page {}...".format(page_count))
                             
                 if "error" in response:
                     
@@ -119,19 +121,19 @@ class SearchClient(object):
                 
     def query(self
             , pt_filter
-            , max_results=100
+            , max_results=500
             , record_callback=None
             , use_case="wordcount"
             , start=None
             , end=None
             , count_bucket="day" 
-            , query=False):
+            , query=False
+            , page=None):
 
         self.set_index(use_case, count_bucket)
-        
+
         if record_callback:
             self.record_callback = record_callback
-            max_results = 500
             self.paged = True
         else:
             self.paged = False
@@ -141,6 +143,10 @@ class SearchClient(object):
                         , 'maxResults': int(max_results)
                         , 'publisher': 'twitter'
                         }
+
+        # if pagination specified, set page index
+        if page:
+            self.rule_payload["next"] = page
         
         if start:
             self.rule_payload["fromDate"] = start.strftime(TIME_FMT)
