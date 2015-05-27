@@ -115,6 +115,8 @@ def process_files(path, table):
     file_result = "master.json"
     Utils.cat_all(path, file_result)
 
+    file_gz = Utils.gzip(file_result)
+
     # load to bigquery
     call_batch = "bq load --source_format=NEWLINE_DELIMITED_JSON --max_bad_records=500000 %s %s" % (table, file_result)
     print call_batch
