@@ -82,8 +82,8 @@ class SearchClient(object):
                 page = response.get("next", None)
                 if page:
                     self.rule_payload["next"] = page
-                else:
-                    self.rule_payload["next"] = None
+                elif "next" in self.rule_payload:
+                    del self.rule_payload["next"]
 
                 if records:
                     
@@ -149,8 +149,8 @@ class SearchClient(object):
         # if pagination specified, set page index
         if page:
             self.rule_payload["next"] = page
-        else:
-            self.rule_payload["next"] = None
+        elif "next" in self.rule_payload:
+            del self.rule_payload["next"]
         
         if start:
             self.rule_payload["fromDate"] = start.strftime(TIME_FMT)

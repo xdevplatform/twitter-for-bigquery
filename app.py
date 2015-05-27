@@ -350,7 +350,7 @@ class ApiRuleBackfill(webapp2.RequestHandler):
         if page_next:
             params["page_next"] = page_next
             
-#         logging.info("Enqueue task: %s" % params)
+        logging.info("Enqueue task: %s" % params)
         
         date = datetime.now().strftime("%Y%m%d_%H%M%S")
         name = "%s_%s" % (rule, table)
