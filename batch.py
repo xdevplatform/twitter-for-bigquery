@@ -9,16 +9,70 @@ PROCESS_COUNT = 8
 table = "gnip.tweets_io15"
 mypath = "data"
 
+class Utils:
+
+    @staticmethod
+    def rename(file, to):
+
+        call_rename = "mv %s %s" % (file, to)
+        print call_rename
+        os.system(call_rename)
+
+        return to
+
+    @staticmethod
+    def archive(file):
+
+        if ".archive" in file:
+            return file 
+
+        file_archive = "%s.archive" % file
+        Utils.rename(file, file_archive)
+
+        return file_archive
+
+    @staticmethod
+    def unarchive(file):
+
+        if ".archive" not in file:
+            return file 
+
+        file2 = file[:-8]
+        Utils.rename(file, file2)
+
+        return file2
+
+    @staticmethod
+    def gzip(file):
+
+        if ".gz" in file:
+            return file 
+
+        call_zip = "gzip %s" % (file)
+        print call_zip
+        os.system(call_zip)
+
+        return "%s.gz" % file
+
+    @staticmethod
+    def gunzip(file):
+
+        if ".gz" not in file:
+            return file 
+
+        call_unzip = "gunzip %s" % (file)
+        print call_unzip
+        os.system(call_unzip)
+
+        return file[:-3]
+
 def reset_file(file, output=None):
 
     # ignore archive files
     if ".archive" in file:
         
         file_gz = file[:-8]
-
-        call_rename = "mv %s %s" % (file, file_gz)
-        print call_rename
-        os.system(call_rename)
+        Utils.rename(file, file_gz)
 
     if output:
         output.put(file)
@@ -34,14 +88,7 @@ def process_file(file, output=None):
 
     # if zipped, unzip for loading
     if "json.gz" in file:
-
-        file_gz = file
-        file = file[:-3]
-
-        # unpack file
-        call_unzip = "gunzip %s" % (file_gz)
-        print call_unzip
-        os.system(call_unzip)
+        file = Utils.gunzip(file)
 
     # load to bigquery
     call_batch = "bq load --source_format=NEWLINE_DELIMITED_JSON --max_bad_records=5000 %s %s" % (table, file)
@@ -49,16 +96,10 @@ def process_file(file, output=None):
     os.system(call_batch)
 
     # pack file back up so it doesn't take up any more memory
-    file_gz = "%s.gz" % file
-    call_zip = "gzip %s" % (file)
-    print call_zip
-    os.system(call_zip)
+    file_gz = Utils.gzip(file)
 
     # archive processed file (re-entrant processing)
-    file_archive = "%s.archive" % file_gz
-    call_rename = "mv %s %s" % (file_gz, file_archive)
-    print call_rename
-    os.system(call_rename)
+    Utils.archive(file_gz)
 
     if output:
         output.put(file)
@@ -77,7 +118,7 @@ if __name__ == '__main__':
             files.append(file)
 
     pool = Pool(processes=PROCESS_COUNT)
-    results = [pool.apply_async(process_file, args=(f,)) for f in files]
+    results = [pool.apply_async(reset_file, args=(f,)) for f in files]
 
     output = [p.get() for p in results]
     print output
