@@ -296,6 +296,7 @@ class ApiRuleBackfill(webapp2.RequestHandler):
         end = datetime.now()
         start = end - timedelta(days=SEARCH_DAYS)
         
+        # for logging purposes, show the estimate 
         if not page_next:
         
             # Initial count
@@ -307,7 +308,7 @@ class ApiRuleBackfill(webapp2.RequestHandler):
             for r in timeline["results"]:
                 count_estimate = count_estimate + r["count"]
                 
-            logging.info("Task start: %s => %s (%s)" % (rule, tag, count_estimate))
+            logging.info("Task start: %s => %s (est. %s)" % (rule, tag, count_estimate))
             
         g = Utils.get_gnip()
         tweets = g.query(rule, use_case="tweets", start=start, end=end, page=page_next)
@@ -333,8 +334,6 @@ class ApiRuleBackfill(webapp2.RequestHandler):
         response = {
             "completed" : True
         }
-        logging.info("POST Response: %s" % response)
-        
         self.response.headers['Content-Type'] = 'application/json'   
         self.response.out.write(json.dumps(response))
       
