@@ -318,11 +318,11 @@ class ApiRuleBackfill(webapp2.RequestHandler):
             timing_start = datetime.now()
             response = Utils.insert_records(dataset, table, tweets)
             timing = datetime.now() - timing_start
-            
-            logging.info("Task page %s: %s => %s (%s, %sms)" % (page_count, rule, tag, count_total, timing))
-            
+
             count_total = count_total + len(tweets)
          
+            logging.info("Task page %s: %s => %s (%s, %sms)" % (page_count, rule, tag, count_total, timing))
+            
         except:
  
             logging.exception("Unexpected error:");

@@ -136,20 +136,6 @@ To confirm the deploy worked, you can do the following to view the logs:
 - Click on "Logs" to the left
 - Find the entry with an orange "E" (for Error) and click on the "+" to expand it
 
-### Deploying queues and background servers on Google App Engine
-
-If you are using the backfill functionality to populate historical data, you need to run a custom task queue and a backend server. This will enable your tasks to run beyond the 10 minute limit of a default task queue.
-
-To create the custom task queue, you need to Deploy using the launch instructions above. Because a `queue.yaml` file exists in this project, you likely already created the custom queue definition on the previous production deploy.
-
-Alternatively, you can run the following command to update the production queues:
-
-	`appcfg.py update_queues . ` 
-
-To deploy a backend server, deploy the app and the backfill server with the `appcfg.py` command, as such:  
-
-	`appcfg.py update app.yaml backfill.yaml`
-	
 ### Querying and loading large sets of tweets onto BigQuery
 
 If you need large amounts of past tweets loaded onto BigQuery, you will need to use Gnip's Historical Power Track. The best way to load large amounts of tweets is:
@@ -256,8 +242,6 @@ The following documents serve as additional information on streaming data from T
 - *Uploading Your Application:* [https://cloud.google.com/App Engine/docs/python/gettingstartedpython27/uploading](https://cloud.google.com/App Engine/docs/python/gettingstartedpython27/uploading)
 - *Data Visualization App Using GAE Python, D3.js and Google BigQuery:* [http://code.tutsplus.com/tutorials/data-visualization-app-using-gae-python-d3js-and-google-bigquery--cms-22175](http://code.tutsplus.com/tutorials/data-visualization-app-using-gae-python-d3js-and-google-bigquery--cms-22175)
 
-
-
 Credits
 ---
 
@@ -273,5 +257,4 @@ TODO
 
 - Backfill
     - UI Dialog
-    - Pull in X days of previous data
 - Admin save/config page + deploy of service?
