@@ -4,10 +4,26 @@ import thread
 import gzip
 from multiprocessing import Pool, Process, Queue
 
-PROCESS_COUNT = 10
+PROCESS_COUNT = 8
 
 table = "gnip.tweets_io15"
 mypath = "data"
+
+def reset_file(file, output=None):
+
+    # ignore archive files
+    if ".archive" in file:
+        
+        file_gz = file[:-8]
+
+        call_rename = "mv %s %s" % (file, file_gz)
+        print call_rename
+        os.system(call_rename)
+
+    if output:
+        output.put(file)
+
+    return file
 
 def process_file(file, output=None):
 
