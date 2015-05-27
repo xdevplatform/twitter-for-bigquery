@@ -6,15 +6,15 @@ PROJECT_NUMBER:
 SERVICE_ACCOUNT:
 
 # Google Cloud Project: PKCS12 P12 key in "APIs & auth->Credentials" (https://console.developers.google.com/project/PROJECT_ID/apiui/credential)
-KEY_FILE:key.p12
+KEY_FILE: "key.p12"
 
 # Google BigQuery: Existing dataset and table you want to stream data into (https://bigquery.cloud.google.com/project/PROJECT_ID)
-DATASET_ID:gnip
-TABLE_ID:tweets
+DATASET_ID: "gnip"
+TABLE_ID: "tweets"
 
 # Gnip: Endpoints and user credentials (http://console.gnip.com)
-GNIP_STREAM_URL:https://stream.gnip.com:443/accounts/YOUR_ACCOUNT/publishers/twitter/streams/track/prod.json
-GNIP_SEARCH_URL:https://search.gnip.com/accounts/YOUR_ACCOUNT/search/STREAM.json
+GNIP_STREAM_URL: "https://stream.gnip.com:443/accounts/YOUR_ACCOUNT/publishers/twitter/streams/track/prod.json"
+GNIP_SEARCH_URL: "https://search.gnip.com/accounts/YOUR_ACCOUNT/search/STREAM.json"
 GNIP_USERNAME:
 GNIP_PASSWORD:
 
@@ -25,4 +25,4 @@ ACCESS_TOKEN:
 ACCESS_TOKEN_SECRET:
 
 # Daemon mode: gnip or twitter
-MODE: gnip
+MODE: "gnip"
