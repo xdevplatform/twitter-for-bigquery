@@ -190,10 +190,10 @@ class TableDetail(webapp2.RequestHandler):
         response = Utils.get_bq().tables().get(projectId=project, datasetId=dataset, tableId=table).execute()
         
         created = float(response['creationTime'])
-        response['creationTime'] = Utils.millis_to_date(created)
+        response['creationTime'] = Utils.millis_to_str(created)
         
         updated = float(response['lastModifiedTime'])
-        response['lastModifiedTime'] = Utils.millis_to_date(updated)
+        response['lastModifiedTime'] = Utils.millis_to_str(updated)
         
         self.response.out.write(JINJA.get_template('table_detail.html').render(response))
 
@@ -212,10 +212,32 @@ class ApiRuleList(webapp2.RequestHandler):
         
         response = rules.get_rules(**GNIP_RULES_PARAMS)
         
+        FORMAT = "%Y%m%d%H%M"
+        end = datetime.now()
+        
+        # scope by table
         if table:
+            
             (project, dataset, table) = Utils.parse_bqid(table)
             tag = Utils.make_tag(dataset, table)
             response = [r for r in response if r['tag'] == tag]
+            
+            table = Utils.get_bq().tables().get(projectId=project, datasetId=dataset, tableId=table).execute()
+            
+            end = float(table['creationTime'])
+            end = Utils.millis_to_date(end)
+            
+        start = end - timedelta(days=SEARCH_DAYS)
+                        
+        for r in response:
+            tag = r['tag']
+            r['hpt'] = json.dumps({
+            "publisher": "twitter", 
+            "streamType": "track", 
+            "dataFormat": "activity-streams", 
+            "fromDate": start.strftime(FORMAT), 
+            "toDate": end.strftime(FORMAT),
+            "rules": [{"tag": tag, "value": r['value']}], "title": tag})
             
         self.response.headers['Content-Type'] = 'application/json'   
         self.response.out.write(json.dumps(response))

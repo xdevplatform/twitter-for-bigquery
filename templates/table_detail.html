@@ -25,7 +25,7 @@
   <div class="col-md-2"><label>Updated</label></div>
   <div class="col-md-4">{{lastModifiedTime}}</div>
 </div>
-		
+
 <br>
 
   <!-- Nav tabs -->
@@ -50,6 +50,7 @@
 <tr>
   <th>Rule</th>
   <th>Dataset</th>
+  <th width="40%">HPT JSON</th>
   <th>Actions</th>
 </tr>
 </thead>
@@ -79,6 +80,9 @@
 	</td>
 	<td>
 		{{tag}}
+	</td>
+	<td>
+		{{hpt}}
 	</td>
 	<td>
 		<a class="rule_backfill" data-rule="{{value}}" data-table="{{tag}}">backfill</a>

@@ -177,10 +177,14 @@ class Utils:
         ts = time.strftime('%Y-%m-%d %H:%M:%S', ts)
         
         return ts
-    
+
     @staticmethod
     def millis_to_date(ts):
-        return datetime.fromtimestamp(ts/1000).strftime('%Y-%m-%d %H:%M')
+        return datetime.fromtimestamp(ts/1000)
+    
+    @staticmethod
+    def millis_to_str(ts, format='%Y-%m-%d %H:%M'):
+        return Utils.millis_to_date(ts).strftime(format)
         
     @staticmethod
     def parse_bqid(id):
