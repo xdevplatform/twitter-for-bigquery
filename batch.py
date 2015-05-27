@@ -66,13 +66,21 @@ class Utils:
 
         return file[:-3]
 
+    @staticmethod
+    def cat_all(path, file):
+
+        call_cat = "find %s -type f -exec cat {} + > " % (path, file)
+        print call_cat
+        os.system(call_cat)
+
+        return file
+
 def reset_file(file, output=None):
 
     # ignore archive files
-    if ".archive" in file:
+    if "json.gz" in file:
         
-        file_gz = file[:-8]
-        Utils.rename(file, file_gz)
+        Utils.gunzip(file)
 
     if output:
         output.put(file)
