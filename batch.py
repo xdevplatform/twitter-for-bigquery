@@ -4,57 +4,66 @@ import thread
 import gzip
 from multiprocessing import Pool, Process, Queue
 
-table = "gnip.ws2014"
+PROCESS_COUNT = 10
+
+table = "gnip.tweets_io15"
 mypath = "data"
 
-def process_file(file_gz, output=None):
+def process_file(file, output=None):
 
-	file = file_gz[:-3]
-	
-	# unpack file
-	call_unzip = "gunzip %s" % (file_gz)
-	print call_unzip
-	os.system(call_unzip)
-	
-	# load to bigquery
-	call_batch = "bq load --source_format=NEWLINE_DELIMITED_JSON --max_bad_records=5000 %s %s" % (table, file)
-	print call_batch
-	os.system(call_batch)
+    # ignore archive files
+    if ".archive" in file:
+        print "ignoring archive: %s" % file
+        return file
 
-	# pack file
-	call_zip = "gzip %s" % (file)
-	print call_zip
-	os.system(call_zip)
-	
-	if output:
-		output.put(file_gz)
+    # if zipped, unzip for loading
+    if "json.gz" in file:
 
-	return file_gz
+        file_gz = file
+        file = file[:-3]
+
+        # unpack file
+        call_unzip = "gunzip %s" % (file_gz)
+        print call_unzip
+        os.system(call_unzip)
+
+    # load to bigquery
+    call_batch = "bq load --source_format=NEWLINE_DELIMITED_JSON --max_bad_records=5000 %s %s" % (table, file)
+    print call_batch
+    os.system(call_batch)
+
+    # pack file back up so it doesn't take up any more memory
+    file_gz = "%s.gz" % file
+    call_zip = "gzip %s" % (file)
+    print call_zip
+    os.system(call_zip)
+
+    # archive processed file (re-entrant processing)
+    file_archive = "%s.archive" % file_gz
+    call_rename = "mv %s %s" % (file_gz, file_archive)
+    print call_rename
+    os.system(call_rename)
+
+    if output:
+        output.put(file)
+
+    return file
 
 if __name__ == '__main__':
-	
- 	files = []
- 	processes = []
- 	
-  	for (dirpath, dirnames, filenames) in walk(mypath):
-  		for f in filenames:
-  			if f.endswith(".gz"):
-  				file = "%s/%s" % (dirpath, f)
-  				files.append(file)
 
-	pool = Pool(processes=10)
-	results = [pool.apply_async(process_file, args=(f,)) for f in files]
-	
-	output = [p.get() for p in results]
-	print output
+    files = []
+    processes = []
 
+    # process all files and let async handle archiving 
+    for (dirpath, dirnames, filenames) in walk(mypath):
+        for f in filenames:
+            file = "%s/%s" % (dirpath, f)
+            files.append(file)
 
- 				
-		
+    pool = Pool(processes=PROCESS_COUNT)
+    results = [pool.apply_async(process_file, args=(f,)) for f in files]
 
-
-		
-
-
+    output = [p.get() for p in results]
+    print output
 
 
