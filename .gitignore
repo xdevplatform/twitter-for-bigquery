@@ -46,3 +46,4 @@ schema.json
 output.txt
 *.sh
 data/*
+fabfile.py
