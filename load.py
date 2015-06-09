@@ -7,13 +7,16 @@ import json
 import ssl
 import zlib
 import threading
+
 from threading import Lock
-import logging.config
 from httplib import *
 from config import Config
+from apiclient.errors import *
+import logging.config
 import tweepy
 
 from utils import Utils
+
 
 NEWLINE = '\r\n'
 SLEEP_TIME = 10
@@ -60,9 +63,12 @@ class GnipListener(object):
                         if not table:
                             table = tag.split(".")
                             created = Utils.insert_table(table[0], table[1], self.schema)
-                            if created:
-                                self.table_mapping[tag] = table
+                            
+                            # Brand new table 
+                            if created and created != True:
                                 self.logger.info('Created BQ table: %s' % tag)
+                                
+                            self.table_mapping[tag] = table
 
                     record_scrubbed = Utils.scrub(record)
                     Utils.insert_records(table[0], table[1], [record_scrubbed])
@@ -291,11 +297,8 @@ def main():
     schema_str = Utils.read_file(schema_file)
     schema = json.loads(schema_str)
 
-    try:
-        Utils.insert_table(config.DATASET_ID, config.TABLE_ID, schema)
-        print "Created default table: %s.%s" % (config.DATASET_ID, config.TABLE_ID)
-    except Exception, e:
-        print "Table already exists: %s" % e
+    Utils.insert_table(config.DATASET_ID, config.TABLE_ID, schema)
+    print "Default table: %s.%s" % (config.DATASET_ID, config.TABLE_ID)
 
     if config.MODE == 'gnip':
         GnipListener.start(schema, logger)

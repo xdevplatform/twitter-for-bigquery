@@ -3,7 +3,7 @@ Twitter for BigQuery
 
 This sample code will help you streaming Twitter data into BigQuery, and running simple visualizations. This sample also generates the queries you can run directly in the BigQuery interface, or extend for your applications.
 
-<img src="static/img/screenshot.png" style="width: 70%;"/>
+<img src="screenshot.png" style="width: 70%;"/>
 
 Additionally, you can use other public or private datasets in BigQuery to do additional joins and develop other insights/correlations.
 
@@ -255,6 +255,10 @@ The following developers and bloggers have aided greatly in the development of t
 
 TODO
 
-- Backfill
-    - UI Dialog
+- One Pager
+- FAQ
+- Easier to deploy full stack
+    - environment settings
+    - container deploy script
+- Figure out location, specifically don't use Utils.scrub() 
 - Admin save/config page + deploy of service?

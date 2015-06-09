@@ -79,12 +79,13 @@ class Utils:
         try:
             response = Utils.get_bq().tables().insert(projectId=config.PROJECT_ID, datasetId=dataset_id, body=body).execute()
         except HttpError, e:
-            # ignore table already exist errors
-            if e.code == 409 or "Already Exists" in e.reason:
+            # HttpError 409 when requesting URI returned 
+            # "Already Exists: Table twitter-for-bigquery:gnip.tweets_nbafinals"
+            if e.resp.status == 409:
                 response = True
             else:
                 raise e
-        
+
         return response
     
     @staticmethod
