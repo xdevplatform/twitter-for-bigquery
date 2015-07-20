@@ -10,8 +10,8 @@ Additionally, you can use other public or private datasets in BigQuery to do add
 Requirements
 ---
 
-- Twitter for BigQuery [sample code](http://github.com/twitterdev/twitter-for-bigquery)
-- [Twitter App](http://apps.twitter.com) created with keys/tokens
+- Twitter for BigQuery [sample code](https://github.com/twitterdev/twitter-for-bigquery)
+- [Twitter App](https://apps.twitter.com) created with keys/tokens
 - [Google Cloud Platform](https://cloud.google.com/) account 
 - [Google App Engine SDK for Python](https://cloud.google.com/appengine/downloads)
 
@@ -20,7 +20,7 @@ Setup & Configuration
 
 To work with Google Cloud and BigQuery, follow the below instructions to create a new project, service account and get your PEM file.
 
-- Go to [http://console.developers.google.com](http://console.developers.google.com)
+- Go to [https://console.developers.google.com](https://console.developers.google.com)
 - Click on "Create Project"
 - Open the project dashboard by clicking on the new project
 - Open "APIs & auth->Credentials"
@@ -49,7 +49,7 @@ As a pre-requisite for setting up BigQuery, you need to first set up a billing a
 
 The enclosed sample includes a simple `load.py` file to stream Tweets directly into BigQuery.
 
-- Go to [http://console.developers.google.com](http://console.developers.google.com)
+- Go to [https://console.developers.google.com](https://console.developers.google.com)
 - Go to your project
 - In the left-hand side, click on "Big Data->BigQuery" to open the BigQuery console
 - Click on the down arrow by the project, select "Create new dataset" and enter "twitter"
@@ -57,12 +57,12 @@ The enclosed sample includes a simple `load.py` file to stream Tweets directly i
 
 When developing on top of the Twitter platform, you must abide by the [Developer Agreement & Policy](https://dev.twitter.com/overview/terms/agreement-and-policy).
 
-Most notably, you must respect the section entitled "Maintain the Integrity of TwitterÕs Products", including removing all relevant Content with regard to unfavorites, deletes and other user actions. 
+Most notably, you must respect the section entitled "Maintain the Integrity of Twitter's Products", including removing all relevant Content with regard to unfavorites, deletes and other user actions. 
 
 Loading Twitter data into BigQuery from Google Compute Engine
 ---
 
-To help simplify your setup, this project is designed to use [Docker](http://www.docker.com) with [Google Compute Engine](https://cloud.google.com/compute/) to run the above process in the cloud.
+To help simplify your setup, this project is designed to use [Docker](https://www.docker.com) with [Google Compute Engine](https://cloud.google.com/compute/) to run the above process in the cloud.
 
 The `Dockerfile` describes the required libraries and packaging for the container. The below runs through the steps to  create your own container and deploy it to Google Compute Engine.
 	
@@ -128,13 +128,13 @@ To run in Google App Engine, do the following:
 
 - In the "Extra Flags" section, add the command line flags, as above:
 
-	`--appidentity_email_address="YOUR_TOKEN@developer.gserviceaccount.com" --appidentity_private_key_path=/PATH_TO/key.pem`
+	`--appidentity_email_address="YOUR_TOKEN@developer.gserviceaccount.com"`   			  			`--appidentity_private_key_path=/PATH_TO/key.pem`
 	
 <img src="static/img/settings_2.png" style="width: 70%;"/>
 
 - Click "Update".
 - Click "Deploy".
-- Open your browser to http://YOUR_PROJECT_NAME.appspot.com/](http://YOUR_PROJECT_NAME.appspot.com/).
+- Open your browser to http://YOUR_PROJECT_NAME.appspot.com/.
 
 To confirm the deploy worked, you can do the following to view the logs:
 
@@ -197,7 +197,7 @@ Users that tweet the most.
 
 	SELECT user.screen_name, count(*) as count FROM [twitter.tweets] GROUP BY user.screen_name ORDER BY count DESC LIMIT 10
 	
-To learn more about querying, go to [https://cloud.google.com/bigquery/query-reference]https://cloud.google.com/bigquery/query-reference)
+To learn more about querying, go to [https://cloud.google.com/bigquery/query-reference](https://cloud.google.com/bigquery/query-reference)
 
 
 Going further
@@ -208,14 +208,14 @@ Using BigQuery allows you to combine Twitter data with other public sources of i
 - Perform and store sentiment analysis on tweet text for worldwide sentiment
 - Cross reference Twitter data to other [public data sets](https://cloud.google.com/bigquery/docs/sample-tables)
 
-You can also visit http://demo.redash.io/ to perform queries and visualizations against publicly available data sources.
+You can also visit https://demo.redash.io/ to perform queries and visualizations against publicly available data sources.
 
 FAQ
 ---
 
 ### When deploying to AppEngine, I'm getting the error "This application does not exist (app_id=u'twitter-for-bigquery')"
 
-You will want to create your own app_id in app.yaml. If that does not work, then per this thread (http://stackoverflow.com/questions/10407955/google-app-engine-this-application-does-not-exist), try the following:
+You will want to create your own app_id in app.yaml. If that does not work, then as per [this StackOverflow thread] (https://stackoverflow.com/questions/10407955/google-app-engine-this-application-does-not-exist), try the following:
 
 	`rm .appcfg_oauth2_tokens`
 
@@ -228,9 +228,7 @@ The default Google AppEngine TaskQueue (named 'default') has a limit of 10 minut
 
 ### I am getting 'Process terminated due to exceeding quotas.' errors in my log console/'This application is temporarily over its serving quota. Please try again later.' when accessing my backend server.
 
-Google AppEngine has usage quotas to regulate billing and usage. You can read about the quotas for various products here: 
-
-https://cloud.google.com/appengine/docs/quotas#When_a_Resource_is_Depleted
+Google AppEngine has usage quotas to regulate billing and usage. You can [read about the quotas for various Google products](https://cloud.google.com/appengine/docs/quotas#When_a_Resource_is_Depleted)
 
 To increase quota limits, you can go into Compute->App Engine->Settings and edit your daily budget to allow for increased usage.
 
@@ -242,11 +240,11 @@ Additional reading
 
 The following documents serve as additional information on streaming data from Twitter and working with BigQuery.
 
-- *How to stream data from Twitter with tweepy [Python]:* [http://runnable.com/Us9rrMiTWf9bAAW3/how-to-stream-data-from-twitter-with-tweepy-for-python](http://runnable.com/Us9rrMiTWf9bAAW3/how-to-stream-data-from-twitter-with-tweepy-for-python)
-- *Authorizing Access to the Google BigQuery API using OAuth 2.0:* [https://cloud.google.com/bigquery/authorization](https://cloud.google.com/bigquery/authorization)
-- *Codelab: Creating a BigQuery Dashboard:* [https://cloud.google.com/bigquery/articles/dashboard#newApp Engineproject](https://cloud.google.com/bigquery/articles/dashboard#newApp Engineproject)
-- *Uploading Your Application:* [https://cloud.google.com/App Engine/docs/python/gettingstartedpython27/uploading](https://cloud.google.com/App Engine/docs/python/gettingstartedpython27/uploading)
-- *Data Visualization App Using GAE Python, D3.js and Google BigQuery:* [http://code.tutsplus.com/tutorials/data-visualization-app-using-gae-python-d3js-and-google-bigquery--cms-22175](http://code.tutsplus.com/tutorials/data-visualization-app-using-gae-python-d3js-and-google-bigquery--cms-22175)
+- [How to stream data from Twitter with tweepy (Python)](https://runnable.com/Us9rrMiTWf9bAAW3/how-to-stream-data-from-twitter-with-tweepy-for-python)
+- [Authorizing Access to the Google BigQuery API using OAuth 2.0](https://cloud.google.com/bigquery/authorization)
+- [Codelab: Creating a BigQuery Dashboard](https://cloud.google.com/bigquery/articles/dashboard#newApp Engineproject)
+- [Uploading Your Application](https://cloud.google.com/App Engine/docs/python/gettingstartedpython27/uploading)
+- [Data Visualization App Using GAE Python, D3.js and Google BigQuery](http://code.tutsplus.com/tutorials/data-visualization-app-using-gae-python-d3js-and-google-bigquery--cms-22175)
 
 Credits
 ---
@@ -257,7 +255,7 @@ The following developers and bloggers have aided greatly in the development of t
 - [@tyler_treat](https://twitter.com/tyler_treat) - [https://github.com/tylertreat/BigQuery-Python/](https://github.com/tyler_treat)
 - [@apassant](https://twitter.com/apassant) - [https://github.com/apassant](https://github.com/apassant)
 - [@jay3dec](https://twitter.com/jay3dec) - [https://twitter.com/jay3dec](https://twitter.com/jay3dec)
-- [@alexhanna](https://twitter.com/alexhanna) - [http://badhessian.org/2012/10/collecting-real-time-twitter-data-with-the-streaming-api/]
+- [@alexhanna](https://twitter.com/alexhanna) - http://badhessian.org/2012/10/collecting-real-time-twitter-data-with-the-streaming-api/
 
 TODO
 
