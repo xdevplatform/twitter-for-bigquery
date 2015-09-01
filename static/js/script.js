@@ -260,7 +260,8 @@ var RulePage = {
 		$(document.body).on("click", ".rule_test", function(){
 			var rule = $("#rule_text").val();
 			var tag = $("#rule_tag").val();
-			RulePage.test(rule, RulePage.test_callback)
+			var days = $("#backfill_days").val();
+			RulePage.test(rule, days, RulePage.test_callback)
 		});
 		
 		// any change to rule results in need for re-test
@@ -270,12 +271,29 @@ var RulePage = {
 		});
 	
 		$(document.body).on("click", ".rule_add", function(){
+			
 			var rule = $("#rule_text").val();
 			var tag = $("#rule_tag").val();
+			var backfill_days = $("#backfill_days").val();
 			
 			RulePage.add(rule, tag, function(response){
-				$('#ruleModal').modal('hide');
-				RulePage.list(table_id);
+				
+				if ($("#rule_import").is(":checked")){
+					
+					RulePage.backfill(rule, tag, backfill_days, function(response){
+
+						$('#ruleModal').modal('hide');
+						RulePage.list(table_id);
+
+					});
+					
+				} else {
+
+					$('#ruleModal').modal('hide');
+					RulePage.list(table_id);
+
+				}
+				
 			});
 			
 		});
@@ -288,22 +306,9 @@ var RulePage = {
 	init_import_count : function(rule_text_field){
 		
 		$("#rule_import_count").hide();
-	    $('#rule_import').change(function() {
-	    	
-	    	var rule = $(rule_text_field).val();
-	    	
-	    	if (!rule){
-	    		alert("Please enter a rule to calculate volume of tweets.");
-	    		$(this).attr("checked", false);
-	    		return false;
-	    	}
-	    	
-	        if($(this).is(":checked")) {
-		    	RulePage.test(rule, RulePage.test_callback);
-	        } else {
-	        	$("#rule_import_count").hide();
-	        }
-	    });
+//	    $('#rule_import').change(function() {
+//	    	$("#rule_import_days").prop('disabled', !$(this).is(":checked"));
+//	    });
 	    
 	},
 
@@ -315,11 +320,16 @@ var RulePage = {
 		 Page.add("/api/rule/add", params, callback);
 	},
 
-	test : function(rule, success, error){
+	test : function(rule, days, success, error){
+		
+		if (!rule){
+			alert("Please enter a rule.");
+			return false;
+		}
 		
     	$("#rule_import_count").fadeIn();
     	$("#rule_import_loading").show();
-    	$("#rule_import_text").html("Calculating volume of tweets over last " + RulePage.DAYS + " days...")
+    	$("#rule_import_text").html("Calculating volume of tweets over last " + days + " days...")
     	
     	if (!error){
     		error = function (request, status, error){
@@ -329,7 +339,8 @@ var RulePage = {
     	}
     	
 		 var params = {
-			'rule': rule
+			'rule': rule,
+			'days': days
 		 }
 		 $.ajax({
 			type : "GET",
@@ -348,10 +359,11 @@ var RulePage = {
 		$("#rule_add").prop("disabled", false);
 	},
 
-	backfill : function(rule, table, callback){
+	backfill : function(rule, table, days, callback){
 		 var params = {
 			'rule': rule,
-			'table': table
+			'table': table,
+			'days': days
 		 }
 		 $.ajax({
 			type : "GET",
@@ -392,12 +404,37 @@ var TablePage = {
 			var table = $("#table_name").val();
 			var type = $("#table_type").val();
 			var rules = $("#table_rules").val();
+			var backfill_days = $("#backfill_days").val();
 			var imprt = $("#table_imprt").val();
 			
+			if (!table){
+				alert("Please enter a table name.");
+				return;
+			}
+			
 			TablePage.add(dataset, table, type, rules, imprt, function(response){
-				$('#ruleModal').modal('hide');
-				$("#datasets").html("");
-				TablePage.list();
+				
+				if ($("#rule_import").is(":checked")){
+						
+					// BUGBUG: dataset has '.' at end, and it shouldn't
+					var rule_tag = dataset + table;
+					
+					RulePage.backfill(rules, rule_tag, backfill_days, function(response){
+
+						$('#ruleModal').modal('hide');
+						$("#datasets").html("");
+						TablePage.list();
+							
+					});
+					
+				} else {
+
+					$('#ruleModal').modal('hide');
+					$("#datasets").html("");
+					TablePage.list();
+
+				}
+					
 			});
 		});
 		
@@ -409,7 +446,8 @@ var TablePage = {
 		
 		$(document.body).on("click", "#rule_test", function(){
 			var rule = $("#table_rules").val();
-			RulePage.test(rule, TablePage.test_callback)
+			var days = $("#backfill_days").val();
+			RulePage.test(rule, days, TablePage.test_callback)
 		});
 		
 		$(document.body).on("change", "#table_type", function(){

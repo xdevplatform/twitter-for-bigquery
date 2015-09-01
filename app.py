@@ -54,7 +54,7 @@ class TableList(webapp2.RequestHandler):
     
     def get(self):
         
-        template_data = {"projectId" : config.PROJECT_ID}
+        template_data = {'searchDays' : SEARCH_DAYS, "projectId" : config.PROJECT_ID}
         self.response.out.write(JINJA.get_template('table_list.html').render(template_data))
         
 class ApiTableList(webapp2.RequestHandler):
@@ -268,13 +268,18 @@ class ApiRuleTest(webapp2.RequestHandler):
     def get(self):
 
         rule = self.request.get("rule")
+        days = SEARCH_DAYS
+        try:
+            days = int(self.request.get("days", SEARCH_DAYS))
+        except:
+            pass
 
         if not rule:
             raise Exception("missing parameter")
 
         g = Utils.get_gnip()
         end = datetime.now()
-        start = end - timedelta(days=SEARCH_DAYS)
+        start = end - timedelta(days=days)
         timeline = g.query(rule, 0, record_callback=None, use_case="timeline", start=start, end=end, count_bucket="day")
         timeline = json.loads(timeline)
         
@@ -293,8 +298,18 @@ class ApiRuleBackfill(webapp2.RequestHandler):
         
         rule = self.request.get("rule", None)
         table = self.request.get("table", None)
+        days = SEARCH_DAYS
+        try:
+            days = int(self.request.get("days", SEARCH_DAYS))
+            
+            print "DAYS E", days
 
-        self.enqueue(rule, table, page_next=None, page_count=0, count_total=0)
+        except:
+            pass
+        
+        print "DAYS F", days
+        
+        self.enqueue(rule, table, days, page_next=None, page_count=0, count_total=0)
         
         response = {
             "enqueued" : True
@@ -306,9 +321,18 @@ class ApiRuleBackfill(webapp2.RequestHandler):
         
         rule = self.request.get("rule", None)
         table_fqdn = self.request.get("table", None)
+        
+        print table_fqdn
+        
         (dataset, table) = Utils.parse_bqid(table_fqdn)  
         tag = Utils.make_tag(dataset, table)
-
+        
+        days = SEARCH_DAYS
+        try:
+            days = int(self.request.get("days", SEARCH_DAYS))
+        except:
+            pass
+        
         page_next = self.request.get("page_next", None)
         page_count = self.request.get("page_count", None)
         count_total = int(self.request.get("count_total", 0))
@@ -318,7 +342,7 @@ class ApiRuleBackfill(webapp2.RequestHandler):
             page_count = int(page_count) + 1
 
         end = datetime.now()
-        start = end - timedelta(days=SEARCH_DAYS)
+        start = end - timedelta(days=days)
         
         # for logging purposes, show the estimate 
         if not page_next:
@@ -353,7 +377,7 @@ class ApiRuleBackfill(webapp2.RequestHandler):
 
         page_next = g.rule_payload.get("next", None)
         if page_next:
-            self.enqueue(rule, table_fqdn, page_next, page_count=page_count, count_total=count_total)
+            self.enqueue(rule, table_fqdn, days, page_next, page_count=page_count, count_total=count_total)
 
         response = {
             "completed" : True
@@ -363,11 +387,12 @@ class ApiRuleBackfill(webapp2.RequestHandler):
       
     # enqueue a pagination task. needed because AppEngine limits tasks to < 10 minutes, 
     # so we can't run long-running tasks
-    def enqueue(self, rule, table, page_next=None, page_count=0, count_total=0):
+    def enqueue(self, rule, table, days, page_next=None, page_count=0, count_total=0):
 
         params = {
             "rule": rule,
             "table": table,
+            "days": days,
             "page_count": page_count,
             "count_total": count_total 
         }
