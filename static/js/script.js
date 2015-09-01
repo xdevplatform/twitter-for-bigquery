@@ -214,6 +214,12 @@ var ChartPage = {
 }
 
 var RulePage = {
+		
+	DAYS : 7,
+	
+	init : function(days){
+		RulePage.DAYS = days;
+	},
 
 	init_list : function(table_id){
 	
@@ -229,7 +235,7 @@ var RulePage = {
 		});
 
 		$(document.body).on("click", ".rule_backfill", function(){
-			if (confirm('This will populate data for the past 7 days. Are you sure?')){
+			if (confirm('This will populate data for the past ' + RulePage.DAYS + ' days. Are you sure?')){
 				rule = $(this).data("rule");
 				table = $(this).data("table");
 				RulePage.backfill(rule, table);
@@ -313,7 +319,7 @@ var RulePage = {
 		
     	$("#rule_import_count").fadeIn();
     	$("#rule_import_loading").show();
-    	$("#rule_import_text").html("Calculating volume of tweets over last 7 days...")
+    	$("#rule_import_text").html("Calculating volume of tweets over last " + RulePage.DAYS + " days...")
     	
     	if (!error){
     		error = function (request, status, error){

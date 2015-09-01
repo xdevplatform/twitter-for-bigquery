@@ -195,13 +195,15 @@ class TableDetail(webapp2.RequestHandler):
         updated = float(response['lastModifiedTime'])
         response['lastModifiedTime'] = Utils.millis_to_str(updated)
         
+        response['searchDays'] = SEARCH_DAYS
+        
         self.response.out.write(JINJA.get_template('table_detail.html').render(response))
 
 class RuleList(webapp2.RequestHandler):
     
     def get(self):
         
-        template_data = {}
+        template_data = {'searchDays' : SEARCH_DAYS}
         self.response.out.write(JINJA.get_template('rule_list.html').render(template_data))
                 
 class ApiRuleList(webapp2.RequestHandler):
