@@ -57,12 +57,15 @@ The enclosed sample includes a simple `load.py` file to stream Tweets directly i
 
 When developing on top of the Twitter platform, you must abide by the [Developer Agreement & Policy](https://dev.twitter.com/overview/terms/agreement-and-policy).
 
-Most notably, you must respect the section entitled "Maintain the Integrity of TwitterÕs Products", including removing all relevant Content with regard to unfavorites, deletes and other user actions. 
+Most notably, you must respect the section entitled "Maintain the Integrity of Twitter's Products", including removing all relevant Content with regard to unfavorites, deletes and other user actions. 
 
 Loading Twitter data into BigQuery from Google Compute Engine
 ---
 
-To help simplify your setup, this project is designed to use [Docker](http://www.docker.com) with [Google Compute Engine](https://cloud.google.com/compute/) to run the above process in the cloud.
+To help simplify your setup, this project is designed to use:
+
+- [Docker](http://www.docker.com). Visit this page for OSX instructions: [http://docs.docker.com/mac/step_one/](http://docs.docker.com/mac/step_one/)
+- [Google Compute Engine](https://cloud.google.com/compute/docs/gcloud-compute/#install). Specifically you can run `curl https://sdk.cloud.google.com | bash`
 
 The `Dockerfile` describes the required libraries and packaging for the container. The below runs through the steps to  create your own container and deploy it to Google Compute Engine.
 	

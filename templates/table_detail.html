@@ -39,6 +39,7 @@
 		</button>
 		</a>
 	</li>
+    <li role="presentation"><a href="#tab_advanced" aria-controls="tab_chart" role="tab" data-toggle="tab">Advanced</a></li>
   </ul>
 
   <!-- Tab panes -->
@@ -59,7 +60,60 @@
 </table>
 
     </div>
-    <div role="tabpanel" class="tab-pane active" id="tab_chart">
+    
+    <div role="tabpanel" class="tab-pane active" id="tab_advanced">
+
+<br>
+  
+<div class="row">
+  <div class="col-md-2">
+  
+	<ul class="nav nav-pills nav-stacked">
+  		<li role="presentation" class="active"><a href="#">Users</a></li>
+  		<li role="presentation"><a href="#">TBD</a></li>
+	</ul>
+
+  </div>
+  <div class="col-md-10">
+  
+  	<div id="advanced_users">
+  	
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Users</h3>
+  </div>
+  <div class="panel-body">
+  	<p>See how many unique users have tweeted in this data set, and optionally import their tweets via new Gnip rules.</p>
+    <a class="btn btn-primary btn-sm" id="advanced_users_calculate" data-id="{{id}}">Show unique users</a>
+    <a class="btn btn-primary btn-sm" id="advanced_users_rules" data-id="{{id}}">Add users to data set</a>
+
+    <br><br>
+    
+    <p id="table_users_count">.</p>
+    
+	<table class="table table-striped">
+	<thead>
+	<tr>
+	  	<th width="*">User</th>
+  		<th width="20%">Tweet Count</th>
+	</tr>
+	</thead>
+	<tbody id="table_users">
+	</tbody>
+	</table>
+	
+  </div>
+</div>  	
+  	
+  	</div>
+  
+  </div>
+</div>		
+
+    </div>
+
+    
+    <div role="tabpanel" class="tab-pane" id="tab_chart">
 
 <br>
 <input type="hidden" id="select_table" value="{{tableReference.datasetId}}.{{tableReference.tableId}}">
@@ -88,6 +142,17 @@
 		<a class="rule_backfill" data-rule="{{value}}" data-table="{{tag}}">backfill</a>
 		|
 		<a class="rule_delete" data-rule="{{value}}">delete</a>
+	</td>
+</tr>
+</script>
+
+<script id="users_row" type="text/template">
+<tr>
+	<td>
+		<a href="https://twitter.com/{{user}}" target="_target">@{{user}}</a>
+	</td>
+	<td>
+		{{count}}
 	</td>
 </tr>
 </script>

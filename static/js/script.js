@@ -398,7 +398,7 @@ var TablePage = {
 				});
 			}
 		});
-	
+		
 		$(document.body).on("click", ".table_add", function(){
 			var dataset = $("#table_dataset").val();
 			var table = $("#table_name").val();
@@ -458,7 +458,7 @@ var TablePage = {
 			$("#table_dataset").val(dataset);
 			
 		});
-		
+
 		RulePage.init_import_count("#table_rules");
 		TablePage.list();
 	},
@@ -488,6 +488,52 @@ var TablePage = {
 			$(this).addClass("col-md-4");
 		});
 		
+		$("#table_users_count").hide();
+
+		$(document.body).on("click", "#advanced_users_calculate", function(){
+
+			 var datasetid = $(this).data("id");
+			 
+			 var url = "/api/table/"+datasetid+"/users";
+			 
+			 $.ajax({
+				type : "GET",
+				url : url,
+				dataType : "json",
+				success : function(response){
+
+					var count = response['count'];
+					var users = response['users'];
+
+					$("#table_users_count").html("Below are the top "+count+" people tweeting in this data set.");
+					$("#table_users_count").show();
+					
+					$("#table_users").html("");
+					
+					template = $("#users_row").html();
+					Mustache.parse(template);
+					
+					alert(users.length);
+					
+					for (var i = 0; i < users.length; i++){
+						
+						var user = users[i];
+						
+						var output = Mustache.render(template, user);
+						$("#table_users").append(output);
+						
+					}				
+
+				},
+				error : Page.handle_error
+			});
+		
+		});
+	
+//		$(document.body).on("click", "#advanced_users_rules", function(){
+//			alert(1);
+//		});
+	
 		RulePage.init_list(id);
 		ChartPage.init();
 		

@@ -181,6 +181,56 @@ class ApiTableData(webapp2.RequestHandler):
         
         self.response.headers['Content-Type'] = 'application/json'
         self.response.out.write(json.dumps(args))
+        
+class ApiTableUsers(webapp2.RequestHandler):
+    
+    def get(self, id):
+        
+        (project, dataset, table) = Utils.parse_bqid(id)
+        
+        query = """
+            SELECT
+              actor.preferredUsername, count(*) as tweet_count
+            FROM
+              %s.%s
+            WHERE actor.followersCount > 1000
+            GROUP BY actor.preferredUsername
+            ORDER BY tweet_count DESC
+            LIMIT 100""" % (dataset, table)
+            
+        results = []
+            
+        results = Utils.get_bq().jobs().query(projectId=config.PROJECT_NUMBER, body={'query':query}).execute()
+ 
+        columns = []
+        if 'rows' in results:
+            for row in results['rows']:
+                for key, dict_list in row.iteritems():
+                    user = dict_list[0]['v']
+                    count = dict_list[1]['v']
+                    if user and count:
+                        columns.append({"user": user, "count": count})
+        else:
+            columns.append([])
+ 
+#         columns = """[{"user": "JCuzzy1", "count": "130"}, {"user": "AzzyChill", "count": "114"}]"""
+#         columns = json.loads(columns)
+
+        response = {"count": len(columns), "users": columns}
+
+        self.response.headers['Content-Type'] = 'application/json'   
+        self.response.out.write(json.dumps(response))
+                               
+class ApiTableRules(webapp2.RequestHandler):
+    
+    def get(self, id):
+        
+        print id
+
+        response = {"count": 100}
+
+        self.response.headers['Content-Type'] = 'application/json'   
+        self.response.out.write(json.dumps(response))
                                
 class TableDetail(webapp2.RequestHandler):
     
@@ -258,6 +308,9 @@ class ApiRuleAdd(webapp2.RequestHandler):
         params['tag'] = tag
         
         response = rules.add_rule(rule, **params)
+        
+        print "ApiRuleAdd response", response
+        
         TABLE_CACHE.clear()
         
         self.response.headers['Content-Type'] = 'application/json'   
@@ -688,6 +741,8 @@ application = webapp2.WSGIApplication([
     ('/api/table/add', ApiTableAdd),
     ('/api/table/([A-Za-z0-9\-\_\:\.]+)/delete', ApiTableDelete),
     ('/api/table/([A-Za-z0-9\-\_\:\.]+)/data', ApiTableData),
+    ('/api/table/([A-Za-z0-9\-\_\:\.]+)/users', ApiTableUsers),
+    ('/api/table/([A-Za-z0-9\-\_\:\.]+)/rules', ApiTableRules),
     
     # web pages
     ('/table/list', TableList),
