@@ -40,8 +40,22 @@ JINJA = jinja2.Environment(
 
 REMOVE_HTML = re.compile(r'<.*?>')
 TABLE_CACHE = {}
-SEARCH_DAYS = 28 
+SEARCH_DAYS = 7 
 TASK_QUEUE_NAME = "default" # "backfill"
+
+USER_QUERY = """
+    SELECT
+      actor.preferredUsername, count(*) as tweet_count
+    FROM
+      %s.%s
+    WHERE actor.followersCount > 1000
+    GROUP BY actor.preferredUsername
+    ORDER BY tweet_count DESC
+    LIMIT 100"""
+    
+DELETE_QUERY = """
+    DELETE FROM %s.%s
+"""
 
 class Home(webapp2.RequestHandler):
     
@@ -105,36 +119,24 @@ class ApiTableAdd(webapp2.RequestHandler):
     def get(self):
         
         response = []
-        
-        type = self.request.get("type")
 
-        dataset = self.request.get("dataset")
-        if "gnip" in dataset:
-            dataset = "gnip"
-            schema_file = "./schema/schema_gnip.json"
-        else:
-            dataset = "twitter"
-            schema_file = "./schema/schema_twitter.json"
-        
+        dataset = self.request.get("dataset")[:-1]
         table = self.request.get("name")
-        rule_list = self.request.get("rules")
-        imprt = self.request.get("import")
 
-        schema_str = Utils.read_file(schema_file)
-        schema = json.loads(schema_str)
-        
-        Utils.insert_table(dataset, table, schema)
+        Utils.insert_table(dataset, table)
         TABLE_CACHE.clear()
             
-        name = Utils.make_tag(dataset, table)
-        rule_list = [s.strip() for s in rule_list.splitlines()]
-        for r in rule_list:
-            
-            params = GNIP_RULES_PARAMS
-            params['tag'] = name
-    
-            response.append(rules.add_rule(r, **params))
-            TABLE_CACHE.clear()
+        tag = Utils.make_tag(dataset, table)
+        rule_list = self.request.get("rules")
+        rule_list = [rules.build(s.strip(), tag) for s in rule_list.splitlines()]
+        
+        params = GNIP_RULES_PARAMS
+        params['tag'] = tag
+
+        response = rules.add_rules(rule_list, **params)
+        TABLE_CACHE.clear()
+        
+        print "ApiTableAdd", response
 
         self.response.headers['Content-Type'] = 'application/json'   
         self.response.out.write(json.dumps(response)) 
@@ -176,22 +178,26 @@ class ApiTableData(webapp2.RequestHandler):
         results = Utils.get_bq().jobs().query(projectId=config.PROJECT_NUMBER, body={'query':query}).execute()
         args = builder.c3_args(query, results) 
 
-#         print query
-#         print args
-        
         self.response.headers['Content-Type'] = 'application/json'
         self.response.out.write(json.dumps(args))
         
-USER_QUERY = """
-    SELECT
-      actor.preferredUsername, count(*) as tweet_count
-    FROM
-      %s.%s
-    WHERE actor.followersCount > 1000
-    GROUP BY actor.preferredUsername
-    ORDER BY tweet_count DESC
-    LIMIT 100"""
-            
+class ApiTableDataDelete(webapp2.RequestHandler):
+    
+    def get(self, id):
+        
+        (project, dataset, table) = Utils.parse_bqid(id)
+        query = DELETE_QUERY % (dataset, table)
+        
+        response = Utils.get_bq().tables().delete(projectId=project, datasetId=dataset, tableId=table).execute()
+        TABLE_CACHE.clear()
+
+        Utils.insert_table(dataset, table)
+        TABLE_CACHE.clear()
+        
+        args = {}
+        self.response.headers['Content-Type'] = 'application/json'
+        self.response.out.write(json.dumps(args))
+        
 class ApiTableUsers(webapp2.RequestHandler):
     
     def get(self, id):
@@ -256,19 +262,20 @@ class ApiTableUsersRules(webapp2.RequestHandler):
                 if clause_count >= 30 or len(rule) > 1000:
                      
                     rule = rule[:-4]
-                    response = rules.add_rule(rule, **params)
-                    rules_list.append(rule)
+                    rules_list.append(rules.build(rule, tag))
                      
                     rule = ""
                     clause_count = 0
                     
-                    break
-                
             if len(rule) > 5:
                 
                 rule = rule[:-4]
-                response = rules.add_rule(rule, **params)
-                rules_list.append(rule)
+                rules_list.append(rules.build(rule, tag))
+                
+        print rules_list
+        response = rules.add_rules(rules_list, **params)
+        
+        print response
                     
         response = {"rules": rules_list, "rule_count": len(rules_list) }
 
@@ -781,6 +788,7 @@ application = webapp2.WSGIApplication([
     ('/api/table/list', ApiTableList),
     ('/api/table/add', ApiTableAdd),
     ('/api/table/([A-Za-z0-9\-\_\:\.]+)/delete', ApiTableDelete),
+    ('/api/table/([A-Za-z0-9\-\_\:\.]+)/data/delete', ApiTableDataDelete),
     ('/api/table/([A-Za-z0-9\-\_\:\.]+)/data', ApiTableData),
     ('/api/table/([A-Za-z0-9\-\_\:\.]+)/users/rules', ApiTableUsersRules),
     ('/api/table/([A-Za-z0-9\-\_\:\.]+)/users', ApiTableUsers),

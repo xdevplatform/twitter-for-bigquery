@@ -223,7 +223,7 @@ var RulePage = {
 
 	init_list : function(table_id){
 		
-		console.log(2);
+		console.log('RulePage.init_list');
 
 		Page.init();
 
@@ -235,6 +235,8 @@ var RulePage = {
 				});
 			}
 		});
+
+		console.log(3);
 
 		$(document.body).on("click", ".rule_backfill", function(){
 			if (confirm('This will populate data for the past ' + RulePage.DAYS + ' days. Are you sure?')){
@@ -391,7 +393,7 @@ var TablePage = {
 	init_list : function(){
 
 		Page.init();
-
+		
 		$(document.body).on("click", ".table_delete", function(){
 			if (confirm('Are you sure?')){
 				datasetid = $(this).data("id");
@@ -473,6 +475,8 @@ var TablePage = {
 		
 		Page.init();
 
+		console.log('table_delete')
+
 		$(document.body).on("click", ".table_delete", function(){
 			if (confirm('Are you sure?')){
 				datasetid = $(this).data("id");
@@ -521,8 +525,6 @@ var TablePage = {
 					template = $("#users_row").html();
 					Mustache.parse(template);
 					
-					alert(users.length);
-					
 					for (var i = 0; i < users.length; i++){
 						
 						var user = users[i];
@@ -563,12 +565,37 @@ var TablePage = {
 			});
 		
 		});
+		
+		$(document.body).on("click", "#advanced_data_delete", function(){
+			
+			if (confirm("Are you sure you want to delete all the data?")){
+				 
+				var datasetid = $(this).data("id");
+				var url = "/api/table/"+datasetid+"/data/delete";
+				 
+				 $.ajax({
+					type : "GET",
+					url : url,
+					dataType : "json",
+					success : function(response){
+
+						$("#tab_chart_link").click();
+						ChartPage.handleChange();
+
+					},
+					error : Page.handle_error
+				});
+				 
+			}
+			
+		});
+		
 	
 		console.log(1);
 		RulePage.init_list(id);
-		ChartPage.init();
 		
-		// auto load first chart
+		// init and auto load first chart
+		ChartPage.init();
 		ChartPage.handleChange();
 	},
 	

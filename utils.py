@@ -62,8 +62,20 @@ class Utils:
         return g
     
     @staticmethod
-    def insert_table(dataset_id, table_id, schema):
-         
+    def insert_table(dataset_id, table_id):
+        
+        schema_file = None
+
+        if "gnip" in dataset_id:
+            dataset_id = "gnip"
+            schema_file = "./schema/schema_gnip.json"
+        else:
+            dataset_id = "twitter"
+            schema_file = "./schema/schema_twitter.json"
+        
+        schema_str = Utils.read_file(schema_file)
+        schema = json.loads(schema_str)
+        
         body = {
             "tableReference" : {
                 "projectId" : config.PROJECT_ID,

@@ -73,42 +73,59 @@
   <div class="col-md-2">
   
 	<ul class="nav nav-pills nav-stacked">
-  		<li role="presentation" class="active"><a href="#">Users</a></li>
-  		<li role="presentation"><a href="#">TBD</a></li>
+  		<li role="presentation" href="#subtab_advanced_users" aria-controls="subtab_advanced_users" role="tab" data-toggle="tab"><a href="#">Users</a></li>
+  		<li role="presentation" href="#subtab_advanced_data" aria-controls="subtab_advanced_data" role="tab" data-toggle="tab"><a href="#">Data</a></li>
 	</ul>
 
   </div>
   <div class="col-md-10">
   
-  	<div id="advanced_users">
+  	<div class="tab-content">
+  	<div role="tabpanel" class="tab-pane active" id="subtab_advanced_users">
   	
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">Users</h3>
-  </div>
-  <div class="panel-body">
-  	<p>See how many unique users have tweeted in this data set, and optionally import their tweets via new Gnip rules.</p>
-    <a class="btn btn-sm btn-primary" id="advanced_users_calculate" data-id="{{id}}">Show unique users</a>
-    <a class="btn btn-sm btn-default" id="advanced_users_rules" data-id="{{id}}">Add users to data set</a>
+		<div class="panel panel-default">
+		  <div class="panel-heading">
+		    <h3 class="panel-title">Users</h3>
+		  </div>
+		  <div class="panel-body">
+		  	<p>See unique users who have tweeted in this data set, and optionally import their tweets via new Gnip rules.</p>
+		    <a class="btn btn-sm btn-primary" id="advanced_users_calculate" data-id="{{id}}">Show unique users</a>
+		    <a class="btn btn-sm btn-default" id="advanced_users_rules" data-id="{{id}}">Add users to data set</a>
 
-    <br><br>
+		    <br><br>
     
-    <p id="table_users_count">.</p>
+		    <p id="table_users_count">.</p>
     
-	<table class="table table-striped">
-	<thead>
-	<tr>
-	  	<th width="*">User</th>
-  		<th width="20%">Tweet Count</th>
-	</tr>
-	</thead>
-	<tbody id="table_users">
-	</tbody>
-	</table>
+			<table class="table table-striped">
+			<thead>
+			<tr>
+	  			<th width="*">User</th>
+		  		<th width="20%">Tweet Count</th>
+			</tr>
+			</thead>
+			<tbody id="table_users">
+			</tbody>
+			</table>
 	
-  </div>
-</div>  	
+		  </div>
+		</div>  	
   	
+  	</div>
+  	
+  	<div role="tabpanel" class="tab-pane" id="subtab_advanced_data">
+  	
+		<div class="panel panel-default">
+		  <div class="panel-heading">
+		    <h3 class="panel-title">Data</h3>
+		  </div>
+		  <div class="panel-body">
+		  	<p>Delete all data from this table.</p>
+		    <a class="btn btn-sm btn-primary" id="advanced_data_delete" data-id="{{id}}">Delete data</a>
+
+		  </div>
+		</div>  	
+  	
+  	</div>
   	</div>
   
   </div>
