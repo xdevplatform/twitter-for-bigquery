@@ -48,7 +48,7 @@ USER_QUERY = """
       actor.preferredUsername, count(*) as tweet_count
     FROM
       %s.%s
-    WHERE actor.followersCount > 1000
+    WHERE actor.followersCount > 200
     GROUP BY actor.preferredUsername
     ORDER BY tweet_count DESC
     LIMIT 100"""
@@ -571,6 +571,11 @@ class QueryBuilder():
                 self.prefix = '#'
                 col = 'entities.hashtags.text'
                 flatten_field = 'entities.hashtags'
+            elif self.field == 'tweets':
+                object = 'User tweets'
+                self.prefix = '@'
+                col = 'user.screen_name'
+#                 flatten_field = 'entities.user_mentions'            
             elif self.field == 'mentions':
                 object = 'User mentions'
                 self.prefix = '@'
@@ -587,6 +592,11 @@ class QueryBuilder():
                 self.prefix = '#'
                 col = 'twitter_entities.hashtags.text'
                 flatten_field = 'twitter_entities.hashtags'
+            elif self.field == 'tweets':
+                object = 'User tweets'
+                self.prefix = '@'
+                col = 'actor.preferredUsername'
+#                 flatten_field = 'twitter_entities.user_mentions'            
             elif self.field == 'mentions':
                 object = 'User mentions'
                 self.prefix = '@'
@@ -597,7 +607,7 @@ class QueryBuilder():
                 self.prefix = ''
                 col = 'generator.displayName'
                             
-        select = "%s as value,count(*) as count" % col 
+        select = "%s as value, count(*) as count" % col 
         fromclause = "flatten(%s, %s)" % (self.from_clause, flatten_field) if flatten_field else self.from_clause
         time_filter = "DATE_ADD(CURRENT_TIMESTAMP(), -%s, 'DAY')" % (self.interval)
         filter = "%s is not null AND %s > %s" % (col, created_field, time_filter)
