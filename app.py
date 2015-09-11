@@ -563,6 +563,7 @@ class QueryBuilder():
         col = None
         flatten_field = None
         created_field = None
+        unique = False
 
         if self.type == QueryBuilder.PUBLIC:
             created_field = 'created_at'
@@ -571,6 +572,7 @@ class QueryBuilder():
                 self.prefix = '#'
                 col = 'entities.hashtags.text'
                 flatten_field = 'entities.hashtags'
+                unique = True
             elif self.field == 'tweets':
                 object = 'User tweets'
                 self.prefix = '@'
@@ -592,6 +594,7 @@ class QueryBuilder():
                 self.prefix = '#'
                 col = 'twitter_entities.hashtags.text'
                 flatten_field = 'twitter_entities.hashtags'
+                unique = True
             elif self.field == 'tweets':
                 object = 'User tweets'
                 self.prefix = '@'
@@ -607,10 +610,11 @@ class QueryBuilder():
                 self.prefix = ''
                 col = 'generator.displayName'
                             
-        select = "%s as value, count(*) as count" % col 
+        col_use = "lower(%s)" % col if unique else col
+        select = "%s as value, count(*) as count" % col_use 
         fromclause = "flatten(%s, %s)" % (self.from_clause, flatten_field) if flatten_field else self.from_clause
         time_filter = "DATE_ADD(CURRENT_TIMESTAMP(), -%s, 'DAY')" % (self.interval)
-        filter = "%s is not null AND %s > %s" % (col, created_field, time_filter)
+        filter = "%s is not null AND %s > %s" % (col_use, created_field, time_filter)
         groupby = "value"
         orderby = "count DESC"
         limit = 20
