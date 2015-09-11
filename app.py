@@ -402,13 +402,8 @@ class ApiRuleBackfill(webapp2.RequestHandler):
         days = SEARCH_DAYS
         try:
             days = int(self.request.get("days", SEARCH_DAYS))
-            
-            print "DAYS E", days
-
         except:
             pass
-        
-        print "DAYS F", days
         
         self.enqueue(rule, table, days, page_next=None, page_count=0, count_total=0)
         
@@ -506,6 +501,7 @@ class ApiRuleBackfill(webapp2.RequestHandler):
         name = "%s_%s" % (rule, table)
         name = re.sub("[\W\d]", "_", name.strip()) 
         name = "Backfill_%s_%s" % (date, name)
+        name = name[0:500]
 
         # attempt to create task on separate backend module; see README.md for instructions 
         # on how to launch backend module + custom queue separately. 
