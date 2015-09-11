@@ -40,7 +40,7 @@ JINJA = jinja2.Environment(
 
 REMOVE_HTML = re.compile(r'<.*?>')
 TABLE_CACHE = {}
-SEARCH_DAYS = 7 
+SEARCH_DAYS = 28
 TASK_QUEUE_NAME = "default" # "backfill"
 
 USER_QUERY = """

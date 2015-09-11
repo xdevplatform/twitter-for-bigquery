@@ -226,23 +226,51 @@ var RulePage = {
 		console.log('RulePage.init_list');
 
 		Page.init();
+		
+		$(document.body).on("click", ".table_action", function(){
+			console.log('x');
+			var visible = false;
+			$.each($(".table_action"), function(){
+				if ($(this).is(":checked")){
+					visible = true;
+				}
+			});
+			console.log(visible);
+			if (visible){
+				$("#action_group").show();
+			} else {
+				$("#action_group").hide();
+			}
+		});
+		$("#action_group").hide(false);
 
 		$(document.body).on("click", ".rule_delete", function(){
 			if (confirm('Are you sure?')){
-				rule = $(this).data("rule");
-				RulePage.delete(rule, function(response){
-					RulePage.list(table_id);
+				
+				var elems = $(".table_action:checked");
+				var count = elems.length;
+				
+				$.each(elems, function(){
+					rule = $(this).data("rule");
+					RulePage.delete(rule, function(response){
+						if (!--count) {
+							RulePage.list(table_id);
+						}
+					});
 				});
+				
 			}
 		});
 
-		console.log(3);
-
 		$(document.body).on("click", ".rule_backfill", function(){
 			if (confirm('This will populate data for the past ' + RulePage.DAYS + ' days. Are you sure?')){
-				rule = $(this).data("rule");
-				table = $(this).data("table");
-				RulePage.backfill(rule, table);
+				$.each($(".table_action"), function(){
+					if ($(this).is(":checked")){
+						rule = $(this).data("rule");
+						table = $(this).data("table");
+						RulePage.backfill(rule, table);
+					}
+				});
 			}
 		});
 
@@ -558,7 +586,7 @@ var TablePage = {
 				success : function(response){
 
 					$("#tab_rules_link").click();
-					RulePage.init_list(datasetid);
+					RulePage.list(datasetid);
 
 				},
 				error : Page.handle_error
