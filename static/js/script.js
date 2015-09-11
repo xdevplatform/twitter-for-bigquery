@@ -489,6 +489,7 @@ var TablePage = {
 		});
 		
 		$("#table_users_count").hide();
+		$("#advanced_users_rules").prop("disabled", true);
 
 		$(document.body).on("click", "#advanced_users_calculate", function(){
 
@@ -502,10 +503,11 @@ var TablePage = {
 				dataType : "json",
 				success : function(response){
 
-					var count = response['count'];
+					var tweet_count = response['tweet_count'];
+					var user_count = response['user_count'];
 					var users = response['users'];
 
-					$("#table_users_count").html("Below are the top "+count+" people tweeting in this data set.");
+					$("#table_users_count").html("Below are the top "+user_count+" people included in this data set. ("+tweet_count+" tweets, X% of the total.)");
 					$("#table_users_count").show();
 					
 					$("#table_users").html("");
@@ -523,6 +525,8 @@ var TablePage = {
 						$("#table_users").append(output);
 						
 					}				
+					
+					$("#advanced_users_rules").prop("disabled", false);
 
 				},
 				error : Page.handle_error
@@ -530,9 +534,9 @@ var TablePage = {
 		
 		});
 	
-//		$(document.body).on("click", "#advanced_users_rules", function(){
-//			alert(1);
-//		});
+		$(document.body).on("click", "#advanced_users_rules", function(){
+			alert(1);
+		});
 	
 		RulePage.init_list(id);
 		ChartPage.init();

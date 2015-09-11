@@ -202,21 +202,23 @@ class ApiTableUsers(webapp2.RequestHandler):
             
         results = Utils.get_bq().jobs().query(projectId=config.PROJECT_NUMBER, body={'query':query}).execute()
  
-        columns = []
+        tweet_count = 0
+        users = []
         if 'rows' in results:
             for row in results['rows']:
                 for key, dict_list in row.iteritems():
                     user = dict_list[0]['v']
                     count = dict_list[1]['v']
                     if user and count:
-                        columns.append({"user": user, "count": count})
+                        users.append({"user": user, "count": count})
+                        tweet_count = tweet_count + int(count)
         else:
-            columns.append([])
+            users.append([])
  
 #         columns = """[{"user": "JCuzzy1", "count": "130"}, {"user": "AzzyChill", "count": "114"}]"""
 #         columns = json.loads(columns)
 
-        response = {"count": len(columns), "users": columns}
+        response = {"tweet_count": tweet_count, "user_count": len(users), "users": users}
 
         self.response.headers['Content-Type'] = 'application/json'   
         self.response.out.write(json.dumps(response))
