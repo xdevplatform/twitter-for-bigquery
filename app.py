@@ -226,27 +226,55 @@ class ApiTableUsersRules(webapp2.RequestHandler):
         (project, dataset, table) = Utils.parse_bqid(id)
         query = USER_QUERY % (dataset, table)
         
-        print query
-            
+        tag = Utils.make_tag(dataset, table)
+        params = GNIP_RULES_PARAMS
+        params['tag'] = tag
+        
         results = Utils.get_bq().jobs().query(projectId=config.PROJECT_NUMBER, body={'query':query}).execute()
- 
+        
         tweet_count = 0
         users = []
         if 'rows' in results:
+            
+            rules_list = []
+            rule = ""
+            clause_count = 0
+            
             for row in results['rows']:
+                
                 for key, dict_list in row.iteritems():
+                    
                     user = dict_list[0]['v']
-                    count = dict_list[1]['v']
-                    if user and count:
-                        users.append({"user": user, "count": count})
-                        tweet_count = tweet_count + int(count)
-        else:
-            users.append([])
- 
-        response = {"tweet_total": tweet_count, "tweet_count": tweet_count, "user_count": len(users), "users": users}
+                    
+                    if user:
+                        user = "from:%s" % user
+                        rule = "%s OR %s" % (user, rule)
+                        
+                        clause_count = clause_count + 1
+                        break
+
+                if clause_count >= 30 or len(rule) > 1000:
+                     
+                    rule = rule[:-4]
+                    response = rules.add_rule(rule, **params)
+                    rules_list.append(rule)
+                     
+                    rule = ""
+                    clause_count = 0
+                    
+                    break
+                
+            if len(rule) > 5:
+                
+                rule = rule[:-4]
+                response = rules.add_rule(rule, **params)
+                rules_list.append(rule)
+                    
+        response = {"rules": rules_list, "rule_count": len(rules_list) }
 
         self.response.headers['Content-Type'] = 'application/json'   
-        self.response.out.write(json.dumps(response))                               
+        self.response.out.write(json.dumps(response))  
+                                     
 class TableDetail(webapp2.RequestHandler):
     
     def get(self, id):
@@ -323,8 +351,6 @@ class ApiRuleAdd(webapp2.RequestHandler):
         params['tag'] = tag
         
         response = rules.add_rule(rule, **params)
-        
-        print "ApiRuleAdd response", response
         
         TABLE_CACHE.clear()
         

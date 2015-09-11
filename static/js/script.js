@@ -222,7 +222,9 @@ var RulePage = {
 	},
 
 	init_list : function(table_id){
-	
+		
+		console.log(2);
+
 		Page.init();
 
 		$(document.body).on("click", ".rule_delete", function(){
@@ -553,7 +555,7 @@ var TablePage = {
 				dataType : "json",
 				success : function(response){
 
-					$("#tab_rules").click();
+					$("#tab_rules_link").click();
 					RulePage.init_list(datasetid);
 
 				},
@@ -562,6 +564,7 @@ var TablePage = {
 		
 		});
 	
+		console.log(1);
 		RulePage.init_list(id);
 		ChartPage.init();
 		
