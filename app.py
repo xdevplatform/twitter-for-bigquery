@@ -182,23 +182,22 @@ class ApiTableData(webapp2.RequestHandler):
         self.response.headers['Content-Type'] = 'application/json'
         self.response.out.write(json.dumps(args))
         
+USER_QUERY = """
+    SELECT
+      actor.preferredUsername, count(*) as tweet_count
+    FROM
+      %s.%s
+    WHERE actor.followersCount > 1000
+    GROUP BY actor.preferredUsername
+    ORDER BY tweet_count DESC
+    LIMIT 100"""
+            
 class ApiTableUsers(webapp2.RequestHandler):
     
     def get(self, id):
         
         (project, dataset, table) = Utils.parse_bqid(id)
-        
-        query = """
-            SELECT
-              actor.preferredUsername, count(*) as tweet_count
-            FROM
-              %s.%s
-            WHERE actor.followersCount > 1000
-            GROUP BY actor.preferredUsername
-            ORDER BY tweet_count DESC
-            LIMIT 100""" % (dataset, table)
-            
-        results = []
+        query = USER_QUERY % (dataset, table)
             
         results = Utils.get_bq().jobs().query(projectId=config.PROJECT_NUMBER, body={'query':query}).execute()
  
@@ -215,25 +214,39 @@ class ApiTableUsers(webapp2.RequestHandler):
         else:
             users.append([])
  
-#         columns = """[{"user": "JCuzzy1", "count": "130"}, {"user": "AzzyChill", "count": "114"}]"""
-#         columns = json.loads(columns)
-
-        response = {"tweet_count": tweet_count, "user_count": len(users), "users": users}
+        response = {"tweet_total": tweet_count, "tweet_count": tweet_count, "user_count": len(users), "users": users}
 
         self.response.headers['Content-Type'] = 'application/json'   
         self.response.out.write(json.dumps(response))
                                
-class ApiTableRules(webapp2.RequestHandler):
+class ApiTableUsersRules(webapp2.RequestHandler):
     
     def get(self, id):
         
-        print id
-
-        response = {"count": 100}
+        (project, dataset, table) = Utils.parse_bqid(id)
+        query = USER_QUERY % (dataset, table)
+        
+        print query
+            
+        results = Utils.get_bq().jobs().query(projectId=config.PROJECT_NUMBER, body={'query':query}).execute()
+ 
+        tweet_count = 0
+        users = []
+        if 'rows' in results:
+            for row in results['rows']:
+                for key, dict_list in row.iteritems():
+                    user = dict_list[0]['v']
+                    count = dict_list[1]['v']
+                    if user and count:
+                        users.append({"user": user, "count": count})
+                        tweet_count = tweet_count + int(count)
+        else:
+            users.append([])
+ 
+        response = {"tweet_total": tweet_count, "tweet_count": tweet_count, "user_count": len(users), "users": users}
 
         self.response.headers['Content-Type'] = 'application/json'   
-        self.response.out.write(json.dumps(response))
-                               
+        self.response.out.write(json.dumps(response))                               
 class TableDetail(webapp2.RequestHandler):
     
     def get(self, id):
@@ -743,8 +756,8 @@ application = webapp2.WSGIApplication([
     ('/api/table/add', ApiTableAdd),
     ('/api/table/([A-Za-z0-9\-\_\:\.]+)/delete', ApiTableDelete),
     ('/api/table/([A-Za-z0-9\-\_\:\.]+)/data', ApiTableData),
+    ('/api/table/([A-Za-z0-9\-\_\:\.]+)/users/rules', ApiTableUsersRules),
     ('/api/table/([A-Za-z0-9\-\_\:\.]+)/users', ApiTableUsers),
-    ('/api/table/([A-Za-z0-9\-\_\:\.]+)/rules', ApiTableRules),
     
     # web pages
     ('/table/list', TableList),

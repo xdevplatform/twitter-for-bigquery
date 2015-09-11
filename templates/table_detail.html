@@ -30,16 +30,20 @@
 
   <!-- Nav tabs -->
   <ul class="nav nav-tabs" role="tablist">
-    <li role="presentation" class="active"><a href="#tab_chart" aria-controls="tab_chart" role="tab" data-toggle="tab">Overview</a></li>
+    <li role="presentation" class="active">
+    	<a id="tab_chart" href="#tab_chart" aria-controls="tab_chart" role="tab" data-toggle="tab">Overview</a>
+    </li>
     <li role="presentation">
-	    <a href="#tab_rules" aria-controls="tab_rules" role="tab" data-toggle="tab">PowerTrack Rules
+	    <a id="tab_rules" href="#tab_rules" aria-controls="tab_rules" role="tab" data-toggle="tab">PowerTrack Rules
 	    &nbsp; &nbsp; 
 		<button type="button" class="btn btn-xs btn-default pull-right" data-toggle="modal" data-target="#ruleModal">
 		  Add rule
 		</button>
 		</a>
 	</li>
-    <li role="presentation"><a href="#tab_advanced" aria-controls="tab_chart" role="tab" data-toggle="tab">Advanced</a></li>
+    <li role="presentation">
+    	<a id="tab_advanced" href="#tab_advanced" aria-controls="tab_advanced" role="tab" data-toggle="tab">Advanced</a>
+    </li>
   </ul>
 
   <!-- Tab panes -->
@@ -61,7 +65,7 @@
 
     </div>
     
-    <div role="tabpanel" class="tab-pane active" id="tab_advanced">
+    <div role="tabpanel" class="tab-pane" id="tab_advanced">
 
 <br>
   
@@ -113,7 +117,7 @@
     </div>
 
     
-    <div role="tabpanel" class="tab-pane" id="tab_chart">
+    <div role="tabpanel" class="tab-pane active" id="tab_chart">
 
 <br>
 <input type="hidden" id="select_table" value="{{tableReference.datasetId}}.{{tableReference.tableId}}">

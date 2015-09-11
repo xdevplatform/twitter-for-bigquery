@@ -493,6 +493,9 @@ var TablePage = {
 
 		$(document.body).on("click", "#advanced_users_calculate", function(){
 
+			$("#table_users").html("");
+			$("#table_users").append("<tr><td colspan=2><center><img class='loading' src='/static/img/loading.gif'></td></tr>");
+
 			 var datasetid = $(this).data("id");
 			 
 			 var url = "/api/table/"+datasetid+"/users";
@@ -504,10 +507,11 @@ var TablePage = {
 				success : function(response){
 
 					var tweet_count = response['tweet_count'];
+					var tweet_total = response['tweet_total'];
 					var user_count = response['user_count'];
 					var users = response['users'];
 
-					$("#table_users_count").html("Below are the top "+user_count+" people included in this data set. ("+tweet_count+" tweets, X% of the total.)");
+					$("#table_users_count").html("Below are the top "+user_count+" people included in this data set. ("+tweet_count+" tweets, "+tweet_total+" total.)");
 					$("#table_users_count").show();
 					
 					$("#table_users").html("");
@@ -535,7 +539,27 @@ var TablePage = {
 		});
 	
 		$(document.body).on("click", "#advanced_users_rules", function(){
-			alert(1);
+
+			$("#table_users").html("");
+			$("#table_users").append("<tr><td colspan=2><center><img class='loading' src='/static/img/loading.gif'></td></tr>");
+
+			 var datasetid = $(this).data("id");
+			 
+			 var url = "/api/table/"+datasetid+"/users/rules";
+			 
+			 $.ajax({
+				type : "GET",
+				url : url,
+				dataType : "json",
+				success : function(response){
+
+					$("#tab_rules").click();
+					RulePage.init_list(datasetid);
+
+				},
+				error : Page.handle_error
+			});
+		
 		});
 	
 		RulePage.init_list(id);
