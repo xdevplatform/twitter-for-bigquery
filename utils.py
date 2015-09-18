@@ -159,11 +159,31 @@ class Utils:
             
             if value is None:
                 del d[key]
+            # maintain geo with lat/long
+            elif key == 'geo':
+                geo = d.get('geo', None)
+                if geo:
+                    
+                    type = geo.get('type', None)
+                    coordinates = geo.get('coordinates', None)
+                    del geo['coordinates']
+                    
+                    if type == 'Point':
+                        geo['lat'] = coordinates[0]
+                        geo['long'] = coordinates[1]
+                    elif type == 'Polygon':
+                        geo['lat'] = sum(pair[1] for pair in coordinates[0]) / 4
+                        geo['long'] = sum(pair[0] for pair in coordinates[0]) / 4
+
+                    print "\t\t\t FOUND", geo
+
+                d['geo'] = geo
+            # remove other coordinates that are 4-point bounding boxes
             elif key == 'coordinates':
                 del d[key]
-            elif key == 'attributes': # in 'place' object 
-                del d[key]
             elif key == 'bounding_box': # in 'place' object
+                del d[key]
+            elif key == 'attributes': # in 'place' object 
                 del d[key]
             elif key == 'retweeted_status':
                 del d[key]
