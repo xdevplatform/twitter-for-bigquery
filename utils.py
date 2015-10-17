@@ -66,7 +66,7 @@ class Utils:
         
         schema_file = None
 
-        if config.MODE == "gnip":
+        if config.MODE == QueryBuilder.GNIP:
             schema_file = "./schema/schema_gnip.json"
         else:
             schema_file = "./schema/schema_twitter.json"
@@ -109,8 +109,8 @@ class Utils:
         
         response = Utils.get_bq().tabledata().insertAll(projectId=config.PROJECT_ID, datasetId=dataset_id, tableId=table_id, body=body).execute()
         
-        print "insert_records: %s %s %s" % (config.PROJECT_ID, dataset_id, table_id)
-        print response
+#         print "insert_records: %s %s %s" % (config.PROJECT_ID, dataset_id, table_id)
+#         print response
 
         return response
          

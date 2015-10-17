@@ -173,12 +173,12 @@ class ApiTableData(webapp2.RequestHandler):
         charttype = self.request.get("charttype")
         interval = int(self.request.get("interval")) if self.request.get("interval") else SEARCH_DAYS
 
-        builder = QueryBuilder(QueryBuilder.GNIP if config.MODE == "gnip" else QueryBuilder.PUBLIC, table, field, charttype, interval) 
+        builder = QueryBuilder(QueryBuilder.GNIP if config.MODE == QueryBuilder.GNIP else QueryBuilder.PUBLIC, table, field, charttype, interval) 
         query = builder.query()
         
         results = Utils.get_bq().jobs().query(projectId=config.PROJECT_NUMBER, body={'query':query}).execute()
         args = builder.c3_args(query, results) 
-
+        
         self.response.headers['Content-Type'] = 'application/json'
         self.response.out.write(json.dumps(args))
         
@@ -384,7 +384,7 @@ class ApiRuleTest(webapp2.RequestHandler):
         start = end - timedelta(days=days)
         timeline = g.query(rule, 1, record_callback=None, use_case="timeline", start=start, end=end, count_bucket="day")
         timeline = json.loads(timeline)
-        print timeline
+#         print timeline
         
         count = 0 
         for r in timeline["results"]:
@@ -420,7 +420,7 @@ class ApiRuleBackfill(webapp2.RequestHandler):
         rule = self.request.get("rule", None)
         table_fqdn = self.request.get("table", None)
         
-        print table_fqdn
+#         print table_fqdn
         
         (dataset, table) = Utils.parse_bqid(table_fqdn)  
         tag = Utils.make_tag(dataset, table)
@@ -524,6 +524,8 @@ class ApiRuleDelete(webapp2.RequestHandler):
             "value" : value
         }
 
+        print rule_delete
+
         response = rules.delete_rule(rule_delete, **GNIP_RULES_PARAMS)
         TABLE_CACHE.clear()
         
@@ -612,11 +614,10 @@ class QueryBuilder():
                 self.prefix = ''
                 col = 'generator.displayName'
                             
-        col_use = "lower(%s)" % col if unique else col
-        select = "%s as value, count(*) as count" % col_use 
+        select = "lower(%s) as value, count(*) as count" % col 
         fromclause = "flatten(%s, %s)" % (self.from_clause, flatten_field) if flatten_field else self.from_clause
         time_filter = "DATE_ADD(CURRENT_TIMESTAMP(), -%s, 'DAY')" % (self.interval)
-        filter = "%s is not null AND %s > %s" % (col_use, created_field, time_filter)
+        filter = "%s is not null AND %s > %s" % (col, created_field, time_filter)
         groupby = "value"
         orderby = "count DESC"
         limit = 20
@@ -631,7 +632,7 @@ class QueryBuilder():
             if self.interval == 1:
                 create_hour = "CONCAT(STRING(YEAR(TIMESTAMP(t1.%s))), '-', STRING(MONTH(TIMESTAMP(t1.%s))), '-', STRING(DAY(TIMESTAMP(t1.%s))), ' ', LPAD(STRING(HOUR(TIMESTAMP(t1.%s))), 2, '0'), ':00')" % (created_field, created_field, created_field, created_field)
                 
-            select = "t1.%s, %s AS create_hour" % (select, create_hour)
+            select = "lower(t1.%s) as value, count(*) as count, %s AS create_hour" % (col, create_hour)
             fromclause = "flatten(%s, %s)" % (self.from_clause, flatten_field) if flatten_field else self.from_clause
             fromclause = """
                 %s t1
@@ -670,6 +671,7 @@ class QueryBuilder():
             ORDER BY 
                 %s 
             LIMIT %s""" % (select, fromclause, filter, groupby, orderby, limit)
+            
         print query
             
         return query
