@@ -18,9 +18,21 @@
 	<table class="table table-striped">
 	<thead>
     <tr>
+      <th></th>
       <th>Rule</th>
-      <th>Destination Table</th>
-      <th width="15%">Actions</th>
+      <th>
+      	Dataset
+<div class="btn-group pull-right">
+  <button id="action_group" type="button" class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    Action <span class="caret"></span>
+  </button>
+  <ul class="dropdown-menu">
+    <li><a href="#" class="rule_backfill">Backfill</a></li>
+    <li><a href="#" class="rule_delete">Delete</a></li>
+  </ul>
+</div> 
+      </th>
+    <th width="40%">HPT JSON</th>
     </tr>
 	</thead>
 	<tbody id="table_data">
@@ -35,15 +47,16 @@
 <script id="table_row" type="text/template">
 <tr>
 	<td>
+		<input type="checkbox" class="table_action" data-rule="{{value}}" data-table="{{tag}}">
+	</td>
+	<td>
 		{{value}}
 	</td>
 	<td>
 		{{tag}}
 	</td>
 	<td>
-		<a class="rule_backfill" data-rule="{{value}}" data-table="{{tag}}">backfill</a>
-		|
-		<a class="rule_delete" data-rule="{{value}}">delete</a>
+		{{hpt}}
 	</td>
 </tr>
 </script>
