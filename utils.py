@@ -62,7 +62,7 @@ class Utils:
         return g
     
     @staticmethod
-    def insert_table(dataset_id, table_id):
+    def insert_table(dataset_id, table_id, schema=None):
         
         schema_file = None
 

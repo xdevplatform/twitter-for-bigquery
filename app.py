@@ -381,8 +381,9 @@ class ApiRuleTest(webapp2.RequestHandler):
         g = Utils.get_gnip()
         end = datetime.now()
         start = end - timedelta(days=days)
-        timeline = g.query(rule, 0, record_callback=None, use_case="timeline", start=start, end=end, count_bucket="day")
+        timeline = g.query(rule, 1, record_callback=None, use_case="timeline", start=start, end=end, count_bucket="day")
         timeline = json.loads(timeline)
+        print timeline
         
         count = 0 
         for r in timeline["results"]:
@@ -668,6 +669,7 @@ class QueryBuilder():
             ORDER BY 
                 %s 
             LIMIT %s""" % (select, fromclause, filter, groupby, orderby, limit)
+        print query
             
         return query
     

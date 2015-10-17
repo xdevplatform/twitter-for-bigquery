@@ -16,7 +16,7 @@ import os
 import platform
 import re
 import sys
-from netrc import netrc, NetrcParseError
+#from netrc import netrc, NetrcParseError
 
 from . import __version__
 from . import certs
