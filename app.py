@@ -30,7 +30,7 @@ config = Config(f)
 
 GNIP_RULES_PARAMS = { 
      'url' : config.GNIP_STREAM_URL, 
-     'auth' : (config.GNIP_USERNAME, config.GNIP_PASSWORD) 
+     'auth' : (config.GNIP_STREAM_USERNAME, config.GNIP_STREAM_PASSWORD) 
  }
 
 JINJA = jinja2.Environment(
@@ -68,7 +68,7 @@ class TableList(webapp2.RequestHandler):
     
     def get(self):
         
-        template_data = {'searchDays' : SEARCH_DAYS, "projectId" : config.PROJECT_ID}
+        template_data = {'searchDays' : SEARCH_DAYS, "projectId" : config.PROJECT_ID, "datasetId": config.DATASET_ID}
         self.response.out.write(JINJA.get_template('table_list.html').render(template_data))
         
 class ApiTableList(webapp2.RequestHandler):
@@ -84,6 +84,7 @@ class ApiTableList(webapp2.RequestHandler):
             
             for d in datasets:
                 ref = d.get("datasetReference", None)
+                
                 bq_tables = Utils.get_bq().tables().list(projectId=ref.get("projectId"), datasetId=ref.get("datasetId")).execute()
                 if bq_tables['totalItems'] > 0:
                     for t in bq_tables.get("tables", None):
@@ -172,7 +173,7 @@ class ApiTableData(webapp2.RequestHandler):
         charttype = self.request.get("charttype")
         interval = int(self.request.get("interval")) if self.request.get("interval") else SEARCH_DAYS
 
-        builder = QueryBuilder(QueryBuilder.GNIP if "gnip" in table else QueryBuilder.PUBLIC, table, field, charttype, interval) 
+        builder = QueryBuilder(QueryBuilder.GNIP if config.MODE == "gnip" else QueryBuilder.PUBLIC, table, field, charttype, interval) 
         query = builder.query()
         
         results = Utils.get_bq().jobs().query(projectId=config.PROJECT_NUMBER, body={'query':query}).execute()

@@ -32,7 +32,7 @@ class GnipListener(object):
     HEADERS = { 'Accept': 'application/json',
                 'Connection': 'Keep-Alive',
                 'Accept-Encoding' : 'gzip',
-                'Authorization' : 'Basic %s' % base64.encodestring('%s:%s' % (config.GNIP_USERNAME, config.GNIP_PASSWORD))  }
+                'Authorization' : 'Basic %s' % base64.encodestring('%s:%s' % (config.GNIP_STREAM_USERNAME, config.GNIP_STREAM_PASSWORD))  }
 
     """docstring for ClassName"""
     def __init__(self, schema, table_mapping, logger=None):

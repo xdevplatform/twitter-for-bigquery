@@ -58,7 +58,7 @@ class Utils:
     
     @staticmethod
     def get_gnip():
-        g = searchclient.SearchClient(config.GNIP_USERNAME, config.GNIP_PASSWORD, config.GNIP_SEARCH_URL)
+        g = searchclient.SearchClient(config.GNIP_SEARCH_USERNAME, config.GNIP_SEARCH_PASSWORD, config.GNIP_SEARCH_URL)
         return g
     
     @staticmethod
@@ -66,11 +66,9 @@ class Utils:
         
         schema_file = None
 
-        if "gnip" in dataset_id:
-            dataset_id = "gnip"
+        if config.MODE == "gnip":
             schema_file = "./schema/schema_gnip.json"
         else:
-            dataset_id = "twitter"
             schema_file = "./schema/schema_twitter.json"
         
         schema_str = Utils.read_file(schema_file)
@@ -108,8 +106,12 @@ class Utils:
             "kind": "bigquery#tableDataInsertAllRequest",
             "rows": [{ "insertId" : t["id"], "json" : Utils.scrub(t) } for t in tweets ]
         }
-
+        
         response = Utils.get_bq().tabledata().insertAll(projectId=config.PROJECT_ID, datasetId=dataset_id, tableId=table_id, body=body).execute()
+        
+        print "insert_records: %s %s %s" % (config.PROJECT_ID, dataset_id, table_id)
+        print response
+
         return response
          
     @staticmethod    
@@ -175,7 +177,7 @@ class Utils:
                         geo['lat'] = sum(pair[1] for pair in coordinates[0]) / 4
                         geo['long'] = sum(pair[0] for pair in coordinates[0]) / 4
 
-                    print "\t\t\t FOUND", geo
+#                     print "\t\t\t FOUND", geo
 
                 d['geo'] = geo
             # remove other coordinates that are 4-point bounding boxes

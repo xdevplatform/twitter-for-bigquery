@@ -81,11 +81,6 @@
 				"fields":[
 					{
 						"type":"string",
-						"name":"source_status_id_str",
-						"mode":"nullable"
-					},
-					{
-						"type":"string",
 						"name":"expanded_url",
 						"mode":"nullable"
 					},
@@ -107,6 +102,21 @@
 					{
 						"type":"integer",
 						"name":"source_status_id",
+						"mode":"nullable"
+					},
+					{
+						"type":"string",
+						"name":"source_status_id_str",
+						"mode":"nullable"
+					},
+					{
+						"type":"integer",
+						"name":"source_user_id",
+						"mode":"nullable"
+					},
+					{
+						"type":"string",
+						"name":"source_user_id_str",
 						"mode":"nullable"
 					},
 					{
@@ -530,11 +540,6 @@
 						"fields":[
 							{
 								"type":"string",
-								"name":"source_status_id_str",
-								"mode":"nullable"
-							},
-							{
-								"type":"string",
 								"name":"expanded_url",
 								"mode":"nullable"
 							},
@@ -556,6 +561,11 @@
 							{
 								"type":"integer",
 								"name":"source_status_id",
+								"mode":"nullable"
+							},
+							{
+								"type":"string",
+								"name":"source_status_id_str",
 								"mode":"nullable"
 							},
 							{
@@ -1105,11 +1115,6 @@
 						"fields":[
 							{
 								"type":"string",
-								"name":"source_status_id_str",
-								"mode":"nullable"
-							},
-							{
-								"type":"string",
 								"name":"expanded_url",
 								"mode":"nullable"
 							},
@@ -1131,6 +1136,21 @@
 							{
 								"type":"integer",
 								"name":"source_status_id",
+								"mode":"nullable"
+							},
+							{
+								"type":"string",
+								"name":"source_status_id_str",
+								"mode":"nullable"
+							},
+							{
+								"type":"integer",
+								"name":"source_user_id",
+								"mode":"nullable"
+							},
+							{
+								"type":"string",
+								"name":"source_user_id_str",
 								"mode":"nullable"
 							},
 							{
@@ -1624,11 +1644,6 @@
 				"fields":[
 					{
 						"type":"string",
-						"name":"source_status_id_str",
-						"mode":"nullable"
-					},
-					{
-						"type":"string",
 						"name":"expanded_url",
 						"mode":"nullable"
 					},
@@ -1650,6 +1665,21 @@
 					{
 						"type":"integer",
 						"name":"source_status_id",
+						"mode":"nullable"
+					},
+					{
+						"type":"string",
+						"name":"source_status_id_str",
+						"mode":"nullable"
+					},
+					{
+						"type":"integer",
+						"name":"source_user_id",
+						"mode":"nullable"
+					},
+					{
+						"type":"string",
+						"name":"source_user_id_str",
 						"mode":"nullable"
 					},
 					{
