@@ -1,14 +1,21 @@
+cffi==1.2.1
 config==0.3.9
+cryptography==1.0.2
+enum34==1.0.4
 gnippy==0.4.1
 google-api-python-client==1.4.1
 httplib2==0.9.1
+idna==2.0
+ipaddress==1.0.14
 Jinja2==2.7.3
 MarkupSafe==0.23
 oauth2client==1.4.11
 oauthlib==0.7.2
-pyasn1==0.1.7
+pyasn1==0.1.9
 pyasn1-modules==0.0.5
+pycparser==2.14
 pycrypto==2.6.1
+pyOpenSSL==0.15.1
 PyYAML==3.11
 requests==2.7.0
 requests-oauthlib==0.5.0
@@ -17,3 +24,4 @@ simplejson==3.7.3
 six==1.9.0
 tweepy==3.3.0
 uritemplate==0.6
+wheel==0.24.0
