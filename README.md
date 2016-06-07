@@ -256,7 +256,7 @@ Credits
 
 The following developers and bloggers have aided greatly in the development of this source. I'm  appreciative of contributions and knowledge sharing.
 
-- [@felipehoffa](https://twitter.com/felipehoffa) - [https://github.com/felipehoffa](https://github.com/felipehoffa)
+- [@felipehoffa](https://twitter.com/felipehoffa) - [https://github.com/fhoffa](https://github.com/fhoffa)
 - [@tyler_treat](https://twitter.com/tyler_treat) - [https://github.com/tylertreat/BigQuery-Python/](https://github.com/tyler_treat)
 - [@apassant](https://twitter.com/apassant) - [https://github.com/apassant](https://github.com/apassant)
 - [@jay3dec](https://twitter.com/jay3dec) - [https://twitter.com/jay3dec](https://twitter.com/jay3dec)
